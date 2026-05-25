@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=refs-auto-collapse" />
+    <link rel="stylesheet" href="styles.css?v=mobile-expand-images" />
   </head>
   <body>
     <div class="professional-dialog" id="professionalDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
@@ -55,7 +55,7 @@
         <button class="tab-trigger" type="button" data-tab="conceitos">Conceitos essenciais</button>
         <button class="tab-trigger" type="button" data-tab="avaliacao">Avaliação inicial</button>
         <button class="tab-trigger" type="button" data-tab="sintomas">Controle de sintomas</button>
-        <button class="tab-trigger" type="button" data-tab="manejo-dor">Manejo da dor</button>
+        <button class="tab-trigger" type="button" data-tab="manejo-dor">Dor</button>
         <button class="tab-trigger" type="button" data-tab="comunicacao">Comunicação</button>
         <button class="tab-trigger" type="button" data-tab="plano">Plano de cuidado</button>
         <button class="tab-trigger" type="button" data-tab="cuidador">Apoio ao cuidador</button>
@@ -237,11 +237,528 @@
       </section>
 
       <section class="content-panel" id="manejo-dor" tabindex="0">
-        <h2>Manejo da dor</h2>
-        <p>
-          Fluxo decisório inspirado no PCDT resumido da Dor Crônica da Conitec.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup> Use como apoio ao raciocínio clínico,
-          individualizando conforme diagnóstico, metas de cuidado, função, fragilidade, comorbidades e protocolos locais.
-        </p>
+        <h2>Dor</h2>
+
+        <div class="subtabs" aria-label="Subseções da aba Dor">
+          <button class="subtab-trigger active" type="button" data-pain-subtab="definicao">Definição</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="fisiopatologia-dor">Fisiopatologia</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="anamnese-exame">Anamnese e exame físico</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="intensidade-dor">Avaliação da intensidade</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="principios-oms-dor">Princípios da OMS</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="tratamento-medicamentoso-dor">Tratamento medicamentoso</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="tratamento-nao-medicamentoso-dor">Tratamento não medicamentoso</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="tratamento-fitoterapico-dor">Tratamento fitoterápico</button>
+          <button class="subtab-trigger" type="button" data-pain-subtab="fluxo-dor">Fluxo decisório</button>
+        </div>
+
+        <div class="pain-subpanel active" id="definicao" tabindex="0">
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Definição</h3>
+              <p>
+                A dor é uma experiência complexa, sensorial e emocional desagradável, subjetiva, situada no corpo e
+                frequentemente associada a dano tecidual real ou potencial.<sup class="ref-call"><a href="#ref-dor-7">7</a></sup><sup class="ref-call"><a href="#ref-dor-8">8</a></sup>
+                Seu significado depende também de contexto, história de vida, cultura e interpretação pessoal.<sup class="ref-call"><a href="#ref-dor-9">9</a></sup><sup class="ref-call"><a href="#ref-dor-10">10</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Elementos centrais</h3>
+              <ul>
+                <li>Subjetividade: só quem sente pode descrever plenamente a experiência.</li>
+                <li>Componente sensorial: localização, intensidade, qualidade e relação com nocicepção.</li>
+                <li>Componente emocional: caráter desagradável, aversivo ou “machucante”.</li>
+                <li>Dimensão cognitiva e social: significado, ameaça percebida, identidade e contexto.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Experiência multidimensional</h3>
+              <p>
+                A dor envolve dimensões sensoriais, afetivas, cognitivas, comportamentais e sociais. Intensidade,
+                localização, desagradabilidade e urgência para agir podem ser analisadas separadamente, mas costumam
+                compor uma experiência única.<sup class="ref-call"><a href="#ref-dor-10">10</a></sup><sup class="ref-call"><a href="#ref-dor-11">11</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Dor, desconforto e sofrimento</h3>
+              <ul>
+                <li>Desconforto é sensação desagradável física ou psicológica; dor pode causá-lo, mas nem todo desconforto é dor.<sup class="ref-call"><a href="#ref-dor-12">12</a></sup></li>
+                <li>Sofrimento relacionado à dor envolve ameaça percebida à integridade e à identidade da pessoa.<sup class="ref-call"><a href="#ref-dor-13">13</a></sup></li>
+                <li>Quando crônica, a dor pode ser compreendida como condição de saúde em si, e não apenas sintoma.<sup class="ref-call"><a href="#ref-dor-14">14</a></sup></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="fisiopatologia-dor" tabindex="0">
+          <figure class="pain-figure">
+            <img src="assets/fisiopatologia-dor-cronica.png" alt="Infográfico sobre fisiopatologia da dor crônica, incluindo sensibilização periférica, sensibilização central, neuroplasticidade, neuroimunidade e modulação biopsicossocial" />
+          </figure>
+
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Da dor aguda à crônica</h3>
+              <p>
+                A cronificação da dor envolve mudanças plásticas em nervos periféricos, medula e cérebro, mantendo o
+                sistema em estado de ameaça mesmo após cicatrização ou redução do estímulo inicial.<sup class="ref-call"><a href="#ref-dor-22">22</a></sup><sup class="ref-call"><a href="#ref-dor-23">23</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Sensibilização periférica</h3>
+              <ul>
+                <li>Nociceptores tornam-se hiperexcitáveis por inflamação, lesão neural e alteração de canais iônicos.</li>
+                <li>O limiar para dor diminui e podem surgir disparos ectópicos sustentados.<sup class="ref-call"><a href="#ref-dor-24">24</a></sup><sup class="ref-call"><a href="#ref-dor-25">25</a></sup></li>
+                <li>Esse componente é comum em dor inflamatória, neuropática, lombalgia e dor pós-cirúrgica persistente.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Sensibilização central</h3>
+              <ul>
+                <li>Neurônios da medula e encéfalo passam a responder mais a estímulos normais ou fracos.</li>
+                <li>Hiperalgesia, alodinia e dor espontânea podem refletir reforço sináptico, NMDA/AMPA e perda de inibição.<sup class="ref-call"><a href="#ref-dor-26">26</a></sup><sup class="ref-call"><a href="#ref-dor-27">27</a></sup></li>
+                <li>A entrada periférica persistente pode alimentar e manter a sensibilização central.<sup class="ref-call"><a href="#ref-dor-28">28</a></sup></li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Neuroplasticidade e neuroimunidade</h3>
+              <ul>
+                <li>Redes cerebrais de saliência, memória, emoção e controle executivo podem se reorganizar na dor persistente.<sup class="ref-call"><a href="#ref-dor-29">29</a></sup><sup class="ref-call"><a href="#ref-dor-30">30</a></sup></li>
+                <li>Micróglia e astrócitos ativados liberam citocinas e fatores tróficos que sustentam plasticidade sináptica.<sup class="ref-call"><a href="#ref-dor-31">31</a></sup></li>
+                <li>Ansiedade, depressão, estresse crônico e catastrofização amplificam a dor por vias neuroendócrinas e de controle descendente.<sup class="ref-call"><a href="#ref-dor-32">32</a></sup></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="anamnese-exame" tabindex="0">
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Anamnese da dor crônica</h3>
+              <ul>
+                <li>Registrar tempo de duração em meses/anos, início, evolução, padrão contínuo ou em crises e periodicidade.<sup class="ref-call"><a href="#ref-dor-15">15</a></sup><sup class="ref-call"><a href="#ref-dor-16">16</a></sup></li>
+                <li>Descrever localização, irradiação, qualidade e intensidade por escala numérica, EVA ou escala compatível com o paciente.<sup class="ref-call"><a href="#ref-dor-17">17</a></sup><sup class="ref-call"><a href="#ref-dor-18">18</a></sup></li>
+                <li>Mapear fatores que pioram e aliviam: movimento, repouso, carga, alimentação, evacuação, micção, sono, estresse e toque.</li>
+                <li>Avaliar impacto em sono, atividades, trabalho, funcionalidade, humor, relações, participação social e custos familiares.<sup class="ref-call"><a href="#ref-dor-16">16</a></sup><sup class="ref-call"><a href="#ref-dor-19">19</a></sup></li>
+                <li>Em crianças ou pessoas com comunicação limitada, incluir relato familiar e observação de comportamento, expressão facial e interação.<sup class="ref-call"><a href="#ref-dor-20">20</a></sup></li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Instrumentos e contexto</h3>
+              <ul>
+                <li>Usar escala numérica ou EVA para intensidade e acompanhamento de resposta.<sup class="ref-call"><a href="#ref-dor-17">17</a></sup><sup class="ref-call"><a href="#ref-dor-18">18</a></sup></li>
+                <li>Considerar McGill ou instrumento similar quando a qualidade sensorial/afetiva da dor precisar ser detalhada.<sup class="ref-call"><a href="#ref-dor-18">18</a></sup></li>
+                <li>Registrar crenças, medo de movimento, humor, perdas funcionais e repercussões econômicas e familiares.<sup class="ref-call"><a href="#ref-dor-16">16</a></sup><sup class="ref-call"><a href="#ref-dor-19">19</a></sup></li>
+                <li>Revisar tratamentos já usados, dose, horário, benefício, eventos adversos, adesão, acesso e automedicação.</li>
+                <li>Definir meta compartilhada: redução de intensidade, melhora funcional, sono, conforto e prioridades da pessoa.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Exame físico direcionado</h3>
+              <ul>
+                <li>Dirigir o exame ao sistema envolvido, reconhecendo que o exame pode não explicar toda a intensidade relatada.<sup class="ref-call"><a href="#ref-dor-16">16</a></sup></li>
+                <li>Inspecionar pele, feridas, edema, deformidades, atrofia, assimetria, postura, marcha e sinais inflamatórios.</li>
+                <li>Palpar pontos dolorosos, temperatura, contraturas, massas, dor à compressão, pontos de gatilho e alodinia.</li>
+                <li>Avaliar amplitude de movimento, força funcional, equilíbrio, sensibilidade, reflexos e distribuição em dermátomo ou território nervoso.</li>
+                <li>Quando indicado, examinar abdome/pelve e usar manobra de Carnett para diferenciar parede abdominal de cavidade pélvica.<sup class="ref-call"><a href="#ref-dor-17">17</a></sup></li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Exames e sinais de alerta</h3>
+              <ul>
+                <li>História e exame definem necessidade e direção de exames complementares, evitando supervalorizar imagem desconectada do quadro clínico.<sup class="ref-call"><a href="#ref-dor-16">16</a></sup><sup class="ref-call"><a href="#ref-dor-21">21</a></sup></li>
+                <li>Pesquisar déficit neurológico novo/progressivo, alteração esfincteriana, febre, imunossupressão ou suspeita de infecção.</li>
+                <li>Pesquisar trauma, osteoporose, uso crônico de corticoide, dor noturna intensa, dor em repouso persistente, perda ponderal ou suspeita de câncer.</li>
+                <li>Avaliar sofrimento desproporcional, incapacidade súbita e segurança no domicílio.</li>
+                <li>Integrar domínios sensoriais, afetivos, temporais e distribuição corporal para hipótese mecanística e plano individualizado.<sup class="ref-call"><a href="#ref-dor-18">18</a></sup></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="intensidade-dor" tabindex="0">
+          <figure class="pain-figure">
+            <img src="assets/instrumento-intensidade-dor-cronica.png" alt="Infográfico de instrumento para avaliação da intensidade da dor crônica com escala numérica de 0 a 10, classificação leve, moderada e forte, e momentos de avaliação" />
+          </figure>
+
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Por que medir</h3>
+              <p>
+                Medir “quanto dói” é central para acompanhar evolução, resposta terapêutica e impacto funcional. A
+                intensidade deve ser interpretada junto de função, sono, humor, flutuações da dor e metas da pessoa.<sup class="ref-call"><a href="#ref-dor-33">33</a></sup><sup class="ref-call"><a href="#ref-dor-34">34</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Escalas unidimensionais</h3>
+              <ul>
+                <li>NRS 0-10: simples, rápida, boa adesão e sensibilidade; costuma ser a primeira escolha em adultos.<sup class="ref-call"><a href="#ref-dor-33">33</a></sup><sup class="ref-call"><a href="#ref-dor-35">35</a></sup></li>
+                <li>EVA/VAS: linha de 0-100 mm, útil em pesquisa, mas mais difícil na rotina clínica.<sup class="ref-call"><a href="#ref-dor-36">36</a></sup></li>
+                <li>VRS: escala verbal com categorias como sem dor, dor moderada ou dor forte; é intuitiva, porém menos sensível.<sup class="ref-call"><a href="#ref-dor-37">37</a></sup></li>
+                <li>Não considerar NRS, EVA e VRS totalmente intercambiáveis.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Como registrar</h3>
+              <ul>
+                <li>Perguntar: “De 0 a 10, qual a intensidade da sua dor agora?”.</li>
+                <li>Registrar dor atual, pior dor, menor dor e média em período definido, como última semana.<sup class="ref-call"><a href="#ref-dor-38">38</a></sup></li>
+                <li>Registrar intensidade antes e depois de resgate, intervenção ou ajuste terapêutico.</li>
+                <li>Em comunicação limitada, considerar escala de faces, comportamento, expressão facial, interação e relato do cuidador.<sup class="ref-call"><a href="#ref-dor-20">20</a></sup></li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Como interpretar</h3>
+              <ul>
+                <li>Redução de cerca de 2 pontos ou 30% na NRS costuma representar melhora clinicamente importante.<sup class="ref-call"><a href="#ref-dor-39">39</a></sup></li>
+                <li>A média isolada pode esconder flutuações; registrar pior dor, variabilidade e tempo em dor alta quando possível.<sup class="ref-call"><a href="#ref-dor-40">40</a></sup><sup class="ref-call"><a href="#ref-dor-41">41</a></sup></li>
+                <li>Relacionar intensidade com incapacidade, fadiga, humor, evitação de atividades e participação social.<sup class="ref-call"><a href="#ref-dor-42">42</a></sup></li>
+                <li>Valor alto persistente pede revisão diagnóstica, adesão, eventos adversos, sinais de alerta e impacto funcional.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="principios-oms-dor" tabindex="0">
+          <figure class="pain-figure">
+            <img src="assets/principios-oms-controle-dor.png" alt="Infográfico sobre princípios da OMS para controle da dor: pela boca, pelo relógio, pela escada, para o indivíduo e atenção aos detalhes" />
+          </figure>
+
+          <h3>Princípios da OMS para controle da dor</h3>
+          <p>
+            A OMS orienta que a analgesia seja planejada de forma simples, regular, individualizada e segura. Esses
+            princípios são especialmente úteis no cuidado paliativo e na dor oncológica, mas devem ser adaptados ao
+            diagnóstico, ao fenótipo da dor, à fragilidade e aos objetivos da pessoa.<sup class="ref-call"><a href="#ref-dor-55">55</a></sup>
+          </p>
+
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Pela boca</h3>
+              <p>
+                Preferir via oral sempre que possível, por ser mais simples, menos invasiva e mais adequada ao cuidado
+                domiciliar. Trocar a via quando houver vômitos, disfagia, rebaixamento de consciência, má absorção ou
+                necessidade clínica específica.<sup class="ref-call"><a href="#ref-dor-55">55</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Pelo relógio</h3>
+              <p>
+                Prescrever analgesia em horários regulares quando a dor é contínua ou recorrente, evitando esperar a dor
+                retornar para tratar. Manter dose de resgate quando houver dor incidental ou episódios de escape.<sup class="ref-call"><a href="#ref-dor-55">55</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Para o indivíduo</h3>
+              <p>
+                Ajustar medicamento, dose, intervalo e via conforme intensidade, resposta, efeitos adversos,
+                comorbidades, idade, função renal/hepática, interações, preferências e metas de cuidado.<sup class="ref-call"><a href="#ref-dor-55">55</a></sup>
+              </p>
+            </article>
+            <article class="definition-card">
+              <h3>Com atenção aos detalhes</h3>
+              <p>
+                Registrar plano de rotina e resgate, orientar eventos adversos, prevenir constipação quando opioide for
+                usado, revisar adesão e acesso, e reavaliar dor, funcionalidade e segurança em intervalos definidos.<sup class="ref-call"><a href="#ref-dor-55">55</a></sup>
+              </p>
+            </article>
+          </div>
+
+          <div class="info-grid">
+            <article>
+              <h3>Escada analgésica</h3>
+              <ul>
+                <li>Dor leve: iniciar com analgésicos não opioides, com ou sem adjuvantes conforme mecanismo.</li>
+                <li>Dor moderada: considerar opioide fraco ou estratégia equivalente, mantendo não opioides/adjuvantes quando apropriado.</li>
+                <li>Dor forte: considerar opioide forte, titulação cuidadosa, resgate, prevenção de eventos adversos e reavaliação estreita.</li>
+              </ul>
+            </article>
+            <article>
+              <h3>Reavaliação</h3>
+              <ul>
+                <li>Reavaliar intensidade, funcionalidade, sono, humor, eventos adversos e necessidade de resgate.</li>
+                <li>Se analgesia for insuficiente, confirmar adesão, dose, intervalo, diagnóstico, mecanismo de dor e sinais de alerta.</li>
+                <li>Se houver toxicidade, reduzir dose, trocar medicamento, ajustar via ou reconsiderar a estratégia.</li>
+              </ul>
+            </article>
+            <article>
+              <h3>Adjuvantes</h3>
+              <ul>
+                <li>Associar adjuvantes quando houver componente neuropático, nociplástico, inflamatório, espástico ou dor periférica localizada.</li>
+                <li>Escolher um alvo terapêutico por vez quando possível, para atribuir benefício ou evento adverso com clareza.</li>
+                <li>Evitar somar fármacos sedativos sem plano de monitorização, principalmente em idosos e pessoas frágeis.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Aplicação clínica:</strong>
+            <span>
+              A lógica da OMS organiza o cuidado, mas não obriga progressão rígida. Dor forte, sofrimento intenso ou
+              contexto paliativo podem exigir controle mais rápido, com escolha proporcional à situação clínica.
+            </span>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="tratamento-medicamentoso-dor" tabindex="0">
+          <figure class="pain-figure">
+            <img src="assets/tratamento-medicamentoso-dor-cronica.png" alt="Infográfico sobre tratamento medicamentoso da dor crônica e locais de ação dos grupos de medicamentos ao longo da via da dor" />
+          </figure>
+
+          <h3>Tratamento medicamentoso da dor crônica</h3>
+          <p>
+            O tratamento medicamentoso deve ser individualizado pelo fenótipo da dor, intensidade, comorbidades, risco
+            de eventos adversos, funcionalidade e metas de cuidado. A abordagem multimodal prioriza não opioides e
+            adjuvantes, reservando opioides para situações selecionadas, com monitorização estreita.
+            <sup class="ref-call"><a href="#ref-dor-1">1</a></sup><sup class="ref-call"><a href="#ref-dor-43">43</a></sup>
+          </p>
+
+          <div class="info-grid">
+            <article>
+              <h3>Princípios do tratamento</h3>
+              <ul>
+                <li>Relacionar a escolha ao mecanismo predominante: nociceptivo, neuropático, nociplástico ou misto.</li>
+                <li>Definir alvo de melhora, função esperada, prazo de reavaliação e critérios de troca ou suspensão.</li>
+                <li>Iniciar com baixa dose quando houver fragilidade, idade avançada, polifarmácia ou maior risco clínico.<sup class="ref-call"><a href="#ref-dor-53">53</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Não opioides e AINEs</h3>
+              <ul>
+                <li>Paracetamol: dose inicial de 500 mg, 3 a 4 vezes/dia.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Dipirona: dose inicial de 500 mg, até 4 vezes/dia.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Ibuprofeno: dose inicial de 200 mg, 3 a 4 vezes/dia, se risco renal, gastrointestinal e cardiovascular permitir.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Naproxeno: dose inicial de 250 mg, 1 vez/dia, se houver indicação e baixo risco de toxicidade.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Em lombalgia crônica, AINEs apresentam benefício modesto e exigem vigilância de eventos adversos.<sup class="ref-call"><a href="#ref-dor-44">44</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Adjuvantes</h3>
+              <ul>
+                <li>Antidepressivos tricíclicos: amitriptilina 25 mg/dia; em idosos, 10 mg/dia. Nortriptilina 25 mg/dia; em idosos, 10 mg/dia.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Outros antidepressivos: clomipramina 10 mg/dia; duloxetina 30 mg/dia; venlafaxina 37,5 mg/dia, conforme perfil clínico, disponibilidade e risco de interação.<sup class="ref-call"><a href="#ref-dor-47">47</a></sup><sup class="ref-call"><a href="#ref-dor-48">48</a></sup></li>
+                <li>Gabapentinoides: gabapentina 300 mg à noite; pregabalina 25 a 75 mg à noite, com ajuste por tolerabilidade, sedação e função renal.<sup class="ref-call"><a href="#ref-dor-46">46</a></sup></li>
+                <li>Anticonvulsivantes: carbamazepina 200 mg/dia; em idosos, 100 mg 2 vezes/dia. Fenitoína 100 mg 3 vezes/dia. Valproato de sódio 250 mg/dia.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Tópicos adjuvantes: lidocaína tópica e capsaicina tópica podem ser úteis em dor neuropática periférica localizada.<sup class="ref-call"><a href="#ref-dor-46">46</a></sup><sup class="ref-call"><a href="#ref-dor-49">49</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Tópicos e terapias selecionadas</h3>
+              <ul>
+                <li>Lidocaína tópica pode ser considerada em neuropatias periféricas localizadas, conforme disponibilidade e avaliação clínica.<sup class="ref-call"><a href="#ref-dor-46">46</a></sup></li>
+                <li>Capsaicina tópica pode ser opção em subgrupos de dor neuropática periférica, com orientação sobre irritação local.<sup class="ref-call"><a href="#ref-dor-49">49</a></sup></li>
+                <li>Toxina botulínica A e cetamina aparecem em estudos para subgrupos, mas não devem substituir avaliação especializada quando a evidência for restrita.<sup class="ref-call"><a href="#ref-dor-50">50</a></sup></li>
+                <li>Canabinoides têm benefício, quando presente, geralmente modesto e com maior risco de eventos adversos.<sup class="ref-call"><a href="#ref-dor-51">51</a></sup><sup class="ref-call"><a href="#ref-dor-52">52</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Opioides</h3>
+              <ul>
+                <li>Considerar apenas em dor moderada a forte, refratária ou em contexto paliativo, após revisão de riscos e objetivos.</li>
+                <li>Codeína: dose inicial de 30 mg, 3 a 4 vezes/dia; em idosos, 15 mg.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Morfina oral de ação curta: dose inicial de 5 mg a cada 4 h.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Metadona: dose inicial de 2,5 mg a cada 8 a 12 h, com maior cautela por meia-vida longa e interações.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup></li>
+                <li>Na dor crônica não oncológica, uso prolongado não demonstrou superioridade clara sobre não opioides e aumenta riscos dose-dependentes.<sup class="ref-call"><a href="#ref-dor-45">45</a></sup><sup class="ref-call"><a href="#ref-dor-51">51</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Monitorização e segurança</h3>
+              <ul>
+                <li>Revisar alergias, gestação, função renal/hepática, risco gastrointestinal, cardiovascular e respiratório.</li>
+                <li>Checar interações, sedação, quedas, constipação, delirium, adesão, acesso ao medicamento e uso de álcool ou sedativos.</li>
+                <li>Em idosos, preferir a menor dose inicial viável, titulação lenta e revisão frequente de função renal e polifarmácia.<sup class="ref-call"><a href="#ref-dor-53">53</a></sup></li>
+                <li>Monitorar sofrimento psíquico e risco de autoagressão quando houver antidepressivos, anticonvulsivantes, opioides ou canabinoides.<sup class="ref-call"><a href="#ref-dor-54">54</a></sup></li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Uso prático:</strong>
+            <span>
+              Evite iniciar vários fármacos ao mesmo tempo quando for possível. Escolha uma hipótese terapêutica,
+              registre dose inicial, meta funcional, efeitos esperados, eventos adversos a vigiar e data de reavaliação.
+            </span>
+          </div>
+
+        </div>
+
+        <div class="pain-subpanel" id="tratamento-nao-medicamentoso-dor" tabindex="0">
+          <figure class="pain-figure">
+            <img src="assets/grau-evidencia-tratamentos-nao-medicamentosos.png" alt="Infográfico sobre grau de evidência dos tratamentos não medicamentosos para dor crônica" />
+          </figure>
+
+          <h3>Tratamento não medicamentoso da dor crônica</h3>
+          <p>
+            Medicamentos isolados costumam ter alívio limitado e eventos adversos relevantes. A evidência favorece
+            intervenções não farmacológicas como parte central de um plano multimodal, com ganhos modestos a moderados
+            em dor, função, humor e qualidade de vida quando há participação ativa da pessoa.<sup class="ref-call"><a href="#ref-dor-56">56</a></sup><sup class="ref-call"><a href="#ref-dor-57">57</a></sup>
+          </p>
+
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Físicas e fisioterapia</h3>
+              <ul>
+                <li>Exercícios aeróbicos, resistidos, aquáticos, alongamentos e fisioterapia estruturada podem reduzir dor e melhorar função.<sup class="ref-call"><a href="#ref-dor-58">58</a></sup><sup class="ref-call"><a href="#ref-dor-59">59</a></sup></li>
+                <li>Terapia manual, massagem, calor/frio e TENS podem ser usados como complementos quando houver indicação e resposta funcional.</li>
+                <li>Programas de exercício e abordagens multimodais têm melhor sustentação em condições musculoesqueléticas, fibromialgia e quadros neurológicos selecionados.<sup class="ref-call"><a href="#ref-dor-60">60</a></sup></li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Psicológicas</h3>
+              <ul>
+                <li>TCC, mindfulness, aceitação e compromisso e estratégias de enfrentamento reduzem interferência da dor, catastrofização e sintomas emocionais.<sup class="ref-call"><a href="#ref-dor-57">57</a></sup><sup class="ref-call"><a href="#ref-dor-61">61</a></sup></li>
+                <li>Os resultados tendem a ser melhores quando suporte psicológico é combinado com atividade física e educação em dor.</li>
+                <li>Abordar sono, medo de movimento, evitação, ansiedade, depressão e metas de participação social.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Complementares e integrativas</h3>
+              <ul>
+                <li>Acupuntura, yoga, tai chi, musicoterapia, hipnose, relaxamento, meditação e educação em dor podem melhorar bem-estar, autonomia e intensidade dolorosa em algumas populações.<sup class="ref-call"><a href="#ref-dor-62">62</a></sup></li>
+                <li>Devem complementar o plano terapêutico e não atrasar avaliação de sinais de alerta ou investigação diagnóstica.</li>
+                <li>Registrar resposta, tolerabilidade, frequência, adesão e impacto em função e qualidade de vida.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Digitais e neuromodulação</h3>
+              <ul>
+                <li>Realidade virtual, aplicativos e ferramentas digitais podem favorecer engajamento, automanejo e reabilitação.</li>
+                <li>tDCS e rTMS aparecem como estratégias emergentes, com efeitos moderados e indicação dependente de equipe habilitada.<sup class="ref-call"><a href="#ref-dor-63">63</a></sup></li>
+                <li>Considerar disponibilidade, custo, adesão, segurança e necessidade de acompanhamento especializado.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="info-grid">
+            <article>
+              <h3>Desfechos esperados</h3>
+              <ul>
+                <li>Redução pequena a moderada da intensidade da dor.</li>
+                <li>Melhora de interferência da dor, atividades de vida diária, função física e qualidade de vida.</li>
+                <li>Redução de ansiedade, depressão, catastrofização e sofrimento associado à dor.<sup class="ref-call"><a href="#ref-dor-57">57</a></sup><sup class="ref-call"><a href="#ref-dor-61">61</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Populações específicas</h3>
+              <ul>
+                <li>Em idosos, intervenções psicológicas associadas à atividade física podem reduzir dor, interferência e depressão, com melhora de desempenho físico.<sup class="ref-call"><a href="#ref-dor-61">61</a></sup></li>
+                <li>Em crianças e adolescentes, TCC, acompanhamento psicossocial, hipnose, musicoterapia e ferramentas digitais podem melhorar dor e bem-estar.<sup class="ref-call"><a href="#ref-dor-64">64</a></sup></li>
+                <li>Em lesão medular ou doenças do sistema nervoso central, exercício, TCC, meditação e recursos físicos podem auxiliar dor e qualidade de vida.<sup class="ref-call"><a href="#ref-dor-65">65</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Limitações da evidência</h3>
+              <ul>
+                <li>Os efeitos médios costumam ser modestos; o objetivo não é “curar” a dor, mas reduzir impacto e ampliar participação.</li>
+                <li>Protocolos variam muito em dose de exercício, formato de TCC, duração, combinação de terapias e seguimento.</li>
+                <li>Resultados dependem de adesão, expectativas, acesso, suporte social e continuidade do plano.<sup class="ref-call"><a href="#ref-dor-58">58</a></sup><sup class="ref-call"><a href="#ref-dor-63">63</a></sup></li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Plano multimodal:</strong>
+            <span>
+              Combine educação em dor, exercício/fisioterapia estruturada, estratégias psicológicas e, quando disponíveis,
+              terapias complementares ou digitais. Escolha poucas ações por vez, pactue metas funcionais e reavalie
+              benefício, adesão e segurança.
+            </span>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="tratamento-fitoterapico-dor" tabindex="0">
+          <h3>Tratamento fitoterápico da dor crônica</h3>
+          <p>
+            O Caderno de Atenção Básica sobre plantas medicinais e fitoterapia orienta a inserção dessa prática na APS
+            como cuidado complementar, com uso racional, vínculo, educação em saúde, qualidade da matéria-prima,
+            acompanhamento profissional e respeito ao conhecimento popular e tradicional.<sup class="ref-call"><a href="#ref-dor-71">71</a></sup>
+          </p>
+
+          <div class="definition-grid">
+            <article class="definition-card">
+              <h3>Conceitos essenciais</h3>
+              <ul>
+                <li>Planta medicinal é a espécie vegetal usada com finalidade terapêutica, geralmente a partir de tradição de uso e orientação local.</li>
+                <li>Fitoterápico é produto obtido de matéria-prima vegetal, preparado com controle de qualidade e finalidade terapêutica definida.<sup class="ref-call"><a href="#ref-dor-71">71</a></sup></li>
+                <li>A fitoterapia deve ser integrada ao cuidado, não usada como substituta automática da avaliação clínica.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Formas de oferta na APS</h3>
+              <ul>
+                <li>Orientação sobre uso seguro de plantas medicinais e preparo caseiro quando houver tradição, identificação correta e baixo risco.</li>
+                <li>Dispensação de droga vegetal, fitoterápico manipulado ou industrializado conforme disponibilidade local e normas sanitárias.<sup class="ref-call"><a href="#ref-dor-71">71</a></sup></li>
+                <li>Farmácias Vivas e arranjos locais podem apoiar cultivo, processamento, preparação e dispensação com rastreabilidade.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Anamnese fitoterápica</h3>
+              <ul>
+                <li>Perguntar ativamente sobre chás, garrafadas, pomadas, óleos, cápsulas, tinturas e produtos comprados sem prescrição.</li>
+                <li>Registrar nome popular e, quando possível, nome científico, parte usada, preparo, dose, frequência, origem e tempo de uso.</li>
+                <li>Checar alergias, gestação, lactação, idade avançada, doença renal/hepática, anticoagulantes, sedativos e polifarmácia.</li>
+              </ul>
+            </article>
+            <article class="definition-card">
+              <h3>Qualidade e identificação</h3>
+              <ul>
+                <li>Confirmar identificação botânica e evitar uso quando houver dúvida sobre a espécie, parte da planta ou contaminação.</li>
+                <li>Valorizar origem segura, secagem, armazenamento, validade, rotulagem e orientação de preparo.</li>
+                <li>Produtos regularizados, manipulados em serviço autorizado ou ofertados por programa institucional reduzem risco sanitário.<sup class="ref-call"><a href="#ref-dor-66">66</a></sup><sup class="ref-call"><a href="#ref-dor-71">71</a></sup></li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="info-grid">
+            <article>
+              <h3>Aplicação na dor</h3>
+              <ul>
+                <li>Considerar como complemento em dor musculoesquelética leve a moderada, rigidez, dor inflamatória periférica ou sintomas associados.</li>
+                <li><em>Harpagophytum procumbens</em>, garra-do-diabo, é citado em monografia do Ministério da Saúde para alívio da dor em artrose ou tendinite.<sup class="ref-call"><a href="#ref-dor-69">69</a></sup></li>
+                <li><em>Salix alba</em>, salgueiro, e <em>Uncaria tomentosa</em>, unha-de-gato, aparecem entre fitoterápicos relacionados ao SUS, mas exigem individualização e cautela.<sup class="ref-call"><a href="#ref-dor-68">68</a></sup></li>
+              </ul>
+            </article>
+            <article>
+              <h3>Doses iniciais</h3>
+              <ul>
+                <li>Garra-do-diabo: iniciar com produto padronizado equivalente a 30 mg/dia de harpagosídeo; em apresentações de 480 mg, usar 1 comprimido 2 vezes ao dia quando essa equivalência estiver no rótulo ou na formulação.<sup class="ref-call"><a href="#ref-dor-69">69</a></sup></li>
+                <li>Salgueiro: iniciar com extrato etanólico padronizado contendo 60 mg de salicina, 1 comprimido 1 vez ao dia; evitar associação com salicilatos, anticoagulantes ou antiagregantes sem avaliação clínica.<sup class="ref-call"><a href="#ref-dor-70">70</a></sup></li>
+                <li>Unha-de-gato: iniciar com cápsula de droga vegetal 300 a 500 mg, 1 cápsula 2 vezes ao dia; limitar o uso a até 8 semanas e evitar em gestação, lactação e situações de imunossupressão ou transplante.<sup class="ref-call"><a href="#ref-dor-72">72</a></sup></li>
+                <li>Confirmar espécie, parte usada, concentração do marcador, forma farmacêutica e contraindicações antes da prescrição ou orientação de uso.</li>
+              </ul>
+            </article>
+            <article>
+              <h3>Educação e autocuidado</h3>
+              <ul>
+                <li>Orientar que dose, parte da planta, forma de preparo e tempo de uso modificam efeito e risco.</li>
+                <li>Evitar misturas sem identificação, uso prolongado sem acompanhamento e substituição de medicamentos essenciais.</li>
+                <li>Incentivar retorno se houver alergia, tontura, sonolência, sangramento, sintomas gastrointestinais, icterícia ou piora da dor.</li>
+              </ul>
+            </article>
+            <article>
+              <h3>Interações e farmacovigilância</h3>
+              <ul>
+                <li>Revisar risco com anticoagulantes, antiagregantes, sedativos, anticonvulsivantes, antidepressivos, AINEs e fármacos de faixa terapêutica estreita.</li>
+                <li>Notificar eventos adversos suspeitos e registrar produto, lote, fabricante, dose, preparo e tempo de exposição quando possível.<sup class="ref-call"><a href="#ref-dor-67">67</a></sup></li>
+                <li>Suspender se houver toxicidade, interação relevante, reação alérgica, piora clínica ou ausência de benefício no prazo pactuado.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="callout">
+            <strong>Segurança:</strong>
+            <span>
+              Fitoterapia deve entrar como complemento de um plano multimodal e dialogado. Se houver sinal de alerta,
+              dor progressiva, déficit neurológico, perda ponderal, febre ou suspeita de fratura/câncer, a investigação
+              clínica vem antes.
+            </span>
+          </div>
+        </div>
+
+        <div class="pain-subpanel" id="fluxo-dor" tabindex="0">
+          <p>
+            Fluxo decisório inspirado no PCDT resumido da Dor Crônica da Conitec e nas subabas de tratamento
+            medicamentoso, não medicamentoso e fitoterápico.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup><sup class="ref-call"><a href="#ref-dor-56">56</a></sup><sup class="ref-call"><a href="#ref-dor-71">71</a></sup>
+            Use como apoio ao raciocínio clínico, individualizando conforme diagnóstico, metas de cuidado, função,
+            fragilidade, comorbidades e protocolos locais.
+          </p>
 
         <div class="pain-tool pain-step" aria-label="Passo 1 - Pesquisar sinais de alerta">
           <div class="step-heading">
@@ -251,7 +768,7 @@
           <div class="pain-controls">
             <fieldset>
               <div class="alert-checklist">
-                <label><input type="checkbox" data-no-red-flags /> Sem sinais de alerta.</label>
+                <label class="no-red-flags-option"><input type="checkbox" data-no-red-flags /> <strong>Sem sinais de alerta.</strong></label>
                 <label><input type="checkbox" data-red-flag="oncologic" /> Suspeita de câncer, dor progressiva ou perda ponderal não explicada.</label>
                 <label><input type="checkbox" data-red-flag="neurologic" /> Déficit neurológico novo ou progressivo, fraqueza, anestesia ou alteração esfincteriana.</label>
                 <label><input type="checkbox" data-red-flag="infection" /> Febre, imunossupressão, uso de drogas injetáveis ou suspeita de infecção.</label>
@@ -273,15 +790,6 @@
             </div>
             <button class="secondary-button compact-button" type="button" id="resetPhenotype">Limpar</button>
           </div>
-          <p>
-            Marque os achados presentes. O resultado integra descritores sensoriais, padrão temporal, localização,
-            sensibilidade e impacto funcional descritos em instrumentos como NPSI,<sup class="ref-call"><a href="#ref-dor-2">2</a></sup>
-            PainDETECT,<sup class="ref-call"><a href="#ref-dor-3">3</a></sup>
-            DN4<sup class="ref-call"><a href="#ref-dor-4">4</a></sup> e SF-MPQ.<sup class="ref-call"><a href="#ref-dor-5">5</a></sup> As
-            possibilidades de apresentação fenotípica incluem dor nociceptiva somática, nociceptiva visceral,
-            neuropática, nociplástica e mista.
-          </p>
-
           <div class="questionnaire-grid">
             <fieldset class="question-card">
               <legend>Localização e distribuição</legend>
@@ -367,13 +875,15 @@
           <h3 id="painResultTitle">Classifique a dor para gerar conduta</h3>
           <p id="painResultText">
             Preencha o questionário interativo de classificação fenotípica da dor. A conduta será gerada a partir do
-            fenótipo predominante ou da identificação de dor mista.
+            fenótipo predominante ou da identificação de dor mista, combinando estratégias medicamentosas, não
+            medicamentosas e fitoterápicas quando apropriado.
           </p>
           <ul id="painResultActions">
             <li>Selecione os achados clínicos presentes no questionário abaixo.</li>
             <li>Se houver sinais de alerta, o fluxo será interrompido e a conduta de segurança será priorizada.</li>
           </ul>
         </aside>
+        </div>
 
         <section class="references-panel" aria-labelledby="painReferencesTitle">
           <button class="references-toggle" type="button" aria-expanded="false" aria-controls="painReferencesList">
@@ -397,6 +907,204 @@
             </li>
             <li id="ref-dor-6">
               Forte G, Favieri F, De Pascalis V, Casagrande M. <a href="https://doi.org/10.3390/jcm13195886" target="_blank" rel="noreferrer">To be in pain: Pain Multidimensional Questionnaire as reliable tool to evaluate multifaceted aspects of pain</a>. <em>J Clin Med</em>. 2024;13(19):5886.
+            </li>
+            <li id="ref-dor-7">
+              Klaumann PR, Wouk AFPF, Sillas T. <a href="https://doi.org/10.5380/avs.v13i1.11532" target="_blank" rel="noreferrer">Patofisiologia da dor</a>. <em>Arch Vet Sci</em>. 2008;13(1).
+            </li>
+            <li id="ref-dor-8">
+              Mickiewicz A. <a href="https://doi.org/10.18276/aie.2025.70-03" target="_blank" rel="noreferrer">Wounded body: a phenomenological attempt to define physical pain</a>. <em>Analiza i Egzystencja</em>. 2025;70.
+            </li>
+            <li id="ref-dor-9">
+              Nobre C, Mendes F. <a href="https://doi.org/10.24902/r.riase.2018.4(2).1373" target="_blank" rel="noreferrer">Significado da dor na experiência da pessoa com dor oncológica</a>. <em>Rev Ibero-Am Saude Envelhecimento</em>. 2018;4(2).
+            </li>
+            <li id="ref-dor-10">
+              Porreca F, Navratilova E. <a href="https://doi.org/10.1097/j.pain.0000000000000798" target="_blank" rel="noreferrer">Reward, motivation, and emotion of pain and its relief</a>. <em>Pain</em>. 2017;158 Suppl 1:S43-S49.
+            </li>
+            <li id="ref-dor-11">
+              Talbot K, Madden VJ, Jones SL, Moseley GL. <a href="https://doi.org/10.1016/j.bja.2019.03.033" target="_blank" rel="noreferrer">The sensory and affective components of pain: are they differentially modifiable dimensions or inseparable aspects of a unitary experience?</a> <em>Br J Anaesth</em>. 2019.
+            </li>
+            <li id="ref-dor-12">
+              Ashkenazy S, Ganz FD. <a href="https://doi.org/10.1016/j.pmn.2019.05.003" target="_blank" rel="noreferrer">The differentiation between pain and discomfort: a concept analysis of discomfort</a>. <em>Pain Manag Nurs</em>. 2019.
+            </li>
+            <li id="ref-dor-13">
+              Noe-Steinmüller N, Scherbakov D, Zhuravlyova A, Wager TD, Goldstein P, Tesarz J. <a href="https://doi.org/10.1097/j.pain.0000000000003195" target="_blank" rel="noreferrer">Defining suffering in pain: a systematic review on pain-related suffering using natural language processing</a>. <em>Pain</em>. 2024;165:1434-49.
+            </li>
+            <li id="ref-dor-14">
+              Raffaeli W, Arnaudo E. <a href="https://doi.org/10.2147/JPR.S138864" target="_blank" rel="noreferrer">Pain as a disease: an overview</a>. <em>J Pain Res</em>. 2017;10:2003-8.
+            </li>
+            <li id="ref-dor-15">
+              Lacerda PF, Godoy LF, Cobianchi MG, Bachion MM. <a href="https://doi.org/10.5216/ree.v7i1.863" target="_blank" rel="noreferrer">Estudo da ocorrência de “dor crônica” em idosos de uma comunidade atendida pelo Programa Saúde da Família em Goiânia</a>. <em>Rev Eletr Enferm</em>. 2006.
+            </li>
+            <li id="ref-dor-16">
+              Dansie EJ, Turk DC. <a href="https://doi.org/10.1093/bja/aet124" target="_blank" rel="noreferrer">Assessment of patients with chronic pain</a>. <em>Br J Anaesth</em>. 2013;111(1):19-25.
+            </li>
+            <li id="ref-dor-17">
+              Nogueira AA, Reis FJC, Poli Neto OB. <a href="https://doi.org/10.1590/S0100-72032006001200008" target="_blank" rel="noreferrer">Abordagem da dor pélvica crônica em mulheres</a>. <em>Rev Bras Ginecol Obstet</em>. 2006;28:733-40.
+            </li>
+            <li id="ref-dor-18">
+              Fillingim RB, Loeser JD, Baron R, Edwards RR. <a href="https://doi.org/10.1016/j.jpain.2015.08.010" target="_blank" rel="noreferrer">Assessment of chronic pain: domains, methods, and mechanisms</a>. <em>J Pain</em>. 2016;17(9 Suppl):T10-20.
+            </li>
+            <li id="ref-dor-19">
+              Ederli SF, Oliveira Bazote B, Moraes L, Souza Aredes M, Tacla MTGM. <a href="https://doi.org/10.5747/cv.2020.v12.n2.v303" target="_blank" rel="noreferrer">Manejo da dor pediátrica: projeções e perspectivas da equipe de enfermagem</a>. <em>Colloquium Vitae</em>. 2020;12(2).
+            </li>
+            <li id="ref-dor-20">
+              Fidler S. <a href="https://doi.org/10.1016/j.pop.2022.02.001" target="_blank" rel="noreferrer">Comprehensive evaluation for chronic pain</a>. <em>Prim Care</em>. 2022;49(3):375-85.
+            </li>
+            <li id="ref-dor-21">
+              Mallmann RF, Duarte MEL, Abreu BA, Almeida Prado J, Silva MAP. <a href="https://doi.org/10.26432/1809-3019.2022.67.029" target="_blank" rel="noreferrer">Cisto paralabral: diagnóstico pela ressonância magnética</a>. <em>Arq Med Hosp Fac Cienc Med Santa Casa Sao Paulo</em>. 2023.
+            </li>
+            <li id="ref-dor-22">
+              Song Q, E S, Zhang Z, Liang Y. <a href="https://doi.org/10.1016/j.neurot.2024.e00464" target="_blank" rel="noreferrer">Neuroplasticity in the transition from acute to chronic pain</a>. <em>Neurotherapeutics</em>. 2024;21.
+            </li>
+            <li id="ref-dor-23">
+              Kuner R, Flor H. <a href="https://doi.org/10.1038/nrn.2016.162" target="_blank" rel="noreferrer">Structural plasticity and reorganisation in chronic pain</a>. <em>Nat Rev Neurosci</em>. 2016;18:20-30.
+            </li>
+            <li id="ref-dor-24">
+              Li W, Gong Y, Liu J, Guo Y, Tang H, Qin S, et al. <a href="https://doi.org/10.2147/JPR.S306280" target="_blank" rel="noreferrer">Peripheral and central pathological mechanisms of chronic low back pain: a narrative review</a>. <em>J Pain Res</em>. 2021;14:1483-94.
+            </li>
+            <li id="ref-dor-25">
+              Jang K, Garraway SM. <a href="https://doi.org/10.1016/j.ynpai.2024.100151" target="_blank" rel="noreferrer">A review of dorsal root ganglia and primary sensory neuron plasticity mediating inflammatory and chronic neuropathic pain</a>. <em>Neurobiol Pain</em>. 2024;15:100151.
+            </li>
+            <li id="ref-dor-26">
+              Arendt-Nielsen L, Morlion B, Perrot S, Dahan A, Dickenson A, Kress HG, et al. <a href="https://doi.org/10.1002/ejp.1140" target="_blank" rel="noreferrer">Assessment and manifestation of central sensitisation across different chronic pain conditions</a>. <em>Eur J Pain</em>. 2018;22.
+            </li>
+            <li id="ref-dor-27">
+              Curatolo M. <a href="https://doi.org/10.2174/1570159X20666221012112725" target="_blank" rel="noreferrer">Central sensitization and pain: pathophysiologic and clinical insights</a>. <em>Curr Neuropharmacol</em>. 2022;22:15-22.
+            </li>
+            <li id="ref-dor-28">
+              Baron R, Hans G, Dickenson AH. <a href="https://doi.org/10.1002/ana.24017" target="_blank" rel="noreferrer">Peripheral input and its importance for central sensitization</a>. <em>Ann Neurol</em>. 2013;74.
+            </li>
+            <li id="ref-dor-29">
+              Jaffal SM. <a href="https://doi.org/10.3344/kjp.24393" target="_blank" rel="noreferrer">Neuroplasticity in chronic pain: insights into diagnosis and treatment</a>. <em>Korean J Pain</em>. 2025;38:89-102.
+            </li>
+            <li id="ref-dor-30">
+              Li M, She K, Zhu P, Li Z, Liu J, Luo F, et al. <a href="https://doi.org/10.3390/ijms26020436" target="_blank" rel="noreferrer">Chronic pain and comorbid emotional disorders: neural circuitry and neuroimmunity pathways</a>. <em>Int J Mol Sci</em>. 2025;26.
+            </li>
+            <li id="ref-dor-31">
+              Hiraga S, Itokazu T, Nishibe M, Yamashita T. <a href="https://doi.org/10.1186/s41232-022-00199-6" target="_blank" rel="noreferrer">Neuroplasticity related to chronic pain and its modulation by microglia</a>. <em>Inflamm Regen</em>. 2022;42.
+            </li>
+            <li id="ref-dor-32">
+              Hassamal S. <a href="https://doi.org/10.3389/fpsyt.2023.1130989" target="_blank" rel="noreferrer">Chronic stress, neuroinflammation, and depression: an overview of pathophysiological mechanisms and emerging anti-inflammatories</a>. <em>Front Psychiatry</em>. 2023;14.
+            </li>
+            <li id="ref-dor-33">
+              Hjermstad MJ, Fayers PM, Haugen DF, Caraceni A, Hanks GW, Loge JH, et al. <a href="https://doi.org/10.1016/j.jpainsymman.2010.08.016" target="_blank" rel="noreferrer">Studies comparing Numerical Rating Scales, Verbal Rating Scales, and Visual Analogue Scales for assessment of pain intensity in adults</a>. <em>J Pain Symptom Manage</em>. 2011;41(6):1073-93.
+            </li>
+            <li id="ref-dor-34">
+              Goldman RE, Broderick JE, Junghaenel DU, Bolton A, May M, Schneider S, et al. <a href="https://doi.org/10.3389/fpain.2021.692567" target="_blank" rel="noreferrer">Beyond average: providers' assessments of indices for measuring pain intensity in patients with chronic pain</a>. <em>Front Pain Res</em>. 2021;2:692567.
+            </li>
+            <li id="ref-dor-35">
+              Euasobhon P, Atisook R, Bumrungchatudom K, Zinboonyahgoon N, Saisavoey N, Jensen MP. <a href="https://doi.org/10.1097/j.pain.0000000000002692" target="_blank" rel="noreferrer">The reliability and responsivity of pain intensity scales in individuals with chronic pain</a>. <em>Pain</em>. 2022.
+            </li>
+            <li id="ref-dor-36">
+              Chiarotto A, Maxwell LJ, Ostelo RW, Boers M, Tugwell P, Terwee CB. <a href="https://doi.org/10.1016/j.jpain.2018.07.009" target="_blank" rel="noreferrer">Measurement properties of Visual Analogue Scale, Numeric Rating Scale, and Pain Severity Subscale of the Brief Pain Inventory in patients with low back pain</a>. <em>J Pain</em>. 2019;20(3):245-63.
+            </li>
+            <li id="ref-dor-37">
+              Ferreira-Valente MA, Pais-Ribeiro JL, Jensen MP. <a href="https://doi.org/10.1016/j.pain.2011.07.005" target="_blank" rel="noreferrer">Validity of four pain intensity rating scales</a>. <em>Pain</em>. 2011;152:2399-404.
+            </li>
+            <li id="ref-dor-38">
+              Stefane T, Santos AM, Marinovic A, Hortense P. <a href="https://doi.org/10.1590/S0103-21002013000100004" target="_blank" rel="noreferrer">Dor lombar crônica: intensidade de dor, incapacidade e qualidade de vida</a>. <em>Acta Paul Enferm</em>. 2013;26:14-20.
+            </li>
+            <li id="ref-dor-39">
+              Farrar JT, Young JP Jr, LaMoreaux L, Werth JL, Poole RM. <a href="https://doi.org/10.1016/S0304-3959(01)00349-9" target="_blank" rel="noreferrer">Clinical importance of changes in chronic pain intensity measured on an 11-point numerical pain rating scale</a>. <em>Pain</em>. 2001;94:149-58.
+            </li>
+            <li id="ref-dor-40">
+              Schneider S, Junghaenel DU, Broderick JE, Ono M, May M, Stone AA. <a href="https://doi.org/10.1016/j.jpain.2020.10.002" target="_blank" rel="noreferrer">Indices of pain intensity derived from ecological momentary assessments and their relationships with patient functioning</a>. <em>J Pain</em>. 2020.
+            </li>
+            <li id="ref-dor-41">
+              Rogers AH, Smit T, Bakhshaie J, Zvolensky MJ. <a href="https://doi.org/10.1007/s10865-025-00590-x" target="_blank" rel="noreferrer">Impact of intraindividual pain variability on functional pain outcomes among adults with chronic pain</a>. <em>J Behav Med</em>. 2025;48:1035-42.
+            </li>
+            <li id="ref-dor-42">
+              Von Korff M, Ormel J, Keefe FJ, Dworkin SF. <a href="https://doi.org/10.1016/0304-3959(92)90154-4" target="_blank" rel="noreferrer">Grading the severity of chronic pain</a>. <em>Pain</em>. 1992;50:133-49.
+            </li>
+            <li id="ref-dor-43">
+              Alorfi NM. <a href="https://doi.org/10.2147/IJGM.S419239" target="_blank" rel="noreferrer">Pharmacological methods of pain management: narrative review of medication used</a>. <em>Int J Gen Med</em>. 2023;16:3247-56.
+            </li>
+            <li id="ref-dor-44">
+              Kim KH, Seo HJ, Abdi S, Huh B. <a href="https://doi.org/10.3344/kjp.2020.33.2.108" target="_blank" rel="noreferrer">All about pain pharmacology: what pain physicians should know</a>. <em>Korean J Pain</em>. 2020;33(2):108-20.
+            </li>
+            <li id="ref-dor-45">
+              Nury E, Schmucker C, Nagavci B, Motschall E, Nitschke K, Schulte E, et al. <a href="https://doi.org/10.1097/j.pain.0000000000002423" target="_blank" rel="noreferrer">Efficacy and safety of strong opioids for chronic noncancer pain and chronic low back pain</a>. <em>Pain</em>. 2022;163(4):610-36.
+            </li>
+            <li id="ref-dor-46">
+              Beal BR, Wallace MS. <a href="https://doi.org/10.1016/j.mcna.2015.08.006" target="_blank" rel="noreferrer">An overview of pharmacologic management of chronic pain</a>. <em>Med Clin North Am</em>. 2016;100(1):65-79.
+            </li>
+            <li id="ref-dor-47">
+              Birkinshaw H, Friedrich CM, Cole P, Eccleston C, Serfaty M, Stewart G, et al. <a href="https://doi.org/10.3310/MKRT2948" target="_blank" rel="noreferrer">Antidepressants for pain management in adults with chronic pain: a network meta-analysis</a>. <em>Health Technol Assess</em>. 2024;28(62):1-155.
+            </li>
+            <li id="ref-dor-48">
+              De Rosa F, Giannatiempo B, Charlier B, Coglianese A, Mensitieri F, Gaudino G, et al. <a href="https://doi.org/10.3390/pharmaceutics15082088" target="_blank" rel="noreferrer">Pharmacological treatments and therapeutic drug monitoring in patients with chronic pain</a>. <em>Pharmaceutics</em>. 2023;15(8):2088.
+            </li>
+            <li id="ref-dor-49">
+              Marciano G, Vocca C, Evangelista M, et al. <a href="https://doi.org/10.3390/pharmaceutics15041165" target="_blank" rel="noreferrer">The pharmacological treatment of chronic pain: from guidelines to daily clinical practice</a>. <em>Pharmaceutics</em>. 2023;15(4):1165.
+            </li>
+            <li id="ref-dor-50">
+              Shetty A, Wilson K, Hsu C, et al. <a href="https://doi.org/10.1038/s41598-023-49761-3" target="_blank" rel="noreferrer">A systematic review and network meta-analysis of pharmaceutical interventions used to manage chronic pain</a>. <em>Sci Rep</em>. 2024;14:260.
+            </li>
+            <li id="ref-dor-51">
+              Chou R, Turner JA, Devine EB, Hansen RN, Sullivan SD, Blazina I, et al. <a href="https://doi.org/10.7326/M14-2559" target="_blank" rel="noreferrer">The effectiveness and risks of long-term opioid therapy for chronic pain</a>. <em>Ann Intern Med</em>. 2015;162(4):276-86.
+            </li>
+            <li id="ref-dor-52">
+              Fisher E, Moore RA, Fogarty AE, Finn DP, Finnerup NB, Gilron I, et al. <a href="https://doi.org/10.1097/j.pain.0000000000001929" target="_blank" rel="noreferrer">Cannabinoids, cannabis, and cannabis-based medicine for pain management: a systematic review of randomised controlled trials</a>. <em>Pain</em>. 2021;162 Suppl 1:S45-S66.
+            </li>
+            <li id="ref-dor-53">
+              Aremu O, Ogunlade O, Mata T. <a href="https://doi.org/10.1136/bmjopen-2024-093728" target="_blank" rel="noreferrer">Comparative efficacy and safety of pharmacological agents for chronic low back pain: a systematic review and bivariate Bayesian network meta-analysis protocol</a>. <em>BMJ Open</em>. 2025;15:e093728.
+            </li>
+            <li id="ref-dor-54">
+              Brezic N, Gligorevic S, Candido KD, Knezevic NN. <a href="https://doi.org/10.1080/14740338.2024.2391999" target="_blank" rel="noreferrer">Assessing suicide risk in chronic pain management: a narrative review across drug classes</a>. <em>Expert Opin Drug Saf</em>. 2024;23(9):1135-55.
+            </li>
+            <li id="ref-dor-55">
+              World Health Organization. <a href="https://www.ncbi.nlm.nih.gov/books/NBK537492/" target="_blank" rel="noreferrer">WHO guidelines for the pharmacological and radiotherapeutic management of cancer pain in adults and adolescents</a> [Internet]. Geneva: World Health Organization; 2018 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-56">
+              Brasil. Ministério da Saúde. Comissão Nacional de Incorporação de Tecnologias no SUS. <a href="https://www.gov.br/conitec/pt-br/midias/relatorios/2024/protocolo-clinico-e-diretrizes-terapeuticas-da-dor-cronica/view" target="_blank" rel="noreferrer">Protocolo Clínico e Diretrizes Terapêuticas da Dor Crônica</a> [Internet]. Brasília: Ministério da Saúde; 2024 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-57">
+              Wang Y, Aaron R, Attal N, Colloca L. <a href="https://doi.org/10.1016/j.xcrm.2025.101940" target="_blank" rel="noreferrer">An update on non-pharmacological interventions for pain relief</a>. <em>Cell Rep Med</em>. 2025;6.
+            </li>
+            <li id="ref-dor-58">
+              Albesher M, Alkhalifah M, Hazazi A, Hakeem G, Almogbel B. <a href="https://doi.org/10.52609/jmlph.v5i4.207" target="_blank" rel="noreferrer">Non-pharmacological interventions for chronic pain management: a narrative review</a>. <em>J Med Law Public Health</em>. 2025;5(4).
+            </li>
+            <li id="ref-dor-59">
+              Silva A, Abner T, Azevedo-Santos I. <a href="https://doi.org/10.63231/2595-0118.20250004-pt" target="_blank" rel="noreferrer">Efeito do exercício terapêutico na intensidade de dor em indivíduos com doenças do sistema nervoso central: revisão integrativa</a>. <em>BrJP</em>. 2025.
+            </li>
+            <li id="ref-dor-60">
+              Hernando-Garijo I, Jiménez-Del-Barrio S, Mingo-Gómez T, Medrano-De-La-Fuente R, Ceballos-Laita L. <a href="https://doi.org/10.3233/BMR-200282" target="_blank" rel="noreferrer">Effectiveness of non-pharmacological conservative therapies in adults with fibromyalgia: a systematic review of high-quality clinical trials</a>. <em>J Back Musculoskelet Rehabil</em>. 2022;35(1):3-20.
+            </li>
+            <li id="ref-dor-61">
+              Leung DYP, Fong A, Wong FKY, Liu T, Wong GHY, Lum TYS. <a href="https://doi.org/10.1093/geront/gnae010" target="_blank" rel="noreferrer">Non-pharmacological interventions for chronic pain in older adults: a systematic review and meta-analysis</a>. <em>Gerontologist</em>. 2024.
+            </li>
+            <li id="ref-dor-62">
+              Shi Y, Wu W. <a href="https://doi.org/10.1186/s12916-023-03076-2" target="_blank" rel="noreferrer">Multimodal non-invasive non-pharmacological therapies for chronic pain: mechanisms and progress</a>. <em>BMC Med</em>. 2023;21.
+            </li>
+            <li id="ref-dor-63">
+              Eller OC, Willits AB, Young EE, Baumbauer KM. <a href="https://doi.org/10.3389/fpain.2022.991736" target="_blank" rel="noreferrer">Pharmacological and non-pharmacological therapeutic interventions for the treatment of spinal cord injury-induced pain</a>. <em>Front Pain Res</em>. 2022;3:991736.
+            </li>
+            <li id="ref-dor-64">
+              Checa-Peñalver A, Lírio-Romero C, Ferreira E, Hernandes-Iglesias S, García-Valdivieso I, Pérez-Pozuelo J, et al. <a href="https://doi.org/10.3390/children11121420" target="_blank" rel="noreferrer">Effectiveness of non-pharmacological interventions in the management of pediatric chronic pain: a systematic review</a>. <em>Children</em>. 2024;11(12):1420.
+            </li>
+            <li id="ref-dor-65">
+              Romer M, Del Saz P, Hernández M, Parra L, Jiménez S, Delgado C. <a href="https://doi.org/10.1016/j.jhqr.2024.01.005" target="_blank" rel="noreferrer">Impact of a multicomponent program with nonpharmacological therapies for patients with chronic pain</a>. <em>J Healthc Qual Res</em>. 2024.
+            </li>
+            <li id="ref-dor-66">
+              Brasil. Ministério da Saúde. <a href="https://www.gov.br/saude/pt-br/composicao/sectics/plantas-medicinais-e-fitoterapicos" target="_blank" rel="noreferrer">Plantas medicinais e fitoterápicos</a> [Internet]. Brasília: Ministério da Saúde; [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-67">
+              World Health Organization. <a href="https://www.who.int/publications/i/item/9241592214" target="_blank" rel="noreferrer">WHO guidelines on safety monitoring of herbal medicines in pharmacovigilance systems</a> [Internet]. Geneva: World Health Organization; 2004 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-68">
+              Brasil. Ministério da Saúde. <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2018/novembro/congresso-celebra-10-anos-do-programa-de-plantas-medicinais-e-fitoterapicos-do-sus" target="_blank" rel="noreferrer">Congresso celebra 10 anos do Programa de Plantas Medicinais e Fitoterápicos do SUS</a> [Internet]. Brasília: Ministério da Saúde; 2018 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-69">
+              Brasil. Ministério da Saúde. <a href="https://www.gov.br/saude/pt-br/composicao/sectics/plantas-medicinais-e-fitoterapicos/ppnpmf/arquivos/2016/MonografiaHarpagophytum.pdf" target="_blank" rel="noreferrer">Monografia da espécie Harpagophytum procumbens DC. ex Meissn.</a> [Internet]. Brasília: Ministério da Saúde; 2015 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-70">
+              Brasil. Ministério da Saúde. <a href="https://www.gov.br/saude/pt-br/acesso-a-informacao/participacao-social/consultas-publicas/2017/arquivos/MonografiaSalixalba.pdf" target="_blank" rel="noreferrer">Monografia da espécie Salix alba L. (salgueiro branco)</a> [Internet]. Brasília: Ministério da Saúde; 2015 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-71">
+              Brasil. Ministério da Saúde. Secretaria de Atenção à Saúde. Departamento de Atenção Básica. <a href="https://bvsms.saude.gov.br/bvs/publicacoes/praticas_integrativas_complementares_plantas_medicinais_cab31.pdf" target="_blank" rel="noreferrer">Práticas integrativas e complementares: plantas medicinais e fitoterapia na Atenção Básica</a> [Internet]. Brasília: Ministério da Saúde; 2012 [cited 2026 May 25].
+            </li>
+            <li id="ref-dor-72">
+              Brasil. Agência Nacional de Vigilância Sanitária. <a href="https://www.gov.br/anvisa/pt-br/assuntos/farmacopeia/formulario-fitoterapico/MementoFitoterapico1.pdf" target="_blank" rel="noreferrer">Memento Fitoterápico da Farmacopeia Brasileira</a> [Internet]. 1st ed. Brasília: Anvisa; 2016 [cited 2026 May 25].
             </li>
           </ol>
         </section>
@@ -533,6 +1241,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=initial-doses"></script>
+    <script src="script.js?v=grupos-medicamentos-separados"></script>
   </body>
 </html>

@@ -74,16 +74,24 @@ const medicationGroups = {
     "Amitriptilina: 25 mg/dia; em idosos, 10 mg/dia.",
     "Nortriptilina: 25 mg/dia; em idosos, 10 a 25 mg/dia.",
     "Clomipramina: 10 mg/dia.",
+    "Duloxetina: 30 mg/dia.",
+    "Venlafaxina: 37,5 mg/dia.",
     "Gabapentina: 300 mg à noite ou 300 mg 3 vezes/dia, conforme tolerabilidade e função renal.",
+    "Pregabalina: 25 a 75 mg à noite, conforme tolerabilidade e função renal.",
     "Carbamazepina: 200 a 400 mg/dia; em idosos, 100 mg 2 vezes/dia.",
     "Fenitoína: 100 mg, 3 vezes/dia.",
     "Ácido valproico/valproato de sódio: 250 mg/dia.",
+    "Lidocaína tópica: considerar em dor neuropática periférica localizada.",
+    "Capsaicina tópica: considerar em dor neuropática periférica localizada.",
   ],
   nociplasticAdjuvants: [
     "Amitriptilina: 25 mg/dia; em idosos, 10 mg/dia.",
     "Nortriptilina: 25 mg/dia; em idosos, 10 a 25 mg/dia.",
     "Clomipramina: 10 mg/dia.",
+    "Duloxetina: 30 mg/dia.",
+    "Venlafaxina: 37,5 mg/dia.",
     "Gabapentina: 300 mg à noite ou 300 mg 3 vezes/dia, conforme tolerabilidade e função renal.",
+    "Pregabalina: 25 a 75 mg à noite, conforme tolerabilidade e função renal.",
   ],
   opioids: [
     "Codeína: 30 mg, 3 a 4 vezes/dia; em idosos, 15 mg a cada 4 h.",
@@ -126,55 +134,210 @@ const medicationGroupLabels = {
 const medicationAssociationGuidance = {
   nociceptive: {
     mild:
-      "Grupo sugerido: iniciar com analgésico simples/não opioide. Associar AINE apenas se houver componente inflamatório e baixo risco renal, gástrico e cardiovascular.",
+      "Grupo de medicamentos sugerido: iniciar com analgésico simples/não opioide. Associar AINE apenas se houver componente inflamatório e baixo risco renal, gástrico e cardiovascular.",
     moderate:
-      "Grupos sugeridos: analgésico simples/não opioide + AINE se indicado. Considerar opioide leve apenas se dor moderada persistir apesar de estratégia inicial adequada.",
+      "Grupos de medicamentos sugeridos: analgésico simples/não opioide + AINE se indicado. Considerar opioide leve apenas se dor moderada persistir apesar de estratégia inicial adequada.",
     severe:
-      "Grupos sugeridos: analgésico simples/não opioide + AINE se seguro + opioide quando dor forte ou refratária justificar, com reavaliação estreita.",
+      "Grupos de medicamentos sugeridos: analgésico simples/não opioide + AINE se seguro + opioide quando dor forte ou refratária justificar, com reavaliação estreita.",
   },
   neuropathic: {
     mild:
-      "Grupos sugeridos: adjuvante para dor neuropática. Associar analgésico simples se houver componente nociceptivo concomitante.",
+      "Grupos de medicamentos sugeridos: adjuvante para dor neuropática. Associar analgésico simples se houver componente nociceptivo concomitante.",
     moderate:
-      "Grupos sugeridos: adjuvante neuropático + analgésico simples se componente nociceptivo. Associar AINE apenas se houver inflamação ou dor musculoesquelética associada.",
+      "Grupos de medicamentos sugeridos: adjuvante neuropático + analgésico simples se componente nociceptivo. Associar AINE apenas se houver inflamação ou dor musculoesquelética associada.",
     severe:
-      "Grupos sugeridos: adjuvante neuropático + analgésico simples/AINE se componente nociceptivo + opioide apenas se dor forte refratária ou contexto paliativo justificar.",
+      "Grupos de medicamentos sugeridos: adjuvante neuropático + analgésico simples/AINE se componente nociceptivo + opioide apenas se dor forte refratária ou contexto paliativo justificar.",
   },
   nociplastic: {
     mild:
-      "Grupo sugerido: adjuvante para dor nociplástica quando medicamento for necessário; priorizar menor carga medicamentosa eficaz.",
+      "Grupo de medicamentos sugerido: adjuvante para dor nociplástica quando medicamento for necessário; priorizar menor carga medicamentosa eficaz.",
     moderate:
-      "Grupos sugeridos: adjuvante para dor nociplástica + analgésico simples se houver dor periférica associada. Evitar opioide como rotina.",
+      "Grupos de medicamentos sugeridos: adjuvante para dor nociplástica + analgésico simples se houver dor periférica associada. Evitar opioide como rotina.",
     severe:
-      "Grupos sugeridos: adjuvante para dor nociplástica + analgésico simples se componente periférico coexistir; dor forte persistente pede revisão diagnóstica e plano multimodal.",
+      "Grupos de medicamentos sugeridos: adjuvante para dor nociplástica + analgésico simples se componente periférico coexistir; dor forte persistente pede revisão diagnóstica e plano multimodal.",
   },
   mixed: {
     mild:
-      "Grupos sugeridos: analgésico simples para componente nociceptivo + adjuvante se houver componente neuropático/nociplástico relevante.",
+      "Grupos de medicamentos sugeridos: analgésico simples para componente nociceptivo + adjuvante se houver componente neuropático/nociplástico relevante.",
     moderate:
-      "Grupos sugeridos: analgésico simples + AINE se inflamatório + adjuvante conforme componente neuropático/nociplástico predominante.",
+      "Grupos de medicamentos sugeridos: analgésico simples + AINE se inflamatório + adjuvante conforme componente neuropático/nociplástico predominante.",
     severe:
-      "Grupos sugeridos: analgésico simples + AINE se seguro + adjuvante para componente neuropático/nociplástico + opioide se dor forte refratária justificar.",
+      "Grupos de medicamentos sugeridos: analgésico simples + AINE se seguro + adjuvante para componente neuropático/nociplástico + opioide se dor forte refratária justificar.",
   },
 };
 
-function getMedicationActions(mechanism, intensity) {
+function getMedicationPlan(mechanism, intensity) {
   const groupKeys = medicationPlanMap[mechanism]?.[intensity] || [];
-  const options = groupKeys.flatMap((key) => [
-    `Medicamentos sugeridos do grupo ${medicationGroupLabels[key]}:`,
-    ...medicationGroups[key].map((option) => `- ${option}`),
-  ]);
 
-  if (!options.length) return [];
+  return {
+    guidance: medicationAssociationGuidance[mechanism]?.[intensity],
+    groups: groupKeys.map((key) => ({
+      title: medicationGroupLabels[key],
+      options: medicationGroups[key],
+    })),
+    safety: [
+      "Não usar todas as opções em conjunto: selecionar uma estratégia, titular gradualmente e atribuir resposta/eventos adversos.",
+      "Segurança antes de prescrever: revisar alergias, idade, gestação, função renal/hepática, risco gastrointestinal/cardiovascular, interações, opioides em uso, constipação, sedação e disponibilidade na RENAME/local.",
+      "Na dor nociplástica, opioides são desencorajados e relaxantes musculares não são recomendados como rotina.",
+    ],
+  };
+}
+
+const nonMedicationPlanMap = {
+  nociceptive: {
+    mild: [
+      "Tratamento não medicamentoso: educação em dor, manutenção de atividade possível, ergonomia, pacing e metas funcionais graduais.",
+      "Considerar fisioterapia estruturada, fortalecimento, mobilidade, alongamento, calor/frio ou TENS conforme localização, função e resposta.",
+    ],
+    moderate: [
+      "Tratamento não medicamentoso: combinar fisioterapia/exercício estruturado com educação em dor e plano de autocuidado.",
+      "Se houver medo de movimento, incapacidade ou evitação, associar TCC, mindfulness ou abordagem psicológica focada em enfrentamento.",
+    ],
+    severe: [
+      "Tratamento não medicamentoso: revisar sinais de alerta, perda funcional e necessidade de avaliação presencial antes de intensificar atividades.",
+      "Após segurança clínica, usar plano graduado com fisioterapia, metas pequenas e suporte psicossocial para reduzir sofrimento e incapacidade.",
+    ],
+  },
+  neuropathic: {
+    mild: [
+      "Tratamento não medicamentoso: educação sobre dor neuropática, proteção da área sensível, dessensibilização gradual e cuidado com pele.",
+      "Considerar fisioterapia, TENS ou terapia ocupacional se houver limitação funcional, alteração sensitiva ou impacto em atividades.",
+    ],
+    moderate: [
+      "Tratamento não medicamentoso: associar reabilitação funcional, estratégias de dessensibilização e suporte psicológico se houver sofrimento ou evitação.",
+      "Avaliar sono, humor, segurança para marcha, quedas e adaptação de atividades.",
+    ],
+    severe: [
+      "Tratamento não medicamentoso: dor neuropática forte pede revisão diagnóstica, exame neurológico dirigido e plano de segurança.",
+      "Combinar reabilitação, suporte psicológico e manejo de sono/fadiga, com encaminhamento especializado quando houver refratariedade.",
+    ],
+  },
+  nociplastic: {
+    mild: [
+      "Tratamento não medicamentoso: priorizar educação em dor, atividade física gradual, higiene do sono, manejo de estresse e metas funcionais.",
+      "Evitar repouso prolongado; trabalhar retorno progressivo às atividades com pacing.",
+    ],
+    moderate: [
+      "Tratamento não medicamentoso: programa multimodal com exercício/fisioterapia estruturada + TCC, mindfulness ou aceitação e compromisso.",
+      "Abordar catastrofização, fadiga, sono, humor, medo de movimento e participação social.",
+    ],
+    severe: [
+      "Tratamento não medicamentoso: dor nociplástica forte sugere plano multimodal intensivo, com metas pequenas, suporte psicológico e reavaliação frequente.",
+      "Revisar diagnóstico, sinais de alerta, sofrimento psíquico e barreiras de adesão antes de aumentar carga medicamentosa.",
+    ],
+  },
+  mixed: {
+    mild: [
+      "Tratamento não medicamentoso: selecionar intervenções conforme os componentes predominantes, combinando educação, atividade gradual e autocuidado.",
+      "Mapear qual componente mais limita função para escolher a primeira meta terapêutica.",
+    ],
+    moderate: [
+      "Tratamento não medicamentoso: programa multimodal proporcional aos fenótipos identificados, com fisioterapia/exercício e suporte psicológico quando indicado.",
+      "Reavaliar função, sono, humor, adesão e barreiras sociais ao cuidado.",
+    ],
+    severe: [
+      "Tratamento não medicamentoso: dor mista forte pede revisão integrada, metas de curto prazo e eventual avaliação multiprofissional/especializada.",
+      "Combinar reabilitação, suporte psicossocial e medidas de conforto, sem atrasar investigação de sinais de alerta.",
+    ],
+  },
+};
+
+function getNonMedicationActions(mechanism, intensity) {
+  return [
+    "Tratamento não medicamentoso sugerido:",
+    ...(nonMedicationPlanMap[mechanism]?.[intensity] || []),
+    "Desfechos a acompanhar: intensidade, função, sono, humor, autonomia, qualidade de vida e adesão.",
+  ];
+}
+
+const phytotherapyPlanMap = {
+  nociceptive: [
+    "Fitoterapia: pode ser considerada como complemento em dor musculoesquelética/inflamatória leve a moderada, quando houver produto seguro, identificação correta e acompanhamento.",
+    "Opções como garra-do-diabo, salgueiro ou unha-de-gato exigem individualização, revisão de contraindicações e risco de interação.",
+  ],
+  neuropathic: [
+    "Fitoterapia: não deve substituir investigação de lesão neural nem tratamento neuropático quando indicado.",
+    "Se houver uso de plantas, registrar produto, dose, origem e monitorar sedação, tontura, alergia, interação e impacto funcional.",
+  ],
+  nociplastic: [
+    "Fitoterapia: pode ser considerada apenas como apoio a sintomas associados, como sono, tensão ou bem-estar, dentro de plano multimodal.",
+    "Priorizar educação, exercício gradual e estratégias psicológicas; evitar prometer efeito analgésico direto consistente.",
+  ],
+  mixed: [
+    "Fitoterapia: individualizar conforme o componente predominante e revisar todos os produtos já usados pela pessoa.",
+    "Evitar misturas sem identificação, automedicação prolongada e associação com anticoagulantes, sedativos, AINEs ou múltiplos fármacos sem revisão.",
+  ],
+};
+
+function getPhytotherapyActions(mechanism, intensity) {
+  const extra =
+    intensity === "severe"
+      ? "Se a dor for forte, fitoterapia não deve atrasar reavaliação clínica, analgesia proporcional ou encaminhamento quando necessário."
+      : "Definir prazo de teste, benefício esperado e critérios de suspensão.";
 
   return [
-    "Orientação de associação de grupos conforme referência 1:",
-    medicationAssociationGuidance[mechanism]?.[intensity],
-    ...options,
-    "Não usar todas as opções em conjunto: selecionar uma estratégia, titular gradualmente e atribuir resposta/eventos adversos.",
-    "Segurança antes de prescrever: revisar alergias, idade, gestação, função renal/hepática, risco gastrointestinal/cardiovascular, interações, opioides em uso, constipação, sedação e disponibilidade na RENAME/local.",
-    "Na dor nociplástica, opioides são desencorajados e relaxantes musculares não são recomendados como rotina.",
+    "Fitoterapia, quando apropriada:",
+    ...(phytotherapyPlanMap[mechanism] || []),
+    "Antes de usar: perguntar sobre chás, garrafadas, pomadas, cápsulas, tinturas e produtos comprados sem prescrição.",
+    extra,
   ];
+}
+
+function createResultItem(text) {
+  const item = document.createElement("li");
+  item.textContent = text;
+  return item;
+}
+
+function createResultSection(title, items, modifier) {
+  const section = document.createElement("li");
+  section.className = `result-section result-section--${modifier}`;
+
+  const heading = document.createElement("h4");
+  heading.textContent = title;
+
+  const list = document.createElement("ul");
+  list.replaceChildren(...items.map(createResultItem));
+
+  section.replaceChildren(heading, list);
+  return section;
+}
+
+function createMedicationSection(plan) {
+  const section = document.createElement("li");
+  section.className = "result-section result-section--medication";
+
+  const heading = document.createElement("h4");
+  heading.textContent = "Tratamento medicamentoso";
+
+  const guidance = document.createElement("p");
+  guidance.className = "result-section-guidance";
+  guidance.textContent = plan.guidance;
+
+  const groups = document.createElement("div");
+  groups.className = "medication-group-grid";
+  groups.replaceChildren(
+    ...plan.groups.map((group) => {
+      const card = document.createElement("article");
+      card.className = "medication-group-card";
+
+      const cardTitle = document.createElement("h5");
+      cardTitle.textContent = group.title;
+
+      const list = document.createElement("ul");
+      list.replaceChildren(...group.options.map(createResultItem));
+
+      card.replaceChildren(cardTitle, list);
+      return card;
+    })
+  );
+
+  const safety = document.createElement("ul");
+  safety.className = "medication-safety-list";
+  safety.replaceChildren(...plan.safety.map(createResultItem));
+
+  section.replaceChildren(heading, guidance, groups, safety);
+  return section;
 }
 
 const redFlagActions = {
@@ -220,6 +383,8 @@ function closeDialog() {
 }
 
 function openTab(tabId, focusPanel = true) {
+  const targetPanel = document.getElementById(tabId);
+
   tabs.forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.tab === tabId);
   });
@@ -231,7 +396,8 @@ function openTab(tabId, focusPanel = true) {
   history.replaceState(null, "", `#${tabId}`);
 
   if (focusPanel) {
-    document.getElementById(tabId)?.focus({ preventScroll: true });
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
   }
 }
 
@@ -242,6 +408,31 @@ declineButton.addEventListener("click", closeDialog);
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => openTab(tab.dataset.tab));
+});
+
+function openPainSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-pain-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.painSubtab === targetId);
+  });
+
+  document.querySelectorAll(".pain-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-pain-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPainSubtab(button.dataset.painSubtab);
+  });
 });
 
 function updatePainResult() {
@@ -275,11 +466,7 @@ function updatePainResult() {
       ...[
         ...painState.redFlags.map((flag) => redFlagActions[flag]),
         "Registrar os alertas encontrados, orientar retorno imediato se houver piora e acionar avaliação presencial/urgência conforme gravidade.",
-      ].map((action) => {
-        const item = document.createElement("li");
-        item.textContent = action;
-        return item;
-      })
+      ].map(createResultItem)
     );
     return;
   }
@@ -287,23 +474,21 @@ function updatePainResult() {
   if (!painState.mechanism) {
     title.textContent = "Classifique a dor para gerar conduta";
     text.textContent =
-      "Preencha o questionário interativo de classificação fenotípica da dor. A conduta será gerada a partir do fenótipo predominante ou da identificação de dor mista.";
+      "Preencha o questionário interativo de classificação fenotípica da dor. A conduta combinará tratamento medicamentoso, não medicamentoso e fitoterápico quando apropriado.";
     actions.replaceChildren(
       ...[
         "Selecione os achados clínicos presentes no questionário de classificação fenotípica.",
         "Se houver sinais de alerta, o fluxo será interrompido e a conduta de segurança será priorizada.",
-      ].map((action) => {
-        const item = document.createElement("li");
-        item.textContent = action;
-        return item;
-      })
+      ].map(createResultItem)
     );
     return;
   }
 
   const recommendation = mechanismRecommendations[painState.mechanism];
-  const medicationActions = getMedicationActions(painState.mechanism, painState.intensity);
-  title.textContent = `Manejo multimodal para dor crônica ${recommendation.label} ${intensityLabels[painState.intensity]}`;
+  const medicationPlan = getMedicationPlan(painState.mechanism, painState.intensity);
+  const nonMedicationActions = getNonMedicationActions(painState.mechanism, painState.intensity);
+  const phytotherapyActions = getPhytotherapyActions(painState.mechanism, painState.intensity);
+  title.textContent = `Plano multimodal para dor crônica ${recommendation.label} ${intensityLabels[painState.intensity]}`;
   text.textContent = recommendation.text;
 
   const intensityAction =
@@ -314,16 +499,12 @@ function updatePainResult() {
         : "Se dor leve, priorizar função, autocuidado e menor carga medicamentosa eficaz.";
 
   actions.replaceChildren(
-    ...[
-      ...recommendation.actions,
-      ...medicationActions,
-      intensityAction,
-      "Reavaliar buscando melhora mínima de 30% e tolerabilidade aceitável.",
-    ].map((action) => {
-      const item = document.createElement("li");
-      item.textContent = action;
-      return item;
-    })
+    ...recommendation.actions.map(createResultItem),
+    createMedicationSection(medicationPlan),
+    createResultSection("Tratamento não medicamentoso", nonMedicationActions, "nonmedication"),
+    createResultSection("Fitoterapia", phytotherapyActions, "phytotherapy"),
+    createResultItem(intensityAction),
+    createResultItem("Reavaliar buscando melhora mínima de 30%, ganho funcional e tolerabilidade aceitável.")
   );
 }
 
@@ -341,6 +522,12 @@ function focusNextStepSuggested() {
   const result = document.querySelector(".pain-result");
   if (!result) return;
   result.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function focusPhenotypeStep() {
+  const step = document.querySelector(".phenotype-tool");
+  if (!step) return;
+  step.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 document.querySelectorAll("[data-pain-group]").forEach((group) => {
@@ -388,6 +575,9 @@ document.querySelector("[data-no-red-flags]")?.addEventListener("change", (event
   painState.stepOneAnswered = event.target.checked || painState.redFlags.length > 0;
   updateStepAccess();
   updatePainResult();
+  if (event.target.checked) {
+    focusPhenotypeStep();
+  }
 });
 
 updatePainResult();
@@ -655,7 +845,15 @@ document.querySelectorAll(".references-toggle").forEach((button) => {
   });
 });
 
-const initialTab = window.location.hash.replace("#", "");
+const initialHash = window.location.hash.replace("#", "");
+const legacyHashMap = {
+  "tratamento-medicamentoso": "tratamento-medicamentoso-dor",
+};
+const initialTab = legacyHashMap[initialHash] || initialHash;
+
 if (initialTab && panels.some((panel) => panel.id === initialTab)) {
   openTab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("pain-subpanel")) {
+  openTab("manejo-dor", false);
+  openPainSubtab(initialTab, false);
 }

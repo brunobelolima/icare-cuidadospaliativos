@@ -169,6 +169,75 @@ button {
   outline-offset: 4px;
 }
 
+.subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.subtab-trigger {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid #c8ebe6;
+  border-radius: 7px;
+  background: #f8fffd;
+  color: #07554c;
+  font-weight: 800;
+}
+
+.subtab-trigger.active {
+  border-color: transparent;
+  background: var(--teal);
+  color: #ffffff;
+}
+
+.pain-subpanel {
+  display: none;
+}
+
+.pain-subpanel.active {
+  display: block;
+}
+
+.definition-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.definition-card {
+  padding: 18px;
+  border: 1px solid #d6f2ee;
+  border-radius: 7px;
+  background: #fbffff;
+}
+
+.definition-card h3 {
+  margin-top: 0;
+}
+
+.definition-card ul {
+  margin-bottom: 0;
+}
+
+.pain-figure {
+  margin: 0 0 18px;
+  padding: 10px;
+  border: 1px solid #d6f2ee;
+  border-radius: 7px;
+  background: #fbffff;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pain-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
 h2 {
   margin: 0 0 18px;
   color: #083b3d;
@@ -425,6 +494,16 @@ tr:last-child td {
   line-height: 1.45;
 }
 
+.alert-checklist .no-red-flags-option {
+  margin-bottom: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #d6f2ee;
+}
+
+.alert-checklist .no-red-flags-option strong {
+  color: #07554c;
+}
+
 .alert-checklist input {
   width: 16px;
   height: 16px;
@@ -496,6 +575,100 @@ tr:last-child td {
   display: grid;
   gap: 7px;
   margin-top: 12px;
+}
+
+#painResultActions {
+  padding-left: 0;
+  list-style: none;
+}
+
+#painResultActions > li:not(.result-section) {
+  position: relative;
+  padding-left: 18px;
+}
+
+#painResultActions > li:not(.result-section)::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0f766e;
+}
+
+.result-section {
+  margin: 8px 0;
+  padding: 14px;
+  border: 1px solid #bfe7e3;
+  border-left: 5px solid #087891;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.result-section h4 {
+  margin: 0 0 10px;
+  color: #06373e;
+  font-size: 1rem;
+}
+
+.result-section-guidance {
+  margin: 0 0 12px;
+  color: #315b62;
+  font-weight: 700;
+}
+
+.result-section ul {
+  gap: 8px;
+  margin: 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+
+.result-section--medication {
+  border-left-color: #087891;
+  background: #f7feff;
+}
+
+.result-section--nonmedication {
+  border-left-color: #0f766e;
+  background: #f7fffb;
+}
+
+.result-section--phytotherapy {
+  border-left-color: #7a8b2e;
+  background: #fdfff5;
+}
+
+.medication-group-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.medication-group-card {
+  padding: 12px;
+  border: 1px solid #cdeff3;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.medication-group-card h5 {
+  margin: 0 0 8px;
+  color: #07554c;
+  font-size: 0.94rem;
+}
+
+.medication-group-card ul {
+  padding-left: 1.05rem;
+}
+
+.medication-safety-list {
+  margin-top: 12px !important;
+  padding-top: 12px;
+  border-top: 1px solid #d7edf0;
+  color: #415e64;
 }
 
 .phenotype-tool {
@@ -984,7 +1157,8 @@ body.dialog-open {
   .info-grid,
   .decision-grid,
   .pain-tool,
-  .questionnaire-grid {
+  .questionnaire-grid,
+  .definition-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1019,6 +1193,20 @@ body.dialog-open {
 
   .tab-trigger {
     min-height: 46px;
+  }
+
+  .subtabs {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .pain-figure {
+    padding: 8px;
+  }
+
+  .pain-figure img {
+    width: max(860px, 100%);
+    max-width: none;
   }
 
   .segmented-control,

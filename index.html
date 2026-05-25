@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iCare - Cuidados Paliativos</title>
+    <meta
+      name="description"
+      content="iCare Cuidados Paliativos: material de consulta rápida para acolhimento, planejamento, controle de sintomas e apoio ao cuidador."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=refs-auto-collapse" />
+  </head>
+  <body>
+    <div class="professional-dialog" id="professionalDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <div class="dialog-card">
+        <h2 id="dialogTitle">Você é profissional de saúde?</h2>
+        <p>Este conteúdo foi organizado para apoiar a prática clínica e a comunicação com pacientes e famílias.</p>
+        <div class="language-row" aria-label="Tradução">
+          <button class="language-button active" type="button">português</button>
+          <button class="language-button" type="button">inglês</button>
+          <button class="language-button" type="button">espanhol</button>
+          <button class="language-button" type="button">francês</button>
+        </div>
+        <div class="dialog-actions">
+          <button class="primary-button" type="button" id="acceptProfessional">Sim</button>
+          <button class="secondary-button" type="button" id="declineProfessional">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="app">
+      <header class="masthead">
+        <aside class="visit-counter" aria-label="Visitas ao site">
+          <span>VISITAS AO SITE</span>
+          <strong>2301</strong>
+          <small>Desde 10 de maio de 2026</small>
+        </aside>
+
+        <div class="brand-block">
+          <h1>iCare - Cuidados Paliativos</h1>
+          <p>acolhimento, conforto e planejamento de cuidado baseado em boas práticas</p>
+        </div>
+
+        <img class="brand-logo" src="assets/icare-logo-cuidados-paliativos.svg" alt="Logotipo iCare Cuidados Paliativos" />
+      </header>
+
+      <section class="tabs" aria-label="Seções do guia">
+        <button class="tab-trigger active" type="button" data-tab="boas-vindas">Boas-vindas</button>
+        <button class="tab-trigger" type="button" data-tab="conceitos">Conceitos essenciais</button>
+        <button class="tab-trigger" type="button" data-tab="avaliacao">Avaliação inicial</button>
+        <button class="tab-trigger" type="button" data-tab="sintomas">Controle de sintomas</button>
+        <button class="tab-trigger" type="button" data-tab="manejo-dor">Manejo da dor</button>
+        <button class="tab-trigger" type="button" data-tab="comunicacao">Comunicação</button>
+        <button class="tab-trigger" type="button" data-tab="plano">Plano de cuidado</button>
+        <button class="tab-trigger" type="button" data-tab="cuidador">Apoio ao cuidador</button>
+        <button class="tab-trigger" type="button" data-tab="luto">Luto e espiritualidade</button>
+        <button class="tab-trigger" type="button" data-tab="urgencias">Sinais de alerta</button>
+        <button class="tab-trigger" type="button" data-tab="equipe">Equipe</button>
+        <button class="tab-trigger" type="button" data-tab="checklists">Documentos e checklists</button>
+        <button class="tab-trigger" type="button" data-tab="contato">Entre em contato</button>
+      </section>
+
+      <section class="content-panel active" id="boas-vindas" tabindex="0">
+        <div class="panel-grid">
+          <div>
+            <h2>Boas-vindas ao iCare</h2>
+            <p>Olá,</p>
+            <p>
+              Este material reúne orientações práticas para cuidado paliativo, apoiando a identificação de necessidades,
+              o manejo de sintomas, a organização da visita e a tomada de decisão compartilhada.
+            </p>
+            <p>
+              A proposta é oferecer uma consulta rápida para profissionais de saúde, com linguagem acessível para
+              facilitar conversas com pacientes, famílias e cuidadores.
+            </p>
+          </div>
+          <figure class="care-figure">
+            <img src="assets/care-illustration.svg" alt="Profissional acolhendo pessoa em cuidado paliativo" />
+          </figure>
+        </div>
+
+        <div class="mint-box">
+          <h3>Sobre este material</h3>
+          <ul>
+            <li>Organizado para consulta rápida no atendimento presencial, domiciliar ou remoto.</li>
+            <li>Focado em conforto, autonomia, segurança e alinhamento de metas de cuidado.</li>
+            <li>Não substitui avaliação individual, protocolos locais nem discussão multiprofissional.</li>
+          </ul>
+        </div>
+
+        <div class="profile-card">
+          <h3>Bruno Belo Lima</h3>
+          <p>
+            Médico paliativista, com atuação em educação em saúde, telemedicina e cuidado centrado na pessoa.
+            Conteúdo estruturado para apoiar decisões clínicas e comunicação compassiva.
+          </p>
+        </div>
+      </section>
+
+      <section class="content-panel" id="conceitos" tabindex="0">
+        <h2>Conceitos essenciais</h2>
+        <p>
+          Cuidados paliativos são uma abordagem de cuidado para pessoas com doenças graves ou ameaçadoras da vida,
+          voltada à qualidade de vida, à prevenção e ao alívio do sofrimento físico, psicossocial e espiritual.<sup class="ref-call"><a href="#ref-conceitos-1">1</a></sup>
+          No SUS, devem ser ofertados de forma integrada à Rede de Atenção à Saúde e podem ocorrer no hospital, no
+          ambulatório, na atenção primária, em serviços especializados e no domicílio.<sup class="ref-call"><a href="#ref-conceitos-2">2</a></sup>
+        </p>
+
+        <div class="info-grid">
+          <article>
+            <h3>Começa cedo</h3>
+            <p>
+              Pode ser iniciado desde o diagnóstico de uma condição grave, junto a tratamentos modificadores da doença,
+              e não apenas nos últimos dias de vida.<sup class="ref-call"><a href="#ref-conceitos-1">1</a></sup>
+            </p>
+          </article>
+          <article>
+            <h3>Não é abandono</h3>
+            <p>
+              O cuidado continua com proporcionalidade terapêutica, manejo de sintomas, comunicação clara e apoio às
+              decisões compatíveis com valores e metas da pessoa.
+            </p>
+          </article>
+          <article>
+            <h3>É interdisciplinar</h3>
+            <p>
+              Envolve equipe multiprofissional, família e cuidadores, considerando necessidades clínicas, sociais,
+              emocionais, espirituais e práticas do cuidado.<sup class="ref-call"><a href="#ref-conceitos-1">1</a></sup>
+            </p>
+          </article>
+        </div>
+
+        <div class="two-column">
+          <div class="mint-box compact">
+            <h3>Objetivos centrais</h3>
+            <ul>
+              <li>Aliviar dor e outros sintomas de sofrimento.</li>
+              <li>Apoiar autonomia, comunicação e planejamento compartilhado.</li>
+              <li>Oferecer suporte à família e aos cuidadores durante a doença e o luto.</li>
+              <li>Evitar intervenções desproporcionais e fortalecer continuidade do cuidado.</li>
+            </ul>
+          </div>
+          <div class="mint-box compact">
+            <h3>Organização no SUS</h3>
+            <ul>
+              <li>Integração entre atenção primária, especializada, hospitalar, urgência e atenção domiciliar.</li>
+              <li>Articulação com a Política Nacional de Cuidados Paliativos no âmbito do SUS.</li>
+              <li>Identificação precoce de pessoas elegíveis e cuidado centrado em necessidades.</li>
+              <li>Capacitação de equipes e apoio matricial para ampliar acesso.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Ideia-chave:</strong>
+          <span>
+            Cuidados paliativos não são definidos por “não há mais o que fazer”, mas por “há sofrimento e necessidades
+            que precisam ser cuidadas com prioridade”.
+          </span>
+        </div>
+
+        <section class="references-panel" aria-labelledby="conceptReferencesTitle">
+          <button class="references-toggle" type="button" aria-expanded="false" aria-controls="conceptReferencesList">
+            <span id="conceptReferencesTitle">Referências</span>
+          </button>
+          <ol id="conceptReferencesList" hidden>
+            <li id="ref-conceitos-1">
+              World Health Organization Regional Office for Europe. <a href="https://www.who.int/europe/news-room/fact-sheets/item/palliative-care" target="_blank" rel="noreferrer">Palliative care</a> [Internet]. Copenhagen: WHO Regional Office for Europe; [cited 2026 May 25]. Available from: https://www.who.int/europe/news-room/fact-sheets/item/palliative-care
+            </li>
+            <li id="ref-conceitos-2">
+              Brasil. Ministério da Saúde. <a href="https://www.gov.br/saude/pt-br/composicao/saes/cuidados-paliativos" target="_blank" rel="noreferrer">Cuidados paliativos</a> [Internet]. Brasília: Ministério da Saúde; [cited 2026 May 25]. Available from: https://www.gov.br/saude/pt-br/composicao/saes/cuidados-paliativos
+            </li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="content-panel" id="avaliacao" tabindex="0">
+        <h2>Avaliação inicial</h2>
+        <p>Uma boa avaliação organiza problemas, prioridades e riscos antes de propor condutas.</p>
+        <div class="two-column">
+          <div class="mint-box compact">
+            <h3>Mapear necessidades</h3>
+            <ul>
+              <li>Diagnóstico, trajetória da doença e tratamentos em curso.</li>
+              <li>Sintomas atuais, intensidade, impacto funcional e gatilhos.</li>
+              <li>Rede de apoio, cuidador principal e condições do domicílio.</li>
+            </ul>
+          </div>
+          <div class="mint-box compact">
+            <h3>Alinhar metas</h3>
+            <ul>
+              <li>O que a pessoa compreende sobre sua condição.</li>
+              <li>O que é mais importante preservar neste momento.</li>
+              <li>Preferências sobre local de cuidado, internações e intervenções.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-panel" id="sintomas" tabindex="0">
+        <h2>Controle de sintomas</h2>
+        <p>O manejo deve combinar avaliação sistemática, medidas não farmacológicas, prescrição segura e reavaliação.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sintoma</th>
+                <th>Investigar</th>
+                <th>Condutas iniciais</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dor</td>
+                <td>Tipo, intensidade, função, uso prévio de analgésicos.</td>
+                <td>Escada analgésica, adjuvantes, resgate e plano de monitoramento.</td>
+              </tr>
+              <tr>
+                <td>Dispneia</td>
+                <td>Hipoxemia, ansiedade, secreção, congestão, infecção.</td>
+                <td>Posicionamento, ventilação, opioide quando indicado e abordagem da causa reversível.</td>
+              </tr>
+              <tr>
+                <td>Náuseas</td>
+                <td>Constipação, medicações, gastroparesia, hipertensão intracraniana.</td>
+                <td>Antiemético guiado por mecanismo, hidratação proporcional e revisão medicamentosa.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="content-panel" id="manejo-dor" tabindex="0">
+        <h2>Manejo da dor</h2>
+        <p>
+          Fluxo decisório inspirado no PCDT resumido da Dor Crônica da Conitec.<sup class="ref-call"><a href="#ref-dor-1">1</a></sup> Use como apoio ao raciocínio clínico,
+          individualizando conforme diagnóstico, metas de cuidado, função, fragilidade, comorbidades e protocolos locais.
+        </p>
+
+        <div class="pain-tool pain-step" aria-label="Passo 1 - Pesquisar sinais de alerta">
+          <div class="step-heading">
+            <span>1</span>
+            <h3>Pesquisar sinais de alerta</h3>
+          </div>
+          <div class="pain-controls">
+            <fieldset>
+              <div class="alert-checklist">
+                <label><input type="checkbox" data-no-red-flags /> Sem sinais de alerta.</label>
+                <label><input type="checkbox" data-red-flag="oncologic" /> Suspeita de câncer, dor progressiva ou perda ponderal não explicada.</label>
+                <label><input type="checkbox" data-red-flag="neurologic" /> Déficit neurológico novo ou progressivo, fraqueza, anestesia ou alteração esfincteriana.</label>
+                <label><input type="checkbox" data-red-flag="infection" /> Febre, imunossupressão, uso de drogas injetáveis ou suspeita de infecção.</label>
+                <label><input type="checkbox" data-red-flag="fracture" /> Trauma, queda, osteoporose, uso crônico de corticoide ou suspeita de fratura.</label>
+                <label><input type="checkbox" data-red-flag="night" /> Dor noturna intensa, dor em repouso persistente ou piora rápida sem explicação.</label>
+                <label><input type="checkbox" data-red-flag="distress" /> Sofrimento desproporcional, incapacidade súbita ou falha de segurança no domicílio.</label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="phenotype-tool pain-step locked-step" data-requires-step-one aria-label="Passo 2 - Questionário interativo de classificação fenotípica" aria-disabled="true">
+          <div class="tool-heading">
+            <div>
+              <div class="step-heading">
+                <span>2</span>
+                <h3>Questionário interativo de classificação fenotípica</h3>
+              </div>
+            </div>
+            <button class="secondary-button compact-button" type="button" id="resetPhenotype">Limpar</button>
+          </div>
+          <p>
+            Marque os achados presentes. O resultado integra descritores sensoriais, padrão temporal, localização,
+            sensibilidade e impacto funcional descritos em instrumentos como NPSI,<sup class="ref-call"><a href="#ref-dor-2">2</a></sup>
+            PainDETECT,<sup class="ref-call"><a href="#ref-dor-3">3</a></sup>
+            DN4<sup class="ref-call"><a href="#ref-dor-4">4</a></sup> e SF-MPQ.<sup class="ref-call"><a href="#ref-dor-5">5</a></sup> As
+            possibilidades de apresentação fenotípica incluem dor nociceptiva somática, nociceptiva visceral,
+            neuropática, nociplástica e mista.
+          </p>
+
+          <div class="questionnaire-grid">
+            <fieldset class="question-card">
+              <legend>Localização e distribuição</legend>
+              <label><input type="checkbox" data-score="somatic:2" /> Localizada em músculo, articulação, osso, pele ou ferida.</label>
+              <label><input type="checkbox" data-score="visceral:2" /> Profunda em tórax, abdome ou pelve, mal delimitada.</label>
+              <label><input type="checkbox" data-score="neuropathic:2" /> Segue território nervoso, raiz, dermatomo ou área de lesão neural.</label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Difusa, migratória ou desproporcional à lesão tecidual identificável.</label>
+            </fieldset>
+
+            <fieldset class="question-card">
+              <legend>Descritores principais <sup class="ref-call"><a href="#ref-dor-2">2</a></sup><sup class="ref-call"><a href="#ref-dor-3">3</a></sup><sup class="ref-call"><a href="#ref-dor-5">5</a></sup></legend>
+              <label><input type="checkbox" data-score="somatic:2" /> Peso, pontada, aperto, latejamento ou dor ao toque local.</label>
+              <label><input type="checkbox" data-score="visceral:2" /> Cólica, pressão interna, distensão, espasmo ou sensação de aperto profundo.</label>
+              <label><input type="checkbox" data-score="neuropathic:3" /> Queimação, choque, formigamento, agulhadas, frio doloroso ou dormência.<sup class="ref-call"><a href="#ref-dor-2">2</a></sup><sup class="ref-call"><a href="#ref-dor-3">3</a></sup></label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Dor generalizada, hipersensibilidade, fadiga dolorosa ou corpo todo dolorido.</label>
+            </fieldset>
+
+            <fieldset class="question-card">
+              <legend>Gatilhos e modulação <sup class="ref-call"><a href="#ref-dor-3">3</a></sup></legend>
+              <label><input type="checkbox" data-score="somatic:2" /> Piora com movimento, carga, postura ou palpação localizada.</label>
+              <label><input type="checkbox" data-score="visceral:2" /> Relaciona-se a alimentação, evacuação, micção, distensão ou contração visceral.</label>
+              <label><input type="checkbox" data-score="neuropathic:2,nociplastic:1" /> Toque leve, roupa, vento ou frio desencadeiam dor.<sup class="ref-call"><a href="#ref-dor-3">3</a></sup></label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Estresse, sono ruim, fadiga ou esforço leve ampliam muito a dor.</label>
+            </fieldset>
+
+            <fieldset class="question-card">
+              <legend>Sinais associados <sup class="ref-call"><a href="#ref-dor-4">4</a></sup></legend>
+              <label><input type="checkbox" data-score="somatic:1" /> Edema, inflamação, contratura, lesão tecidual ou limitação mecânica local.</label>
+              <label><input type="checkbox" data-score="visceral:2" /> Náusea, sudorese, palidez, mal-estar ou irradiação visceral típica.</label>
+              <label><input type="checkbox" data-score="neuropathic:3" /> Perda de sensibilidade, alteração de reflexos, fraqueza ou parestesias.<sup class="ref-call"><a href="#ref-dor-4">4</a></sup></label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Sono não reparador, alterações de humor, sensibilidade difusa ou múltiplos sintomas.</label>
+            </fieldset>
+
+            <fieldset class="question-card">
+              <legend>Padrão temporal <sup class="ref-call"><a href="#ref-dor-2">2</a></sup><sup class="ref-call"><a href="#ref-dor-3">3</a></sup></legend>
+              <label><input type="checkbox" data-score="somatic:1" /> Padrão previsível com uso da região afetada.</label>
+              <label><input type="checkbox" data-score="visceral:1" /> Crises em ondas ou cólicas, com períodos de alívio parcial.</label>
+              <label><input type="checkbox" data-score="neuropathic:2" /> Paroxismos em choque ou fisgada sobre dor contínua.<sup class="ref-call"><a href="#ref-dor-2">2</a></sup></label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Persistente, flutuante, com amplificação por contexto físico e emocional.</label>
+            </fieldset>
+
+            <fieldset class="question-card">
+              <legend>Impacto e contexto <sup class="ref-call"><a href="#ref-dor-5">5</a></sup><sup class="ref-call"><a href="#ref-dor-6">6</a></sup></legend>
+              <label><input type="checkbox" data-score="somatic:1,visceral:1" /> Há causa estrutural ou inflamatória compatível com a área dolorosa.</label>
+              <label><input type="checkbox" data-score="neuropathic:1" /> História de diabetes, herpes-zóster, quimioterapia, cirurgia, trauma ou compressão neural.</label>
+              <label><input type="checkbox" data-score="nociplastic:2" /> Impacto funcional alto com achados físicos pouco proporcionais.</label>
+              <label><input type="checkbox" data-score="nociplastic:1,neuropathic:1" /> Medo de movimento, catastrofização ou sofrimento emocional ampliam a experiência dolorosa.<sup class="ref-call"><a href="#ref-dor-6">6</a></sup></label>
+            </fieldset>
+          </div>
+
+          <aside class="phenotype-result" aria-live="polite">
+            <span class="result-kicker">Classificação provável</span>
+            <h3 id="phenotypeTitle">Selecione os achados para classificar a dor</h3>
+            <p id="phenotypeText">
+              O resultado aparecerá aqui com a hipótese predominante e os fenótipos concorrentes.
+            </p>
+            <div class="radar-wrap">
+              <svg id="phenotypeRadar" class="radar-chart" viewBox="0 0 320 300" role="img" aria-label="Gráfico de radar da classificação provável da dor em porcentagem"></svg>
+            </div>
+            <div class="score-list" id="phenotypeScores" aria-label="Pontuação por fenótipo"></div>
+            <ul id="phenotypeEvidence"></ul>
+          </aside>
+        </div>
+
+        <div class="intensity-step pain-step locked-step" data-requires-step-one aria-label="Passo 3 - Intensidade da dor" aria-disabled="true">
+          <div class="step-heading">
+            <span>3</span>
+            <h3>Intensidade da dor</h3>
+          </div>
+          <div class="segmented-control" data-pain-group="intensity">
+            <button class="segment active" type="button" data-value="mild">Leve</button>
+            <button class="segment" type="button" data-value="moderate">Moderada</button>
+            <button class="segment" type="button" data-value="severe">Forte</button>
+          </div>
+        </div>
+
+        <aside class="pain-result pain-step locked-step" data-requires-step-one aria-live="polite" aria-label="Passo 4 - Próximo passo sugerido" aria-disabled="true">
+          <div class="step-heading">
+            <span>4</span>
+            <h3>Próximo passo sugerido</h3>
+          </div>
+          <span class="result-kicker">Conduta</span>
+          <h3 id="painResultTitle">Classifique a dor para gerar conduta</h3>
+          <p id="painResultText">
+            Preencha o questionário interativo de classificação fenotípica da dor. A conduta será gerada a partir do
+            fenótipo predominante ou da identificação de dor mista.
+          </p>
+          <ul id="painResultActions">
+            <li>Selecione os achados clínicos presentes no questionário abaixo.</li>
+            <li>Se houver sinais de alerta, o fluxo será interrompido e a conduta de segurança será priorizada.</li>
+          </ul>
+        </aside>
+
+        <section class="references-panel" aria-labelledby="painReferencesTitle">
+          <button class="references-toggle" type="button" aria-expanded="false" aria-controls="painReferencesList">
+            <span id="painReferencesTitle">Referências</span>
+          </button>
+          <ol id="painReferencesList" hidden>
+            <li id="ref-dor-1">
+              Brasil. Ministério da Saúde. Comissão Nacional de Incorporação de Tecnologias no SUS. <a href="https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-resumido-da-dor-cronica" target="_blank" rel="noreferrer">PCDT resumido da dor crônica</a> [Internet]. Brasília: Ministério da Saúde; 2024 [cited 2026 May 25]. Available from: https://www.gov.br/conitec/pt-br/midias/protocolos/pcdt-resumido-da-dor-cronica
+            </li>
+            <li id="ref-dor-2">
+              Bouhassira D, Attal N, Fermanian J, Alchaar H, Gautron M, Masquelier E, et al. <a href="https://doi.org/10.1016/j.pain.2003.12.024" target="_blank" rel="noreferrer">Development and validation of the Neuropathic Pain Symptom Inventory</a>. <em>Pain</em>. 2004;108(3):248-57.
+            </li>
+            <li id="ref-dor-3">
+              Freynhagen R, Baron R, Gockel U, Tölle TR. <a href="https://doi.org/10.1185/030079906X132488" target="_blank" rel="noreferrer">painDETECT: a new screening questionnaire to identify neuropathic components in patients with back pain</a>. <em>Curr Med Res Opin</em>. 2006;22(10):1911-20.
+            </li>
+            <li id="ref-dor-4">
+              Bouhassira D, Attal N, Alchaar H, Boureau F, Brochet B, Bruxelle J, et al. <a href="https://doi.org/10.1016/j.pain.2004.12.010" target="_blank" rel="noreferrer">Comparison of pain syndromes associated with nervous or somatic lesions and development of a new neuropathic pain diagnostic questionnaire (DN4)</a>. <em>Pain</em>. 2005;114(1-2):29-36.
+            </li>
+            <li id="ref-dor-5">
+              Ferreira KA, de Andrade DC, Teixeira MJ. <a href="https://doi.org/10.1016/j.pmn.2011.04.006" target="_blank" rel="noreferrer">Development and validation of a Brazilian version of the short-form McGill Pain Questionnaire</a>. <em>Pain Manag Nurs</em>. 2013;14(4):210-9.
+            </li>
+            <li id="ref-dor-6">
+              Forte G, Favieri F, De Pascalis V, Casagrande M. <a href="https://doi.org/10.3390/jcm13195886" target="_blank" rel="noreferrer">To be in pain: Pain Multidimensional Questionnaire as reliable tool to evaluate multifaceted aspects of pain</a>. <em>J Clin Med</em>. 2024;13(19):5886.
+            </li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="content-panel" id="comunicacao" tabindex="0">
+        <h2>Comunicação</h2>
+        <p>Conversas difíceis ficam mais seguras quando há preparação, escuta e checagem de entendimento.</p>
+        <ol class="steps">
+          <li><strong>Preparar:</strong> escolha local adequado, revise dados e convide as pessoas relevantes.</li>
+          <li><strong>Explorar:</strong> pergunte o que a pessoa sabe e quanto deseja saber.</li>
+          <li><strong>Informar:</strong> use frases curtas, pausas e linguagem proporcional.</li>
+          <li><strong>Acolher:</strong> reconheça emoções antes de avançar para decisões.</li>
+          <li><strong>Planejar:</strong> defina próximos passos claros e registre preferências.</li>
+        </ol>
+      </section>
+
+      <section class="content-panel" id="plano" tabindex="0">
+        <h2>Plano de cuidado</h2>
+        <p>O plano deve ser prático, compartilhado e revisado sempre que a condição clínica ou as metas mudarem.</p>
+        <div class="info-grid">
+          <article>
+            <h3>Metas de cuidado</h3>
+            <p>Registrar prioridades, limites terapêuticos, preferências e valores da pessoa.</p>
+          </article>
+          <article>
+            <h3>Plano medicamentoso</h3>
+            <p>Manter prescrição clara, com doses de rotina, resgate e orientações de segurança.</p>
+          </article>
+          <article>
+            <h3>Plano de crise</h3>
+            <p>Definir sinais de alerta, contatos e o que fazer antes de buscar emergência.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-panel" id="cuidador" tabindex="0">
+        <h2>Apoio ao cuidador</h2>
+        <p>O cuidador precisa de orientação, descanso possível e acesso fácil à equipe quando houver insegurança.</p>
+        <div class="mint-box">
+          <h3>Orientações prioritárias</h3>
+          <ul>
+            <li>Ensinar administração de medicamentos, sinais de piora e medidas de conforto.</li>
+            <li>Validar medos e dúvidas, usando demonstração prática sempre que necessário.</li>
+            <li>Identificar sobrecarga, privação de sono e necessidade de apoio social.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="content-panel" id="luto" tabindex="0">
+        <h2>Luto e espiritualidade</h2>
+        <p>
+          Sofrimento espiritual, perdas antecipadas e luto familiar fazem parte da avaliação. A equipe deve acolher
+          crenças, rituais, vínculos e fontes de sentido, sem impor respostas.
+        </p>
+        <div class="callout">
+          <strong>Pergunta útil:</strong>
+          <span>O que tem dado força para vocês atravessarem este momento?</span>
+        </div>
+      </section>
+
+      <section class="content-panel" id="urgencias" tabindex="0">
+        <h2>Sinais de alerta</h2>
+        <p>Algumas situações exigem contato rápido com a equipe ou avaliação presencial.</p>
+        <ul class="check-list">
+          <li>Dispneia intensa ou sofrimento respiratório novo.</li>
+          <li>Dor sem resposta ao plano de resgate.</li>
+          <li>Sonolência excessiva, confusão aguda ou convulsão.</li>
+          <li>Sangramento importante, queda com trauma ou febre persistente.</li>
+          <li>Cuidador sem condições de manter segurança no domicílio.</li>
+        </ul>
+      </section>
+
+      <section class="content-panel" id="equipe" tabindex="0">
+        <h2>Equipe</h2>
+        <p>O cuidado paliativo se fortalece quando papéis e canais de comunicação estão claros.</p>
+        <div class="info-grid">
+          <article>
+            <h3>Médico</h3>
+            <p>Avaliação clínica, prescrição, prognóstico e alinhamento terapêutico.</p>
+          </article>
+          <article>
+            <h3>Enfermagem</h3>
+            <p>Monitoramento, educação do cuidador, curativos, vias e coordenação prática do cuidado.</p>
+          </article>
+          <article>
+            <h3>Rede de apoio</h3>
+            <p>Família, cuidadores, atenção primária, assistência social e suporte comunitário.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-panel" id="checklists" tabindex="0">
+        <h2>Documentos e checklists</h2>
+        <p>Use estes tópicos para estruturar registros e visitas.</p>
+        <div class="two-column">
+          <div class="compact-card">
+            <h3>Checklist de visita</h3>
+            <ul>
+              <li>Sintomas prioritários e escala de intensidade.</li>
+              <li>Funcionalidade, alimentação, hidratação e eliminação.</li>
+              <li>Adesão, efeitos adversos e disponibilidade de medicamentos.</li>
+            </ul>
+          </div>
+          <div class="compact-card">
+            <h3>Registro mínimo</h3>
+            <ul>
+              <li>Metas de cuidado discutidas.</li>
+              <li>Plano de sintomas e plano de crise.</li>
+              <li>Responsável por contato e próxima reavaliação.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-panel" id="contato" tabindex="0">
+        <h2>Entre em contato</h2>
+        <p>Para adaptar este conteúdo a protocolos institucionais, materiais de ensino ou fluxos de visita domiciliar:</p>
+        <form class="contact-form">
+          <label>
+            Nome
+            <input type="text" name="nome" autocomplete="name" />
+          </label>
+          <label>
+            E-mail
+            <input type="email" name="email" autocomplete="email" />
+          </label>
+          <label>
+            Mensagem
+            <textarea name="mensagem" rows="5"></textarea>
+          </label>
+          <button class="primary-button" type="button">Enviar mensagem</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js?v=initial-doses"></script>
+  </body>
+</html>

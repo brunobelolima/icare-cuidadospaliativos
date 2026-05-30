@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 430" role="img" aria-labelledby="title desc">
+  <title id="title">Trajetórias de adoecimento em cuidados paliativos</title>
+  <desc id="desc">Três gráficos mostram funcionalidade medida pela PPS de 0 a 100 ao longo do tempo em câncer avançado, insuficiência de órgão e fragilidade ou demência.</desc>
+  <defs>
+    <style>
+      .panel{fill:#fbffff;stroke:#a9efe0;stroke-width:2}
+      .axis{stroke:#587b84;stroke-width:2.4}
+      .grid{stroke:#d8eeee;stroke-width:1.2}
+      .tick{stroke:#587b84;stroke-width:2}
+      .curve{fill:none;stroke:#19778d;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+      .curve2{fill:none;stroke:#2e8f68;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+      .curve3{fill:none;stroke:#8a5d9e;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+      .curve3-shadow{fill:none;stroke:#d9c4e4;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+      .marker{fill:#ffffff;stroke:#8a5d9e;stroke-width:3}
+      .label{fill:#083b3d;font-family:Inter,Arial,Helvetica,sans-serif;font-size:24px;font-weight:800}
+      .small{fill:#38656c;font-family:Inter,Arial,Helvetica,sans-serif;font-size:17px}
+      .axisText{fill:#415f67;font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px;font-weight:700}
+      .note{fill:#6d4a7c;font-family:Inter,Arial,Helvetica,sans-serif;font-size:13px;font-weight:800}
+      .caption{fill:#38656c;font-family:Inter,Arial,Helvetica,sans-serif;font-size:18px}
+    </style>
+  </defs>
+
+  <rect width="1080" height="430" rx="18" fill="#f4fffc"/>
+
+  <g transform="translate(24 24)">
+    <rect class="panel" width="328" height="360" rx="10"/>
+    <text class="label" x="22" y="42">Câncer avançado</text>
+    <text class="small" x="22" y="70">Declínio relativamente rápido</text>
+    <line class="grid" x1="78" y1="96" x2="294" y2="96"/>
+    <line class="grid" x1="78" y1="144" x2="294" y2="144"/>
+    <line class="grid" x1="78" y1="192" x2="294" y2="192"/>
+    <line class="grid" x1="78" y1="240" x2="294" y2="240"/>
+    <line class="grid" x1="78" y1="288" x2="294" y2="288"/>
+    <line class="axis" x1="78" y1="96" x2="78" y2="288"/>
+    <line class="axis" x1="78" y1="288" x2="296" y2="288"/>
+    <line class="tick" x1="73" y1="96" x2="78" y2="96"/>
+    <line class="tick" x1="73" y1="144" x2="78" y2="144"/>
+    <line class="tick" x1="73" y1="192" x2="78" y2="192"/>
+    <line class="tick" x1="73" y1="240" x2="78" y2="240"/>
+    <line class="tick" x1="73" y1="288" x2="78" y2="288"/>
+    <text class="axisText" x="36" y="101">100</text>
+    <text class="axisText" x="45" y="149">75</text>
+    <text class="axisText" x="45" y="197">50</text>
+    <text class="axisText" x="45" y="245">25</text>
+    <text class="axisText" x="54" y="293">0</text>
+    <path class="curve" d="M90 112 C128 112 168 114 202 120 C232 128 254 152 266 184 C274 214 282 252 290 282"/>
+    <text class="axisText" x="22" y="86">PPS (%)</text>
+    <text class="axisText" x="230" y="325">tempo</text>
+  </g>
+
+  <g transform="translate(376 24)">
+    <rect class="panel" width="328" height="360" rx="10"/>
+    <text class="label" x="22" y="42">Insuficiência de órgão</text>
+    <text class="small" x="22" y="70">Crises com recuperações parciais</text>
+    <line class="grid" x1="78" y1="96" x2="294" y2="96"/>
+    <line class="grid" x1="78" y1="144" x2="294" y2="144"/>
+    <line class="grid" x1="78" y1="192" x2="294" y2="192"/>
+    <line class="grid" x1="78" y1="240" x2="294" y2="240"/>
+    <line class="grid" x1="78" y1="288" x2="294" y2="288"/>
+    <line class="axis" x1="78" y1="96" x2="78" y2="288"/>
+    <line class="axis" x1="78" y1="288" x2="296" y2="288"/>
+    <line class="tick" x1="73" y1="96" x2="78" y2="96"/>
+    <line class="tick" x1="73" y1="144" x2="78" y2="144"/>
+    <line class="tick" x1="73" y1="192" x2="78" y2="192"/>
+    <line class="tick" x1="73" y1="240" x2="78" y2="240"/>
+    <line class="tick" x1="73" y1="288" x2="78" y2="288"/>
+    <text class="axisText" x="36" y="101">100</text>
+    <text class="axisText" x="45" y="149">75</text>
+    <text class="axisText" x="45" y="197">50</text>
+    <text class="axisText" x="45" y="245">25</text>
+    <text class="axisText" x="54" y="293">0</text>
+    <path class="curve2" d="M90 116 L112 134 L132 126 L154 160 L176 150 L202 192 L224 176 L248 228 L270 210 L290 282"/>
+    <text class="axisText" x="22" y="86">PPS (%)</text>
+    <text class="axisText" x="230" y="325">tempo</text>
+  </g>
+
+  <g transform="translate(728 24)">
+    <rect class="panel" width="328" height="360" rx="10"/>
+    <text class="label" x="22" y="42">Fragilidade / demência</text>
+    <text class="small" x="22" y="70">Declínio a partir de PPS 40%</text>
+    <line class="grid" x1="78" y1="96" x2="294" y2="96"/>
+    <line class="grid" x1="78" y1="144" x2="294" y2="144"/>
+    <line class="grid" x1="78" y1="192" x2="294" y2="192"/>
+    <line class="grid" x1="78" y1="240" x2="294" y2="240"/>
+    <line class="grid" x1="78" y1="288" x2="294" y2="288"/>
+    <line class="axis" x1="78" y1="96" x2="78" y2="288"/>
+    <line class="axis" x1="78" y1="288" x2="296" y2="288"/>
+    <line class="tick" x1="73" y1="96" x2="78" y2="96"/>
+    <line class="tick" x1="73" y1="144" x2="78" y2="144"/>
+    <line class="tick" x1="73" y1="192" x2="78" y2="192"/>
+    <line class="tick" x1="73" y1="240" x2="78" y2="240"/>
+    <line class="tick" x1="73" y1="288" x2="78" y2="288"/>
+    <text class="axisText" x="36" y="101">100</text>
+    <text class="axisText" x="45" y="149">75</text>
+    <text class="axisText" x="45" y="197">50</text>
+    <text class="axisText" x="45" y="245">25</text>
+    <text class="axisText" x="54" y="293">0</text>
+    <path class="curve3-shadow" d="M90 211 C120 216 146 224 168 234 C190 244 210 256 230 266 C252 276 272 281 290 284"/>
+    <path class="curve3" d="M90 211 C120 216 146 224 168 234 C190 244 210 256 230 266 C252 276 272 281 290 284"/>
+    <circle class="marker" cx="90" cy="211" r="6"/>
+    <circle class="marker" cx="168" cy="234" r="6"/>
+    <circle class="marker" cx="230" cy="266" r="6"/>
+    <text class="note" x="94" y="204">PPS 40%</text>
+    <text class="note" x="132" y="228">dependência</text>
+    <text class="note" x="212" y="258">fase final</text>
+    <text class="axisText" x="22" y="86">PPS (%)</text>
+    <text class="axisText" x="230" y="325">tempo</text>
+  </g>
+
+  <text class="caption" x="34" y="414">Esquema visual adaptado das trajetórias de adoecimento descritas por Murray, Kendall, Boyd e Sheikh (BMJ, 2005).</text>
+</svg>

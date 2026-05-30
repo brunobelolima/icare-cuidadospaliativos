@@ -1022,7 +1022,7 @@ function getNonMedicationActions(mechanism, intensity) {
 const phytotherapyPlanMap = {
   nociceptive: [
     "Fitoterapia: pode ser considerada como complemento em dor musculoesquelética/inflamatória leve a moderada, quando houver produto seguro, identificação correta e acompanhamento.",
-    "Opções como garra-do-diabo, salgueiro ou unha-de-gato exigem individualização, revisão de contraindicações e risco de interação.",
+    "Opções presentes na Rename, como garra-do-diabo e salgueiro, exigem individualização, revisão de contraindicações e risco de interação.",
   ],
   neuropathic: [
     "Fitoterapia: não deve substituir investigação de lesão neural nem tratamento neuropático quando indicado.",
@@ -2908,6 +2908,156 @@ document.querySelectorAll("[data-hypodermo-subtab]").forEach((button) => {
   });
 });
 
+function openOralSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-oral-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.oralSubtab === targetId);
+  });
+
+  document.querySelectorAll(".oral-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-oral-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openOralSubtab(button.dataset.oralSubtab);
+  });
+});
+
+function openIvSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-iv-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.ivSubtab === targetId);
+  });
+
+  document.querySelectorAll(".iv-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-iv-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openIvSubtab(button.dataset.ivSubtab);
+  });
+});
+
+function openSublingualSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-sublingual-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.sublingualSubtab === targetId);
+  });
+
+  document.querySelectorAll(".sublingual-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-sublingual-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openSublingualSubtab(button.dataset.sublingualSubtab);
+  });
+});
+
+function openRectalSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-rectal-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.rectalSubtab === targetId);
+  });
+
+  document.querySelectorAll(".rectal-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-rectal-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openRectalSubtab(button.dataset.rectalSubtab);
+  });
+});
+
+function openTubeSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-tube-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.tubeSubtab === targetId);
+  });
+
+  document.querySelectorAll(".tube-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-tube-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openTubeSubtab(button.dataset.tubeSubtab);
+  });
+});
+
+function openInsomniaSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-insomnia-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.insomniaSubtab === targetId);
+  });
+
+  document.querySelectorAll(".insomnia-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-insomnia-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openInsomniaSubtab(button.dataset.insomniaSubtab);
+  });
+});
+
 function openPediatricSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
 
@@ -3793,6 +3943,312 @@ document.querySelector("#clearDirective")?.addEventListener("click", () => {
   }
 });
 
+function getCompleteRecordValue(name) {
+  return document.querySelector(`.complete-record-form [name="${name}"]`)?.value.trim() || "";
+}
+
+function getCompleteRecordRadioValue(name) {
+  const checked = document.querySelector(`.complete-record-form [name="${name}"]:checked`);
+  if (!checked) return "";
+  return checked.closest("label")?.textContent.trim() || checked.value;
+}
+
+function getCompleteRecordCheckboxValues(name) {
+  return Array.from(document.querySelectorAll(`.complete-record-form [name="${name}"]:checked`))
+    .map((item) => item.closest("label")?.textContent.trim() || item.value)
+    .join(", ");
+}
+
+function getCoelhoSavassiScore() {
+  const sentinels = Array.from(document.querySelectorAll("[data-coelho-savassi-score]:checked")).reduce(
+    (total, item) => total + Number(item.dataset.coelhoSavassiScore || 0),
+    0
+  );
+  const density = Number(document.querySelector("[data-coelho-savassi-density]:checked")?.dataset.coelhoSavassiDensity || 0);
+  return sentinels + density;
+}
+
+function classifyCoelhoSavassi(score) {
+  if (score >= 9) return "R3 - risco máximo";
+  if (score >= 7) return "R2 - risco médio";
+  if (score >= 5) return "R1 - risco menor";
+  return "R0 - risco habitual";
+}
+
+function getCoelhoSavassiSelectedItems() {
+  const sentinels = Array.from(document.querySelectorAll("[data-coelho-savassi-score]:checked")).map(
+    (item) => item.closest("label")?.textContent.trim() || ""
+  );
+  const density = document.querySelector("[data-coelho-savassi-density]:checked")?.closest("label")?.textContent.trim();
+  return [...sentinels, density].filter(Boolean).join(", ");
+}
+
+function updateCoelhoSavassiResult() {
+  const score = getCoelhoSavassiScore();
+  const classification = classifyCoelhoSavassi(score);
+  const scoreOutput = document.querySelector("#coelhoSavassiScore");
+  const classOutput = document.querySelector("#coelhoSavassiClass");
+  if (scoreOutput) scoreOutput.textContent = `Escore: ${score}`;
+  if (classOutput) classOutput.textContent = classification;
+}
+
+function getCompleteSpictSelectedItems() {
+  return Array.from(document.querySelectorAll("[data-complete-spict-item]:checked")).map(
+    (item) => item.closest("label")?.textContent.trim() || ""
+  );
+}
+
+function getCompleteSpictResult() {
+  const selectedItems = getCompleteSpictSelectedItems();
+  const hasNoPositive = Boolean(document.querySelector("[data-complete-spict-none]")?.checked);
+  const hasDoubt = Boolean(document.querySelector("[data-complete-spict-doubt]")?.checked);
+
+  if (selectedItems.length > 0) {
+    return {
+      status: "SPICT-BR positivo",
+      detail: `${selectedItems.length} indicador(es) positivo(s) selecionado(s).`,
+      summary: `SPICT-BR positivo, com ${selectedItems.length} indicador(es) selecionado(s): ${selectedItems.join("; ")}.`,
+    };
+  }
+
+  if (hasDoubt) {
+    return {
+      status: "SPICT-BR inconclusivo",
+      detail: "Permanece dúvida após aplicação; discutir em equipe e reavaliar.",
+      summary: "SPICT-BR inconclusivo: permanece dúvida após aplicação, com necessidade de discussão em equipe e reavaliação.",
+    };
+  }
+
+  if (hasNoPositive) {
+    return {
+      status: "SPICT-BR sem indicadores positivos",
+      detail: "Não há indicador positivo selecionado neste momento.",
+      summary: "SPICT-BR sem indicadores positivos selecionados neste momento.",
+    };
+  }
+
+  return {
+    status: "SPICT-BR: aguardando seleção",
+    detail: "Nenhum item positivo selecionado.",
+    summary: "[resultado do SPICT-BR]",
+  };
+}
+
+function updateCompleteSpictResult() {
+  const result = getCompleteSpictResult();
+  const statusOutput = document.querySelector("#completeSpictStatus");
+  const countOutput = document.querySelector("#completeSpictCount");
+  if (statusOutput) statusOutput.textContent = result.status;
+  if (countOutput) countOutput.textContent = result.detail;
+}
+
+function getCompletePpsCalculation() {
+  const selects = Array.from(document.querySelectorAll("[data-complete-pps-factor]"));
+  if (!selects.length) {
+    return {
+      complete: false,
+      score: null,
+      text: "[PPS atual]",
+      summary: "[PPS atual]",
+    };
+  }
+
+  const selected = selects.filter((select) => select.value);
+  if (selected.length < selects.length) {
+    return {
+      complete: false,
+      score: null,
+      text: "Selecione os cinco parâmetros para gerar o resultado automaticamente.",
+      summary: "[PPS atual]",
+    };
+  }
+
+  const values = selects.reduce((acc, select) => {
+    acc[select.dataset.completePpsFactor] = select.value;
+    return acc;
+  }, {});
+  const calculation = calculatePpsScoreFromTable(values);
+  const interpretation = getPpsInterpretation(calculation.score);
+  return {
+    complete: true,
+    score: calculation.score,
+    text: interpretation.summary,
+    summary: `${calculation.score}% - ${interpretation.summary}`,
+  };
+}
+
+function updateCompletePpsResult() {
+  const result = getCompletePpsCalculation();
+  const scoreOutput = document.querySelector("#completePpsScore");
+  const textOutput = document.querySelector("#completePpsText");
+  if (scoreOutput) {
+    scoreOutput.textContent = result.complete ? `PPS atual: ${result.score}%` : "PPS atual: aguardando seleção";
+  }
+  if (textOutput) textOutput.textContent = result.text;
+  syncPpsProgressionFields();
+}
+
+function syncLinkedField(selector, value) {
+  const field = document.querySelector(selector);
+  if (!field || field.dataset.userEdited === "true") return;
+  field.value = value;
+}
+
+function syncPpsProgressionFields() {
+  const dateValue = getCompleteRecordValue("data-pps-atual");
+  const ppsResult = getCompletePpsCalculation();
+  syncLinkedField("[data-linked-pps-date]", dateValue);
+  syncLinkedField("[data-linked-pps-score]", ppsResult.complete ? `${ppsResult.score}%` : "");
+}
+
+function getCompleteRecordText(name, fallback) {
+  return getCompleteRecordValue(name) || fallback;
+}
+
+function buildCompleteRecordSummary() {
+  const nome = getCompleteRecordText("nome", "[nome]");
+  const idade = getCompleteRecordText("idade", "[idade]");
+  const genero = getCompleteRecordText("genero", "[gênero]");
+  const cns = getCompleteRecordText("cns", "[Cartão Nacional do SUS]");
+  const cid = getCompleteRecordText("cid", "[CID]");
+  const municipio = getCompleteRecordText("municipio", "[município]");
+  const endereco = getCompleteRecordText("endereco", "[endereço]");
+  const localCuidado = getCompleteRecordText("local-cuidado", "[local de cuidado]");
+  const acs = getCompleteRecordText("acs", "[Agente Comunitário de Saúde]");
+  const data = getCompleteRecordText("data-abordagem", "[data da abordagem]");
+  const profissional = getCompleteRecordText("profissional-responsavel", "[profissional responsável]");
+  const trajetoria = getCompleteRecordCheckboxValues("trajetoria") || "[trajetória da doença]";
+  const perguntaSurpresa = getCompleteRecordRadioValue("pergunta-surpresa") || "[resposta à pergunta-surpresa]";
+  const coelhoSavassiScore = getCoelhoSavassiScore();
+  const coelhoSavassiClass = classifyCoelhoSavassi(coelhoSavassiScore);
+  const coelhoSavassiItems = getCoelhoSavassiSelectedItems() || "[sentinelas de risco familiar selecionadas]";
+  const spictResult = getCompleteSpictResult();
+  const ppsResult = getCompletePpsCalculation();
+
+  return [
+    `Resumo da abordagem paliativa completa realizada em ${data}, por ${profissional}. Pessoa avaliada: ${nome}, ${idade}, ${genero}, Cartão Nacional do SUS ${cns}, CID ${cid}, residente em ${municipio}, endereço ${endereco}, local de cuidado ${localCuidado}, acompanhada no território pelo Agente Comunitário de Saúde ${acs}.`,
+    "",
+    `Risco familiar pela Escala de Coelho-Savassi: ${coelhoSavassiClass}, escore ${coelhoSavassiScore}. Itens selecionados: ${coelhoSavassiItems}.`,
+    "",
+    `Biografia e contexto: ${getCompleteRecordText("biografia", "[síntese biográfica, valores, vínculos e aspectos relevantes da história de vida]")}`,
+    "",
+    `História de adoecimento: ${getCompleteRecordText("historia-adoecimento", "[diagnóstico principal, diagnósticos secundários, trajetória clínica, tratamentos prévios e em curso, internações e complicações relevantes]")}`,
+    "",
+    `Elegibilidade e trajetória: ${spictResult.summary} A trajetória predominante selecionada foi: ${trajetoria}. PPS atual: ${ppsResult.summary}, avaliado em ${getCompleteRecordText("data-pps-atual", "[data da avaliação do PPS]")}. Pergunta-surpresa: ${perguntaSurpresa}.`,
+    "",
+    `Família, rede de apoio e aspectos socioeconômicos: ${getCompleteRecordText("familia-rede", "[composição familiar, cuidador principal, rede de apoio e aspectos familiares relevantes]")} ${getCompleteRecordText("aspectos-socioeconomicos", "[condições de moradia, ocupação, renda, benefícios e necessidades sociais]")}`,
+    "",
+    `Avaliação multidimensional: dimensão psicológica: ${getCompleteRecordText("dimensao-psicologica", "[fontes de sofrimento psicológico e ações propostas]")}; dimensão espiritual: ${getCompleteRecordText("dimensao-espiritual", "[fontes de sofrimento espiritual, FICA e ações propostas]")}; dimensão familiar e social: ${getCompleteRecordText("dimensao-familiar-social", "[fontes de sofrimento familiar/social e ações propostas]")}; dimensão física: ${getCompleteRecordText("dimensao-fisica", "[sintomas, limitações, riscos e ações propostas]")}.`,
+    "",
+    `Planejamento antecipado e Diretivas Antecipadas de Vontade: ${getCompleteRecordText("pac-dav", "[preferências, valores, limites terapêuticos, representante e orientações registradas]")}`,
+    "",
+    `Reflexões da equipe e próximos passos: ${getCompleteRecordText("reflexoes-equipe", "[reflexões da equipe, dificuldades, aprendizados, necessidade de matriciamento e plano de acompanhamento]")}`,
+  ].join("\n");
+}
+
+function renderCompleteRecordSummary() {
+  const output = document.querySelector("#completeRecordSummary");
+  if (output) {
+    output.value = buildCompleteRecordSummary();
+  }
+}
+
+document.querySelector("#generateCompleteRecordSummary")?.addEventListener("click", renderCompleteRecordSummary);
+
+document.querySelector("#copyCompleteRecordSummary")?.addEventListener("click", async (event) => {
+  const output = document.querySelector("#completeRecordSummary");
+  const text = output?.value.trim() || buildCompleteRecordSummary();
+  if (output && !output.value.trim()) {
+    output.value = text;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    event.currentTarget.textContent = "Resumo copiado";
+    window.setTimeout(() => {
+      event.currentTarget.textContent = "Copiar resumo";
+    }, 1800);
+  } catch {
+    event.currentTarget.textContent = "Copie manualmente";
+  }
+});
+
+document.querySelectorAll("[data-coelho-savassi-score], [data-coelho-savassi-density]").forEach((input) => {
+  input.addEventListener("change", updateCoelhoSavassiResult);
+});
+
+document.querySelectorAll("[data-complete-spict-item]").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      document.querySelector("[data-complete-spict-none]")?.removeAttribute("checked");
+      document.querySelector("[data-complete-spict-doubt]")?.removeAttribute("checked");
+      const none = document.querySelector("[data-complete-spict-none]");
+      const doubt = document.querySelector("[data-complete-spict-doubt]");
+      if (none) none.checked = false;
+      if (doubt) doubt.checked = false;
+    }
+    updateCompleteSpictResult();
+  });
+});
+
+document.querySelector("[data-complete-spict-none]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-complete-spict-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const doubt = document.querySelector("[data-complete-spict-doubt]");
+    if (doubt) doubt.checked = false;
+  }
+  updateCompleteSpictResult();
+});
+
+document.querySelector("[data-complete-spict-doubt]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-complete-spict-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const none = document.querySelector("[data-complete-spict-none]");
+    if (none) none.checked = false;
+  }
+  updateCompleteSpictResult();
+});
+
+document.querySelectorAll("[data-complete-pps-factor]").forEach((select) => {
+  select.addEventListener("change", updateCompletePpsResult);
+});
+
+document.querySelector('[name="data-pps-atual"]')?.addEventListener("input", syncPpsProgressionFields);
+
+document.querySelectorAll("[data-linked-pps-date], [data-linked-pps-score]").forEach((field) => {
+  field.addEventListener("input", () => {
+    field.dataset.userEdited = "true";
+  });
+});
+
+function getSymptomScoreLabel(score) {
+  if (score === 0) return "0 - ausente";
+  if (score <= 3) return `${score} - leve`;
+  if (score <= 6) return `${score} - moderado`;
+  return `${score} - forte`;
+}
+
+function populateSymptomScoreSelects() {
+  const options = [
+    '<option value="">Selecionar</option>',
+    ...Array.from({ length: 11 }, (_, score) => `<option value="${score}">${getSymptomScoreLabel(score)}</option>`),
+  ].join("");
+
+  document.querySelectorAll("[data-symptom-score]").forEach((select) => {
+    if (!select.children.length) {
+      select.innerHTML = options;
+    }
+  });
+}
+
+populateSymptomScoreSelects();
+updateCoelhoSavassiResult();
+updateCompleteSpictResult();
+updateCompletePpsResult();
 updatePainResult();
 updateStepAccess();
 updateCoughResult();
@@ -4828,6 +5284,24 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("hypodermo-subpanel")) {
   openTab("hipodermoclise", false);
   openHypodermoSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("oral-subpanel")) {
+  openTab("via-oral", false);
+  openOralSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("iv-subpanel")) {
+  openTab("via-endovenosa", false);
+  openIvSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("sublingual-subpanel")) {
+  openTab("via-sublingual-bucal", false);
+  openSublingualSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("rectal-subpanel")) {
+  openTab("via-retal", false);
+  openRectalSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("tube-subpanel")) {
+  openTab("sonda-gastrostomia", false);
+  openTubeSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("insomnia-subpanel")) {
+  openTab("insonia", false);
+  openInsomniaSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("pediatric-subpanel")) {
   openTab("pediatria", false);
   openPediatricSubtab(initialTab, false);

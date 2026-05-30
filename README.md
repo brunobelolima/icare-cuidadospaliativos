@@ -1,4 +1,4 @@
-# iCare - Cuidados Paliativos
+# iCare - Abordagem Paliativa
 
 Site estático de apoio à abordagem paliativa para profissionais do serviço público de saúde.
 
@@ -12,7 +12,6 @@ Abra o arquivo `index.html` em um navegador ou publique a pasta em qualquer serv
 - `styles.css`: estilos e responsividade.
 - `script.js`: interações, fluxos decisórios e ferramentas preenchíveis.
 - `assets/`: imagens e logotipos.
-- `hipodermoclise-app/`: módulo incorporado de hipodermóclise.
 
 ## Observação
 

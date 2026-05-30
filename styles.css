@@ -59,7 +59,23 @@ h4,
 h5,
 strong,
 span {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+p,
+li,
+td,
+th,
+label,
+.definition-card,
+.compact-card,
+.info-grid article,
+.callout {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
 }
 
 button {
@@ -165,6 +181,7 @@ button {
   color: var(--muted);
   font-weight: 800;
   line-height: 1.15;
+  text-wrap: balance;
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
@@ -215,6 +232,7 @@ button {
   background: #f8fffd;
   color: #07554c;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 .subtab-trigger.active {
@@ -247,6 +265,12 @@ button {
 .fatigue-subpanel,
 .anorexia-subpanel,
 .grief-subpanel,
+.oral-subpanel,
+.iv-subpanel,
+.sublingual-subpanel,
+.rectal-subpanel,
+.tube-subpanel,
+.insomnia-subpanel,
 .hypodermo-subpanel {
   display: none;
 }
@@ -275,6 +299,12 @@ button {
 .fatigue-subpanel.active,
 .anorexia-subpanel.active,
 .grief-subpanel.active,
+.oral-subpanel.active,
+.iv-subpanel.active,
+.sublingual-subpanel.active,
+.rectal-subpanel.active,
+.tube-subpanel.active,
+.insomnia-subpanel.active,
 .hypodermo-subpanel.active {
   display: block;
 }
@@ -390,6 +420,22 @@ ol {
   background: #ecfffb;
 }
 
+.trajectory-figure {
+  margin: 10px 0 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.trajectory-figure img {
+  display: block;
+  width: 100%;
+  min-width: 760px;
+  height: auto;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #f4fffc;
+}
+
 .mint-box,
 .profile-card,
 .compact-card,
@@ -418,6 +464,46 @@ ol {
 
 .profile-card {
   margin-top: 18px;
+}
+
+.profile-card-with-photo {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.profile-card-with-photo h3 {
+  margin-top: 0;
+}
+
+.profile-photo {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #e6fbf6, #d7eafb);
+  border: 1px solid #9adfd7;
+  color: #155a73;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-photo span {
+  display: none;
+}
+
+.profile-photo.is-fallback span {
+  display: inline;
 }
 
 .section-kicker {
@@ -473,8 +559,7 @@ ol {
 
 #politica-nacional-cuidados-paliativos p,
 #politica-nacional-cuidados-paliativos li {
-  text-align: justify;
-  text-justify: inter-word;
+  text-align: left;
 }
 
 #cuidados-boca .info-grid {
@@ -521,6 +606,17 @@ td {
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid #d9f5f1;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+th:first-child,
+td:first-child {
+  min-width: 170px;
+}
+
+.references-panel a {
+  overflow-wrap: anywhere;
 }
 
 th {
@@ -1693,6 +1789,69 @@ tr:last-child td {
   font-weight: 700;
 }
 
+.coelho-savassi-grid,
+.spict-record-grid,
+.complete-pps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 14px;
+}
+
+.coelho-savassi-grid label,
+.coelho-savassi-density label,
+.spict-record-grid label,
+.spict-record-options label,
+.complete-pps-grid label {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cdeee9;
+  border-radius: 7px;
+  background: #fbffff;
+}
+
+.spict-record-options {
+  margin-top: 12px;
+}
+
+.coelho-savassi-result,
+.spict-record-result,
+.complete-pps-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #78d9d0;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #d8ffeb, #eafffb);
+  color: #06373e;
+}
+
+.coelho-savassi-result strong,
+.coelho-savassi-result span,
+.spict-record-result strong,
+.spict-record-result span,
+.complete-pps-result strong,
+.complete-pps-result span {
+  font-weight: 800;
+}
+
+.complete-pps-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #21494f;
+  font: inherit;
+  font-weight: 700;
+}
+
 .record-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -1725,6 +1884,19 @@ tr:last-child td {
   border-radius: 6px;
   padding: 9px 10px;
   background: #fbffff;
+}
+
+.record-table select {
+  width: 100%;
+  min-width: 150px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #bdebe6;
+  border-radius: 6px;
+  background: #fbffff;
+  color: #21494f;
+  font: inherit;
+  font-weight: 700;
 }
 
 .directive-actions {
@@ -1884,6 +2056,12 @@ body.dialog-open {
     grid-template-columns: 1fr;
   }
 
+  .coelho-savassi-grid,
+  .spict-record-grid,
+  .complete-pps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .capacity-domain-grid {
     grid-template-columns: 1fr;
   }
@@ -1922,38 +2100,41 @@ body.dialog-open {
     text-align: center;
   }
 
+  .profile-card-with-photo {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .profile-photo {
+    width: 76px;
+    height: 76px;
+  }
+
   .tabs {
-    display: flex;
-    grid-template-columns: none;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 8px;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: visible;
     padding: 8px;
-    margin-inline: -2px;
+    margin-inline: 0;
   }
 
   .tab-trigger {
-    flex: 0 0 min(76vw, 240px);
+    width: 100%;
     min-height: 46px;
-    scroll-snap-align: start;
     white-space: normal;
   }
 
   .subtabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-    margin-inline: -2px;
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+    padding-bottom: 0;
+    margin-inline: 0;
   }
 
   .subtab-trigger {
-    flex: 0 0 min(74vw, 260px);
-    scroll-snap-align: start;
+    width: 100%;
     white-space: normal;
   }
 
@@ -1972,6 +2153,12 @@ body.dialog-open {
   }
 
   .prescription-symptom-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .coelho-savassi-grid,
+  .spict-record-grid,
+  .complete-pps-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2043,25 +2230,4 @@ body.dialog-open {
   grid-template-columns: 1fr;
   gap: 5px;
 }
-}
-
-.embedded-app-shell {
-  display: grid;
-  gap: 16px;
-}
-
-.embedded-hipodermo-app {
-  width: 100%;
-  min-height: min(86vh, 920px);
-  height: 920px;
-  border: 1px solid rgba(31, 91, 111, 0.18);
-  border-radius: 8px;
-  background: #ffffff;
-}
-
-@media (max-width: 760px) {
-  .embedded-hipodermo-app {
-    min-height: 78vh;
-    height: 780px;
-  }
 }

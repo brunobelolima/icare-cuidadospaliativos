@@ -11,16 +11,31 @@ const symptomTabs = [
   { id: "vomitos", label: "Vômitos" },
   { id: "constipacao", label: "Constipação" },
   { id: "diarreia", label: "Diarreia" },
+  { id: "depressao", label: "Depressão" },
   { id: "ansiedade", label: "Ansiedade" },
   { id: "delirium", label: "Delirium" },
+  { id: "insonia", label: "Insônia" },
   { id: "fadiga", label: "Fadiga" },
-  { id: "anorexia-caquexia", label: "Anorexia-caquexia" },
+  { id: "hiporexia", label: "Hiporexia" },
+  { id: "xerostomia", label: "Xerostomia" },
+  { id: "sialorreia", label: "Sialorreia" },
+  { id: "babacao", label: "Babação" },
 ];
 const symptomTabIds = new Set(symptomTabs.map((tab) => tab.id));
+const routeTabs = [
+  { id: "via-oral", label: "Via oral" },
+  { id: "hipodermoclise", label: "Hipodermóclise" },
+  { id: "via-endovenosa", label: "Via endovenosa" },
+  { id: "via-sublingual-bucal", label: "Via sublingual/bucal" },
+  { id: "via-retal", label: "Via retal" },
+  { id: "sonda-gastrostomia", label: "Sonda nasoenteral / gastrostomia" },
+];
+const routeTabIds = new Set(routeTabs.map((tab) => tab.id));
 const painState = {
   stepOneAnswered: false,
   redFlags: [],
   mechanism: null,
+  phenotype: null,
   intensity: "mild",
 };
 
@@ -48,12 +63,40 @@ const fatigueState = {
 const anorexiaState = {
   stepOneAnswered: false,
   alerts: [],
-  stage: "reversible",
+  stage: "precachexia",
   factors: [],
 };
 
+const identificationState = {
+  simplified: null,
+  simplifiedItems: [],
+  simplifiedNone: false,
+  simplifiedDoubt: false,
+  spict: null,
+  spictItems: [],
+  spictNone: false,
+  spictDoubt: false,
+  surprise: null,
+};
+
+const capacityState = {
+  risk: "low",
+  riskItems: [],
+  choiceItems: [],
+  understandingItems: [],
+  appreciationItems: [],
+  reasoningItems: [],
+  domains: {
+    choice: null,
+    understanding: null,
+    appreciation: null,
+    reasoning: null,
+  },
+};
+
 const prescriptionState = {
-  route: "oral",
+  population: null,
+  route: null,
   routeAnswered: false,
   symptomIntensities: {},
   symptoms: [],
@@ -61,12 +104,19 @@ const prescriptionState = {
   coughTypes: [],
   nonpharm: [],
   medications: [],
+  phytotherapy: [],
 };
 
 const prescriptionLabels = {
+  population: {
+    adult: "Adulto",
+    pediatric: "Pediátrico",
+  },
   routes: {
     oral: "Oral",
-    subcutaneous: "Subcutânea",
+    sublingual: "Sublingual/bucal",
+    subcutaneous: "Hipodermóclise/subcutânea",
+    intravenous: "Endovenosa",
     rectal: "Retal",
     tube: "Sonda/Gastrostomia",
   },
@@ -87,7 +137,7 @@ const prescriptionLabels = {
     delirium: "Delirium",
     secretions: "Secreções/sororoca",
     fatigue: "Fadiga",
-    anorexiaCachexia: "Anorexia-caquexia",
+    anorexiaCachexia: "Síndrome de anorexia-caquexia",
   },
   nonpharm: {
     positioning: "Posicionamento, conforto no leito e conservação de energia.",
@@ -112,58 +162,117 @@ const prescriptionLabels = {
 
 const prescriptionMedicationOptions = {
   pain: [
-    { id: "pain-dipyrone", label: "Dipirona", detail: "Dor leve/moderada: 500 mg a 1 g VO/SC/EV a cada 6 h, conforme via disponível e protocolo local.", routes: ["oral", "subcutaneous", "tube"], intensities: ["mild", "moderate"] },
+    { id: "pain-dipyrone", label: "Dipirona", detail: "Dor leve/moderada: 500 mg a 1 g VO/SC/EV a cada 6 h, conforme via disponível e protocolo local.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["mild", "moderate"] },
     { id: "pain-paracetamol", label: "Paracetamol", detail: "Dor leve: 500 mg a 750 mg VO/retal ou por sonda a cada 6 h.", routes: ["oral", "rectal", "tube"], intensities: ["mild"], painTypes: ["somatic", "visceral"] },
     { id: "pain-ibuprofen", label: "Ibuprofeno", detail: "Dor nociceptiva com componente inflamatório: 200 mg a 400 mg VO/retal a cada 6 a 8 h se seguro.", routes: ["oral", "rectal"], intensities: ["mild", "moderate"], painTypes: ["somatic"] },
     { id: "pain-codeine", label: "Codeína", detail: "Dor moderada: 15 mg a 30 mg VO/retal a cada 4 a 6 h, se apropriado.", routes: ["oral", "rectal", "tube"], intensities: ["moderate"], painTypes: ["somatic", "visceral"] },
-    { id: "pain-morphine", label: "Morfina", detail: "Dor moderada/intensa: considerar 2,5 mg a 5 mg VO/retal ou 1 mg a 2 mg SC, titulando resposta e segurança.", routes: ["oral", "subcutaneous", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "pain-morphine", label: "Morfina", detail: "Dor moderada/intensa: considerar 2,5 mg a 5 mg VO/retal ou 1 mg a 2 mg SC/EV, titulando resposta e segurança.", routes: ["oral", "subcutaneous", "intravenous", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
     { id: "pain-amitriptyline", label: "Amitriptilina", detail: "Dor neuropática/nociplástica: 10 mg VO à noite como dose inicial em pessoa frágil ou idosa.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
-    { id: "pain-duloxetine", label: "Duloxetina", detail: "Dor neuropática/nociplástica: 30 mg VO pela manhã como dose inicial quando perfil clínico permitir.", routes: ["oral"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
     { id: "pain-gabapentin", label: "Gabapentina", detail: "Dor neuropática/nociplástica: 100 mg a 300 mg VO à noite como dose inicial, ajustando por idade e função renal.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
+    { id: "ped-pain-paracetamol", label: "Paracetamol pediátrico", detail: "Dor leve: 10 a 15 mg/kg/dose VO, retal ou por sonda a cada 6 h; respeitar dose máxima por peso, idade e função hepática.", routes: ["oral", "rectal", "tube"], intensities: ["mild"], painTypes: ["somatic", "visceral"], populations: ["pediatric"] },
+    { id: "ped-pain-ibuprofen", label: "Ibuprofeno pediátrico", detail: "Dor leve/moderada com componente inflamatório: 5 a 10 mg/kg/dose VO a cada 6 a 8 h; evitar em desidratação, insuficiência renal, sangramento, plaquetopenia ou risco gastrointestinal.", routes: ["oral", "tube"], intensities: ["mild", "moderate"], painTypes: ["somatic"], populations: ["pediatric"] },
+    { id: "ped-pain-morphine", label: "Morfina pediátrica de liberação imediata", detail: "Dor moderada/intensa: 0,1 a 0,2 mg/kg/dose VO ou por sonda a cada 4 h como início usual; iniciar mais baixo em lactentes, fragilidade, insuficiência renal/hepática ou uso de sedativos.", routes: ["oral", "tube"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
+    { id: "ped-pain-gabapentin", label: "Gabapentina pediátrica", detail: "Dor neuropática ou hipersensibilidade: iniciar 5 mg/kg/dose VO ou por sonda à noite ou a cada 12 h; titular lentamente conforme resposta, sonolência e função renal.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"], populations: ["pediatric"] },
   ],
   dyspnea: [
-    { id: "dyspnea-morphine", label: "Opioide para dispneia", detail: "Dispneia moderada/intensa: morfina 2,5 mg a 5 mg VO ou 1 mg a 2 mg SC como dose inicial, com reavaliação.", routes: ["oral", "subcutaneous", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "dyspnea-morphine", label: "Opioide para dispneia", detail: "Dispneia moderada/intensa: morfina 2,5 mg a 5 mg VO ou 1 mg a 2 mg SC/EV como dose inicial, com reavaliação.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["moderate", "severe", "crisis"] },
     { id: "dyspnea-bronchodilator", label: "Broncodilatador se broncoespasmo", detail: "Considerar salbutamol ou ipratrópio inalatório/nebulização se sibilância ou DPOC/asma.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"] },
     { id: "dyspnea-benzodiazepine", label: "Ansiolítico se pânico associado", detail: "Dispneia intensa/crise com ansiedade: considerar benzodiazepínico em baixa dose, com monitorização de sedação.", routes: ["oral", "subcutaneous", "tube"], intensities: ["severe", "crisis"] },
+    { id: "ped-dyspnea-salbutamol", label: "Salbutamol inalatório pediátrico", detail: "Se sibilância ou broncoespasmo: 2 a 4 jatos com espaçador, podendo repetir conforme gravidade e protocolo; monitorar tremor, taquicardia e agitação.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], populations: ["pediatric"] },
+    { id: "ped-dyspnea-ipratropium", label: "Brometo de ipratrópio inalatório pediátrico", detail: "Broncoespasmo associado à dispneia: 250 mcg por nebulização a cada 6 a 8 h em crianças pequenas ou 500 mcg em maiores, conforme idade, gravidade e protocolo local.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], populations: ["pediatric"] },
+    { id: "ped-dyspnea-morphine", label: "Morfina pediátrica para dispneia", detail: "Dispneia persistente com sofrimento importante em maiores de 6 meses: 0,05 a 0,1 mg/kg/dose VO ou por sonda a cada 4 h se necessário; titular com cautela e monitorar sedação/respiração.", routes: ["oral", "tube"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
   ],
   cough: [
     { id: "cough-codeine", label: "Antitussivo opioide", detail: "Tosse moderada/intensa, seca ou refratária: considerar codeína 10 mg a 20 mg VO a cada 4 a 6 h se apropriado.", routes: ["oral", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"], coughTypes: ["dry", "refractory"] },
     { id: "cough-ipratropium", label: "Ipratrópio se secreção/broncoespasmo", detail: "Tosse com secreção/broncorreia ou broncoespasmo: considerar brometo de ipratrópio inalatório/nebulização.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], coughTypes: ["productive"] },
-    { id: "cough-acetylcysteine", label: "N-acetilcisteína se secreção espessa", detail: "Se secreção espessa e objetivo for fluidificar: considerar N-acetilcisteína conforme apresentação disponível e tolerância.", routes: ["oral", "tube"], intensities: ["moderate", "severe"], coughTypes: ["productive"] },
+    { id: "ped-cough-salbutamol", label: "Salbutamol inalatório pediátrico", detail: "Tosse associada a sibilância ou broncoespasmo: 2 a 4 jatos com espaçador, podendo repetir conforme gravidade e protocolo; monitorar tremor, taquicardia e agitação.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], coughTypes: ["dry", "refractory"], populations: ["pediatric"] },
+    { id: "ped-cough-ipratropium", label: "Brometo de ipratrópio inalatório pediátrico", detail: "Tosse com secreção/broncorreia ou broncoespasmo: 250 mcg por nebulização a cada 6 a 8 h em crianças pequenas ou 500 mcg em maiores, conforme idade, gravidade e protocolo local.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], coughTypes: ["productive"], populations: ["pediatric"] },
   ],
   nauseaVomiting: [
-    { id: "nausea-metoclopramide", label: "Metoclopramida", detail: "Náuseas/vômitos leves/moderados: 10 mg VO/SC/retal a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.", routes: ["oral", "subcutaneous", "rectal", "tube"], intensities: ["mild", "moderate"] },
+    { id: "nausea-metoclopramide", label: "Metoclopramida", detail: "Náuseas/vômitos leves/moderados: 10 mg VO/SC/EV/retal a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.", routes: ["oral", "subcutaneous", "intravenous", "rectal", "tube"], intensities: ["mild", "moderate"] },
     { id: "nausea-haloperidol", label: "Haloperidol", detail: "Náusea persistente, química/metabólica ou associada a delirium: 0,5 mg a 1 mg VO/SC/retal à noite ou a cada 12 h.", routes: ["oral", "subcutaneous", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
-    { id: "nausea-ondansetron", label: "Ondansetrona", detail: "Náusea/vômito moderado/intenso: considerar 4 mg a 8 mg VO/EV a cada 8 a 12 h quando indicado; observar constipação.", routes: ["oral", "tube"], intensities: ["moderate", "severe"] },
+    { id: "nausea-ondansetron", label: "Ondansetrona", detail: "Náusea/vômito moderado/intenso: considerar 4 mg a 8 mg VO/EV a cada 8 a 12 h quando indicado; observar constipação.", routes: ["oral", "intravenous", "tube"], intensities: ["moderate", "severe"] },
+    { id: "ped-nausea-ondansetron", label: "Ondansetrona pediátrica", detail: "Náuseas/vômitos moderados/intensos: 0,15 mg/kg/dose VO, EV ou por sonda a cada 8 h se necessário; dose máxima usual 8 mg por dose; monitorar constipação e intervalo QT.", routes: ["oral", "intravenous", "tube"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
+    { id: "ped-nausea-metoclopramide", label: "Metoclopramida pediátrica", detail: "Náusea/vômito com suspeita de gastroparesia ou estase gástrica: 0,1 a 0,15 mg/kg/dose VO, EV, SC ou por sonda a cada 6 a 8 h; evitar em obstrução completa e risco extrapiramidal.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["mild", "moderate", "severe"], populations: ["pediatric"] },
+    { id: "ped-nausea-haloperidol", label: "Haloperidol pediátrico", detail: "Náusea/vômito persistente por mecanismo químico/metabólico ou associado a delirium: 0,01 a 0,02 mg/kg/dose VO, SC ou por sonda a cada 12 a 24 h; monitorar sedação, efeitos extrapiramidais e QT.", routes: ["oral", "subcutaneous", "tube"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
   ],
   constipation: [
     { id: "constipation-laxative", label: "Laxativo de rotina", detail: "Constipação leve/moderada: associar laxativo estimulante e/ou osmótico conforme padrão intestinal, hidratação e opioide.", routes: ["oral", "tube"], intensities: ["mild", "moderate"] },
-    { id: "constipation-bisacodyl", label: "Bisacodil retal", detail: "Constipação intensa: considerar bisacodil 10 mg por via retal se não houver contraindicação local.", routes: ["rectal"], intensities: ["severe", "crisis"] },
-    { id: "constipation-rectal", label: "Enema ou medida retal se impactação", detail: "Constipação intensa ou suspeita de fecaloma: considerar enema, supositório de glicerina ou remoção, respeitando conforto, plaquetas e mucosa.", routes: ["rectal"], intensities: ["severe", "crisis"] },
+    { id: "constipation-glycerol", label: "Glicerol retal", detail: "Constipação intensa: considerar glicerol por via retal se não houver contraindicação local.", routes: ["rectal"], intensities: ["severe", "crisis"] },
+    { id: "constipation-rectal", label: "Enema ou medida retal se impactação", detail: "Constipação intensa ou suspeita de fecaloma: considerar solução retal de glicerol ou remoção, respeitando conforto, plaquetas e mucosa.", routes: ["rectal"], intensities: ["severe", "crisis"] },
   ],
   diarrhea: [
-    { id: "diarrhea-loperamide", label: "Loperamida", detail: "Diarreia leve/moderada sem sinais infecciosos: considerar 2 mg após evacuação, ajustando conforme causa.", routes: ["oral", "tube"], intensities: ["mild", "moderate"] },
-    { id: "diarrhea-hydration", label: "Reposição proporcional", detail: "Diarreia moderada/intensa: repor líquidos e eletrólitos conforme objetivo de cuidado; investigar laxativos, antibióticos e impactação.", routes: ["oral", "subcutaneous", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "diarrhea-hydration", label: "Reposição proporcional", detail: "Diarreia moderada/intensa: repor líquidos e eletrólitos conforme objetivo de cuidado; investigar laxativos, antibióticos e impactação.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "diarrhea-codeine", label: "Codeína em caso selecionado", detail: "Diarreia persistente em caso selecionado: considerar codeína em baixa dose, observando sedação, constipação e náuseas.", routes: ["oral", "rectal", "tube"], intensities: ["moderate", "severe"] },
+    { id: "ped-diarrhea-ors", label: "Solução de reidratação oral pediátrica", detail: "Diarreia ou vômitos com objetivo de hidratação proporcional: ofertar pequenos volumes frequentes, ajustando por sede, perdas, tolerância e objetivo de cuidado.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], populations: ["pediatric"] },
   ],
   anxiety: [
-    { id: "anxiety-lorazepam", label: "Benzodiazepínico de curta ação", detail: "Ansiedade moderada/intensa: considerar lorazepam 0,5 mg VO/SL/retal, com cautela para delirium, quedas e sedação.", routes: ["oral", "rectal", "tube"], intensities: ["moderate", "severe"] },
-    { id: "anxiety-diazepam", label: "Diazepam retal", detail: "Crise com ansiedade intensa ou convulsão: considerar diazepam 5 mg a 10 mg por via retal, com monitoramento de sedação e respiração.", routes: ["rectal"], intensities: ["severe", "crisis"] },
-    { id: "anxiety-midazolam", label: "Midazolam se crise/refratariedade", detail: "Ansiedade em crise/refratária: considerar midazolam SC conforme protocolo e monitorização clínica.", routes: ["subcutaneous"], intensities: ["crisis"] },
+    { id: "anxiety-diazepam", label: "Diazepam", detail: "Ansiedade intensa ou crise selecionada: considerar diazepam 5 mg a 10 mg, com monitoramento de sedação, respiração e delirium.", routes: ["oral", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "anxiety-midazolam", label: "Midazolam se crise/refratariedade", detail: "Ansiedade em crise/refratária: considerar midazolam SC/EV conforme protocolo e monitorização clínica.", routes: ["subcutaneous", "intravenous"], intensities: ["crisis"] },
   ],
   delirium: [
     { id: "delirium-haloperidol", label: "Haloperidol", detail: "Delirium moderado/intenso: 0,5 mg a 1 mg VO/SC/retal a cada 12 a 24 h, titulando por sintomas e efeitos adversos.", routes: ["oral", "subcutaneous", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
     { id: "delirium-quetiapine", label: "Quetiapina se via oral possível", detail: "Delirium leve/moderado em caso selecionado: considerar 12,5 mg a 25 mg VO à noite.", routes: ["oral", "tube"], intensities: ["mild", "moderate"] },
   ],
   secretions: [
-    { id: "secretions-scopolamine", label: "Escopolamina", detail: "Secreções moderadas/intensas ou sororoca: considerar escopolamina conforme via disponível e protocolo local.", routes: ["oral", "subcutaneous", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "secretions-atropine", label: "Atropina", detail: "Secreções moderadas/intensas ou sororoca: considerar sulfato de atropina conforme via disponível, protocolo local e tolerabilidade.", routes: ["subcutaneous"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "ped-secretions-atropine", label: "Atropina 1% colírio por via sublingual", detail: "Sialorreia ou secreções incômodas: 1 gota sublingual a cada 6 a 8 h se indicado; monitorar boca seca, retenção urinária, constipação, taquicardia e espessamento de secreções.", routes: ["sublingual"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
   ],
   fatigue: [
-    { id: "fatigue-methylphenidate", label: "Psicoestimulante em caso selecionado", detail: "Fadiga moderada/intensa: considerar metilfenidato 2,5 mg a 5 mg pela manhã se prognóstico/risco forem compatíveis.", routes: ["oral", "tube"], intensities: ["moderate", "severe"] },
-    { id: "fatigue-dexamethasone", label: "Corticosteroide em contexto selecionado", detail: "Fadiga intensa/fim de vida: considerar dexametasona 2 mg a 4 mg pela manhã por curto período se meta definida.", routes: ["oral", "subcutaneous", "tube"], intensities: ["severe", "crisis"] },
+    { id: "fatigue-dexamethasone", label: "Corticosteroide em contexto selecionado", detail: "Fadiga intensa/fim de vida: considerar dexametasona 2 mg a 4 mg pela manhã por curto período se meta definida.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["severe", "crisis"] },
   ],
   anorexiaCachexia: [
-    { id: "anorexia-dexamethasone", label: "Corticosteroide em contexto selecionado", detail: "Anorexia-caquexia moderada/intensa: considerar dexametasona 2 mg a 4 mg pela manhã por curto período se benefício esperado.", routes: ["oral", "subcutaneous", "tube"], intensities: ["moderate", "severe"] },
+    { id: "anorexia-dexamethasone", label: "Corticosteroide em contexto selecionado", detail: "Síndrome de anorexia-caquexia moderada/intensa: considerar dexametasona 2 mg a 4 mg pela manhã por curto período se benefício esperado.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["moderate", "severe"] },
     { id: "anorexia-comfort", label: "Sem fármaco de rotina na fase final", detail: "Crise/fim de vida: priorizar conforto alimentar e boca úmida; medicamento apenas se houver sintoma-alvo claro.", routes: ["oral", "subcutaneous", "rectal", "tube"], intensities: ["crisis"] },
+  ],
+};
+
+const prescriptionPhytotherapyOptions = {
+  pain: [
+    {
+      id: "phyto-pain-harpagophytum",
+      label: "Garra-do-diabo",
+      detail:
+        "Dor musculoesquelética/nociceptiva somática leve a moderada: 1 cápsula/comprimido VO a cada 8 a 12 h, conforme apresentação padronizada. Evitar em úlcera péptica ativa, gestação e cautela com anticoagulantes.",
+      routes: ["oral"],
+      intensities: ["mild", "moderate"],
+      painTypes: ["somatic"],
+      populations: ["adult"],
+    },
+  ],
+  cough: [
+    {
+      id: "phyto-cough-guaco",
+      label: "Guaco",
+      detail:
+        "Tosse leve com ou sem secreção, como adjuvante: xarope VO conforme concentração disponível, geralmente 5 mL a 10 mL até 3 vezes ao dia. Não atrasar avaliação de dispneia, febre, hipoxemia ou infecção.",
+      routes: ["oral"],
+      intensities: ["mild"],
+      coughTypes: ["productive", "dry"],
+      populations: ["adult"],
+    },
+  ],
+  nauseaVomiting: [
+    {
+      id: "phyto-nausea-peppermint",
+      label: "Hortelã-pimenta",
+      detail:
+        "Náusea ou desconforto abdominal leve sem sinais de alarme: infusão de 1 a 2 g em 150 mL de água, 2 a 3 vezes ao dia. Evitar em refluxo importante, obstrução biliar ou hipersensibilidade.",
+      routes: ["oral"],
+      intensities: ["mild"],
+      populations: ["adult"],
+    },
+  ],
+  constipation: [
+    {
+      id: "phyto-constipation-plantago",
+      label: "Plantago ovata",
+      detail:
+        "Constipação leve com ingestão hídrica possível: usar VO conforme apresentação padronizada, sempre com líquidos e reavaliação de distensão, dor ou suspeita de obstrução.",
+      routes: ["oral"],
+      intensities: ["mild"],
+      populations: ["adult"],
+    },
   ],
 };
 
@@ -285,7 +394,7 @@ const prescriptionNonpharmOptions = {
       { id: "anorexia-preferences", text: "Fracionar pequenas porções, priorizar preferências, textura segura e reduzir pressão familiar para comer." },
     ],
     severe: [
-      { id: "anorexia-family", text: "Explicar anorexia-caquexia, alinhar metas de conforto e revisar causas reversíveis como boca seca, náusea e constipação." },
+      { id: "anorexia-family", text: "Explicar síndrome de anorexia-caquexia, alinhar metas de conforto e revisar causas reversíveis como boca seca, náusea e constipação." },
     ],
     crisis: [
       { id: "anorexia-end", text: "Na fase final, não forçar dieta; focar boca úmida, conforto, rituais familiares e explicação clara." },
@@ -293,10 +402,256 @@ const prescriptionNonpharmOptions = {
   },
 };
 
+const pediatricSymptomFlowState = {};
+
+const pediatricSymptomFlowConfigs = {
+  pain: {
+    title: "Fluxo decisório interativo da dor",
+    stepLabel: "Padrão predominante",
+    defaultContext: "somatic",
+    alerts: [
+      "Dor intensa de início súbito ou progressão rápida",
+      "Rebaixamento, sonolência incomum ou sinais de toxicidade medicamentosa",
+      "Déficit neurológico novo, febre, rigidez de nuca, trauma ou suspeita de fratura",
+      "Dor associada a dispneia intensa, abdome agudo, sangramento ou instabilidade",
+    ],
+    contexts: [
+      { value: "somatic", label: "Nociceptiva somática" },
+      { value: "visceral", label: "Nociceptiva visceral" },
+      { value: "neuropathic", label: "Neuropática" },
+      { value: "complex", label: "Complexa ou refratária" },
+    ],
+    recommendations: {
+      somatic: {
+        nonpharm: "Posicionar, proteger a área dolorosa, usar calor/frio quando apropriado, reduzir estímulos e definir meta de alívio com a criança/família.",
+        meds: "Dor leve: paracetamol 10 a 15 mg/kg/dose VO/retal a cada 6 h. Se componente inflamatório e baixo risco: ibuprofeno 5 a 10 mg/kg/dose VO a cada 6 a 8 h. Dor moderada/intensa: morfina de liberação imediata 0,1 a 0,2 mg/kg/dose VO a cada 4 h, com titulação e monitorização.",
+      },
+      visceral: {
+        nonpharm: "Avaliar constipação, distensão, náuseas, retenção urinária e posição de conforto; evitar manipulações desnecessárias.",
+        meds: "Dor leve: paracetamol 10 a 15 mg/kg/dose VO/retal a cada 6 h. Dor moderada/intensa: morfina de liberação imediata 0,1 a 0,2 mg/kg/dose VO a cada 4 h, com cautela e reavaliação. Se houver cólica/espasmo, discutir antiespasmódico conforme protocolo pediátrico local.",
+      },
+      neuropathic: {
+        nonpharm: "Evitar estímulos dolorosos, roupas apertadas e mobilização brusca; mapear alodinia, parestesia, choque ou queimação.",
+        meds: "Considerar gabapentina 5 mg/kg/dose VO à noite ou a cada 12 h, com titulação lenta conforme resposta, sonolência e função renal; associar analgésico de base se houver componente nociceptivo.",
+      },
+      complex: {
+        nonpharm: "Reavaliar mecanismo, adesão, via, dose, constipação por opioide, medo familiar e sofrimento global; definir plano de resgate.",
+        meds: "Se dor moderada/intensa ou refratária, priorizar avaliação especializada. Conferir peso, dose máxima, função renal/hepática e necessidade de opioide, adjuvante ou via alternativa.",
+      },
+    },
+  },
+  dyspnea: {
+    title: "Fluxo decisório interativo da dispneia",
+    stepLabel: "Situação predominante",
+    defaultContext: "bronchospasm",
+    alerts: [
+      "Estridor, cianose, apneia, exaustão ou tiragem intensa",
+      "Saturação muito baixa com sofrimento, rebaixamento ou convulsão",
+      "Suspeita de aspiração, pneumotórax, sepse ou crise respiratória aguda",
+      "Dispneia rapidamente progressiva sem plano de crise definido",
+    ],
+    contexts: [
+      { value: "bronchospasm", label: "Sibilância/broncoespasmo" },
+      { value: "secretions", label: "Secreção ou broncorreia" },
+      { value: "persistent", label: "Dispneia persistente" },
+      { value: "crisis", label: "Crise de dispneia" },
+    ],
+    recommendations: {
+      bronchospasm: {
+        nonpharm: "Elevar cabeceira, manter cuidador de referência, reduzir estímulos e orientar respiração calma conforme tolerância.",
+        meds: "Se sibilância/broncoespasmo: salbutamol 2 a 4 jatos com espaçador; considerar brometo de ipratrópio 250 mcg por nebulização a cada 6 a 8 h em crianças pequenas ou 500 mcg em maiores, conforme protocolo.",
+      },
+      secretions: {
+        nonpharm: "Posicionar em decúbito lateral ou cabeceira elevada, higiene oral, hidratação proporcional e evitar aspiração repetida sem benefício.",
+        meds: "Se houver broncoespasmo associado, considerar ipratrópio conforme idade e protocolo. Se secreções de vias aéreas superiores forem predominantes, avaliar fluxo de sialorreia/secreções.",
+      },
+      persistent: {
+        nonpharm: "Fan/ventilação na face se tolerado, ambiente calmo, pausas para fala/alimentação e plano familiar de reavaliação.",
+        meds: "Em maiores de 6 meses com sofrimento persistente: morfina 0,05 a 0,1 mg/kg/dose VO a cada 4 h se necessário; titular com cautela e monitorar sedação/respiração.",
+      },
+      crisis: {
+        nonpharm: "Interromper atividades, posicionar, acalmar ambiente, chamar apoio e aplicar plano de crise previamente pactuado.",
+        meds: "Usar medicações de crise previamente prescritas e proporcionais ao objetivo de cuidado. Se não houver plano ou houver instabilidade, interromper fluxo e solicitar avaliação imediata.",
+      },
+    },
+  },
+  cough: {
+    title: "Fluxo decisório interativo da tosse",
+    stepLabel: "Tipo de tosse",
+    defaultContext: "productive",
+    alerts: [
+      "Hemoptise, engasgo importante ou suspeita de aspiração",
+      "Tosse com dispneia intensa, cianose, exaustão ou estridor",
+      "Febre alta, queda importante do estado geral ou dor torácica intensa",
+    ],
+    contexts: [
+      { value: "productive", label: "Com secreção" },
+      { value: "dry", label: "Sem secreção" },
+      { value: "refractory", label: "Refratária" },
+      { value: "bronchospasm", label: "Com broncoespasmo" },
+    ],
+    recommendations: {
+      productive: {
+        nonpharm: "Favorecer tosse efetiva sem exaurir a criança, ajustar posição, higiene oral, hidratação proporcional e revisão de aspiração/refluxo.",
+        meds: "Se houver broncorreia ou broncoespasmo, considerar ipratrópio inalatório/nebulização conforme idade e protocolo. Evitar suprimir tosse produtiva sem avaliar retenção de secreções.",
+      },
+      dry: {
+        nonpharm: "Reduzir irritantes, revisar refluxo, gotejamento pós-nasal, medicamentos, ambiente seco e impacto no sono.",
+        meds: "Priorizar causa provável e conforto. Antitussivo opioide em pediatria deve ser individualizado e geralmente exige avaliação especializada.",
+      },
+      refractory: {
+        nonpharm: "Rever causas persistentes: aspiração, broncoespasmo, refluxo, infecção, tumor, ansiedade e secreções.",
+        meds: "Se tosse refratária com sofrimento importante, discutir manejo especializado; considerar broncodilatador quando houver sibilância e plano individual quando a tosse for seca e exaustiva.",
+      },
+      bronchospasm: {
+        nonpharm: "Posicionar, reduzir esforço, observar frequência respiratória e resposta a broncodilatador prévio.",
+        meds: "Salbutamol 2 a 4 jatos com espaçador; se secreção/broncoespasmo, ipratrópio 250 mcg por nebulização em crianças pequenas ou 500 mcg em maiores, conforme protocolo.",
+      },
+    },
+  },
+  sialorrhea: {
+    title: "Fluxo decisório interativo da sialorreia",
+    stepLabel: "Fator predominante",
+    defaultContext: "dysphagia",
+    alerts: [
+      "Engasgos repetidos, aspiração ou desconforto respiratório",
+      "Desidratação, boca muito seca, secreção muito espessa ou rolhas",
+      "Retenção urinária, constipação intensa, taquicardia ou delirium após anticolinérgico",
+    ],
+    contexts: [
+      { value: "dysphagia", label: "Disfagia/aspiração" },
+      { value: "neurologic", label: "Doença neurológica" },
+      { value: "skin", label: "Impacto em pele/conforto" },
+      { value: "thick", label: "Secreção espessa" },
+    ],
+    recommendations: {
+      dysphagia: {
+        nonpharm: "Revisar textura, postura durante alimentação, higiene oral, proteção de pele e risco de aspiração.",
+        meds: "Se sialorreia persistir com desconforto: atropina 1% colírio por via sublingual, 1 gota a cada 6 a 8 h se indicado; monitorar efeitos anticolinérgicos.",
+      },
+      neurologic: {
+        nonpharm: "Ajustar posicionamento, proteção de pele, rotina de higiene oral e plano com cuidador para secreções.",
+        meds: "Considerar atropina 1% sublingual 1 gota a cada 6 a 8 h quando benefício esperado superar risco de boca seca e secreção espessa.",
+      },
+      skin: {
+        nonpharm: "Proteger lábios, queixo e pescoço, trocar tecidos úmidos, manter higiene suave e reduzir irritação.",
+        meds: "Medicamento só se houver desconforto relevante, aspiração ou impacto funcional; considerar atropina sublingual conforme tolerância.",
+      },
+      thick: {
+        nonpharm: "Evitar intensificar anticolinérgico; priorizar umidificação, higiene oral e hidratação proporcional.",
+        meds: "Se secreção ficou espessa após atropina ou outro anticolinérgico, reduzir/suspender e reavaliar. Evitar nova dose antes de avaliação clínica.",
+      },
+    },
+  },
+  nausea: {
+    title: "Fluxo decisório interativo das náuseas",
+    stepLabel: "Mecanismo provável",
+    defaultContext: "gastric",
+    alerts: [
+      "Suspeita de obstrução intestinal, distensão importante ou dor abdominal intensa",
+      "Sonolência, cefaleia intensa, vômitos em jato ou suspeita de hipertensão intracraniana",
+      "Desidratação, sangue, bile persistente ou piora rápida",
+    ],
+    contexts: [
+      { value: "gastric", label: "Gastroparesia/estase" },
+      { value: "chemical", label: "Química/metabólica" },
+      { value: "constipation", label: "Constipação associada" },
+      { value: "anxiety", label: "Ansiedade/odores/alimentação" },
+    ],
+    recommendations: {
+      gastric: {
+        nonpharm: "Fracionar volumes, reduzir odores, revisar dieta, posição pós-alimentação e medicamentos que retardam esvaziamento gástrico.",
+        meds: "Metoclopramida 0,1 a 0,15 mg/kg/dose VO/EV/SC a cada 6 a 8 h se não houver obstrução completa ou risco extrapiramidal.",
+      },
+      chemical: {
+        nonpharm: "Revisar fármacos, infecção, uremia, hipercalcemia, constipação e hidratação proporcional ao objetivo.",
+        meds: "Ondansetrona 0,15 mg/kg/dose VO/EV a cada 8 h, dose máxima usual 8 mg por dose; ou haloperidol 0,01 a 0,02 mg/kg/dose VO/SC a cada 12 a 24 h em caso selecionado.",
+      },
+      constipation: {
+        nonpharm: "Pesquisar evacuação, fecaloma, dor abdominal e escape fecal; tratar constipação antes de escalar antiemético.",
+        meds: "Usar antiemético conforme mecanismo e plano intestinal proporcional; evitar metoclopramida se houver suspeita de obstrução completa.",
+      },
+      anxiety: {
+        nonpharm: "Ambiente calmo, alimentos frios ou mornos, pequenas porções, cuidado com odores e presença de cuidador de referência.",
+        meds: "Se náusea persistir, escolher antiemético conforme mecanismo provável; ondansetrona pode ser considerada quando indicado e disponível.",
+      },
+    },
+  },
+  vomiting: {
+    title: "Fluxo decisório interativo dos vômitos",
+    stepLabel: "Situação predominante",
+    defaultContext: "intermittent",
+    alerts: [
+      "Vômitos persistentes com desidratação, prostração ou piora rápida",
+      "Vômitos biliosos, sangue, distensão importante ou parada de gases/fezes",
+      "Cefaleia intensa, sonolência, vômitos em jato ou alteração neurológica",
+    ],
+    contexts: [
+      { value: "intermittent", label: "Intermitente/leve" },
+      { value: "persistent", label: "Persistente" },
+      { value: "obstruction", label: "Suspeita de obstrução" },
+      { value: "feeding", label: "Relacionado à alimentação" },
+    ],
+    recommendations: {
+      intermittent: {
+        nonpharm: "Ofertar pequenos volumes, reduzir odores, pausar dieta se piorar desconforto e revisar medicamentos.",
+        meds: "Ondansetrona 0,15 mg/kg/dose VO/EV a cada 8 h se necessário; monitorar constipação e intervalo QT.",
+      },
+      persistent: {
+        nonpharm: "Avaliar hidratação proporcional, aspiração, constipação, distensão, cefaleia, dor e impacto no conforto.",
+        meds: "Escolher antiemético pelo mecanismo: ondansetrona, metoclopramida se estase sem obstrução, ou haloperidol em caso selecionado químico/metabólico.",
+      },
+      obstruction: {
+        nonpharm: "Interromper alimentação forçada, proteger via aérea, avaliar distensão/dor e discutir objetivo de cuidado.",
+        meds: "Interromper fluxo habitual e solicitar avaliação dirigida. Evitar metoclopramida se obstrução completa for possível.",
+      },
+      feeding: {
+        nonpharm: "Reduzir volume, fracionar, ajustar textura/velocidade, revisar refluxo e evitar insistência alimentar desproporcional.",
+        meds: "Se suspeita de estase gástrica sem obstrução, metoclopramida 0,1 a 0,15 mg/kg/dose a cada 6 a 8 h pode ser considerada.",
+      },
+    },
+  },
+  diarrhea: {
+    title: "Fluxo decisório interativo da diarreia",
+    stepLabel: "Causa provável",
+    defaultContext: "medication",
+    alerts: [
+      "Sangue, febre alta, dor abdominal intensa ou distensão",
+      "Desidratação, sonolência, queda importante do estado geral ou piora rápida",
+      "Suspeita de impactação fecal com escape ou obstrução",
+    ],
+    contexts: [
+      { value: "medication", label: "Laxativos/antibióticos/dieta" },
+      { value: "infectious", label: "Suspeita infecciosa" },
+      { value: "overflow", label: "Escape por fecaloma" },
+      { value: "skin", label: "Lesão de pele associada" },
+    ],
+    recommendations: {
+      medication: {
+        nonpharm: "Revisar laxativos, antibióticos, dieta, fórmula, sorbitol e hidratação proporcional.",
+        meds: "Solução de reidratação oral em pequenos volumes frequentes conforme sede, perdas, tolerância e objetivo de cuidado.",
+      },
+      infectious: {
+        nonpharm: "Higiene de mãos, proteção de pele, hidratação proporcional e monitorização de febre, sangue e dor.",
+        meds: "Evitar antidiarreico automático; priorizar avaliação dirigida se houver febre, sangue, dor importante ou desidratação.",
+      },
+      overflow: {
+        nonpharm: "Pesquisar fecaloma, distensão, dor, náuseas/vômitos e escape fecal antes de tratar como diarreia simples.",
+        meds: "Evitar antidiarreico; tratar impactação conforme avaliação clínica, conforto e segurança da mucosa.",
+      },
+      skin: {
+        nonpharm: "Higiene suave, secagem cuidadosa, trocas frequentes, barreira cutânea e redução de atrito.",
+        meds: "Óxido de zinco tópico pode ser aplicado em camada fina a cada troca se houver dermatite por umidade.",
+      },
+    },
+  },
+};
+
 const prescriptionRouteMedicationDetails = {
   "pain-dipyrone": {
     oral: "Dipirona 500 mg a 1 g VO a cada 6 h.",
     subcutaneous: "Dipirona 500 mg a 1 g por via SC a cada 6 h, conforme protocolo local e tolerância do sítio.",
+    intravenous: "Dipirona 500 mg a 1 g EV a cada 6 h, conforme protocolo local e monitoramento.",
     tube: "Dipirona 500 mg a 1 g por sonda/gastrostomia a cada 6 h, diluir e lavar a sonda antes e após.",
   },
   "pain-paracetamol": {
@@ -316,15 +671,13 @@ const prescriptionRouteMedicationDetails = {
   "pain-morphine": {
     oral: "Morfina 2,5 mg a 5 mg VO como dose inicial, com reavaliação e titulação conforme resposta.",
     subcutaneous: "Morfina 1 mg a 2 mg SC como dose inicial, com reavaliação e titulação conforme resposta.",
+    intravenous: "Morfina 1 mg a 2 mg EV como dose inicial em ambiente monitorado, com reavaliação e titulação conforme resposta.",
     rectal: "Morfina 2,5 mg a 5 mg por via retal como dose inicial, considerando absorção variável e titulação conforme resposta.",
     tube: "Morfina 2,5 mg a 5 mg por sonda/gastrostomia como dose inicial, diluir e lavar a sonda antes e após.",
   },
   "pain-amitriptyline": {
     oral: "Amitriptilina 10 mg VO à noite como dose inicial em pessoa idosa/frágil; monitorar sedação, boca seca, retenção urinária e quedas.",
     tube: "Amitriptilina 10 mg por sonda/gastrostomia à noite apenas se apresentação compatível; confirmar possibilidade de trituração.",
-  },
-  "pain-duloxetine": {
-    oral: "Duloxetina 30 mg VO pela manhã como dose inicial quando perfil clínico permitir; revisar interações e função hepática.",
   },
   "pain-gabapentin": {
     oral: "Gabapentina 100 mg a 300 mg VO à noite como dose inicial; ajustar por idade, sonolência e função renal.",
@@ -333,6 +686,7 @@ const prescriptionRouteMedicationDetails = {
   "dyspnea-morphine": {
     oral: "Morfina 2,5 mg a 5 mg VO para dispneia moderada/intensa, com reavaliação.",
     subcutaneous: "Morfina 1 mg a 2 mg SC para dispneia moderada/intensa, com reavaliação.",
+    intravenous: "Morfina 1 mg a 2 mg EV para dispneia moderada/intensa em ambiente monitorado, com reavaliação.",
     tube: "Morfina 2,5 mg a 5 mg por sonda/gastrostomia para dispneia, diluir e lavar a sonda antes e após.",
   },
   "dyspnea-bronchodilator": {
@@ -340,9 +694,9 @@ const prescriptionRouteMedicationDetails = {
     tube: "Se broncoespasmo, preferir via inalatória/nebulização; esta opção não é administrada por sonda.",
   },
   "dyspnea-benzodiazepine": {
-    oral: "Lorazepam 0,5 mg VO/SL em dispneia com pânico/ansiedade intensa, se apropriado.",
+    oral: "Diazepam 5 mg VO em dispneia com pânico/ansiedade intensa, se apropriado; monitorar sedação e delirium.",
     subcutaneous: "Midazolam SC em baixa dose conforme protocolo local se crise de dispneia com ansiedade importante.",
-    tube: "Lorazepam 0,5 mg por sonda/gastrostomia se apresentação compatível; monitorar sedação.",
+    tube: "Diazepam por sonda/gastrostomia apenas se apresentação compatível; monitorar sedação e delirium.",
   },
   "cough-codeine": {
     oral: "Codeína 10 mg a 20 mg VO a cada 4 a 6 h se tosse seca/refratária e uso for apropriado.",
@@ -353,13 +707,10 @@ const prescriptionRouteMedicationDetails = {
     oral: "Se secreção/broncoespasmo, preferir ipratrópio por via inalatória/nebulização; esta opção não é prescrição oral direta.",
     tube: "Se secreção/broncoespasmo, preferir ipratrópio por via inalatória/nebulização; esta opção não é administrada por sonda.",
   },
-  "cough-acetylcysteine": {
-    oral: "N-acetilcisteína VO se secreção espessa e benefício esperado; evitar se piorar náusea, broncoespasmo ou volume de secreção.",
-    tube: "N-acetilcisteína por sonda/gastrostomia apenas se apresentação compatível; diluir e lavar a sonda antes e após.",
-  },
   "nausea-metoclopramide": {
     oral: "Metoclopramida 10 mg VO a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.",
     subcutaneous: "Metoclopramida 10 mg SC a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.",
+    intravenous: "Metoclopramida 10 mg EV a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.",
     rectal: "Metoclopramida 10 mg por via retal a cada 8 h, evitando se obstrução completa ou sintomas extrapiramidais.",
     tube: "Metoclopramida 10 mg por sonda/gastrostomia a cada 8 h, diluir e lavar a sonda antes e após.",
   },
@@ -371,37 +722,38 @@ const prescriptionRouteMedicationDetails = {
   },
   "nausea-ondansetron": {
     oral: "Ondansetrona 4 mg a 8 mg VO a cada 8 a 12 h quando indicada; observar constipação.",
+    intravenous: "Ondansetrona 4 mg a 8 mg EV a cada 8 a 12 h quando indicada; observar constipação e intervalo QT.",
     tube: "Ondansetrona 4 mg a 8 mg por sonda/gastrostomia a cada 8 a 12 h, se apresentação compatível; observar constipação.",
   },
   "constipation-laxative": {
-    oral: "Laxativo estimulante e/ou osmótico VO conforme padrão intestinal e uso de opioide.",
-    tube: "Laxativo por sonda/gastrostomia conforme apresentação compatível; diluir e lavar a sonda antes e após.",
+    oral: "Usar opção presente na RENAME conforme padrão intestinal, como lactulose, óleo mineral, sulfato de magnésio ou Plantago ovata.",
+    tube: "Usar laxativo presente na RENAME por sonda/gastrostomia apenas se apresentação compatível; diluir e lavar a sonda antes e após.",
   },
-  "constipation-bisacodyl": {
-    rectal: "Bisacodil 10 mg por via retal se constipação intensa e sem contraindicação local.",
+  "constipation-glycerol": {
+    rectal: "Glicerol por via retal se constipação intensa e sem contraindicação local.",
   },
   "constipation-rectal": {
     rectal: "Supositório de glicerina, enema ou remoção retal se fecaloma, respeitando conforto, plaquetas e mucosa.",
   },
-  "diarrhea-loperamide": {
-    oral: "Loperamida 2 mg VO após evacuação diarreica, ajustando conforme causa.",
-    tube: "Loperamida 2 mg por sonda/gastrostomia após evacuação diarreica, se apresentação compatível.",
-  },
   "diarrhea-hydration": {
     oral: "Reposição oral proporcional de líquidos e eletrólitos conforme tolerância e objetivo de cuidado.",
     subcutaneous: "Hidratação SC proporcional se via oral insuficiente e objetivo de cuidado justificar.",
+    intravenous: "Reposição EV proporcional de líquidos e eletrólitos quando houver indicação clínica, acesso venoso e monitoramento.",
     tube: "Reposição hídrica por sonda/gastrostomia conforme tolerância, risco de broncoaspiração e objetivo de cuidado.",
   },
-  "anxiety-lorazepam": {
-    oral: "Lorazepam 0,5 mg VO/SL se ansiedade moderada/intensa, com cautela para delirium, quedas e sedação.",
-    rectal: "Lorazepam 0,5 mg por via retal se apresentação compatível, com cautela para delirium, quedas e sedação.",
-    tube: "Lorazepam 0,5 mg por sonda/gastrostomia se apresentação compatível; monitorar sedação.",
+  "diarrhea-codeine": {
+    oral: "Codeína em baixa dose VO em caso selecionado, observando sedação, constipação e náuseas.",
+    rectal: "Codeína por via retal em caso selecionado, considerando absorção variável e monitoramento clínico.",
+    tube: "Codeína por sonda/gastrostomia em caso selecionado, se apresentação compatível; lavar a sonda antes e após.",
   },
   "anxiety-diazepam": {
+    oral: "Diazepam 5 mg VO em crise selecionada; monitorar sedação, respiração e risco de delirium.",
     rectal: "Diazepam 5 mg a 10 mg por via retal em crise selecionada; monitorar sedação, respiração e risco de delirium.",
+    tube: "Diazepam por sonda/gastrostomia apenas se apresentação compatível; monitorar sedação e respiração.",
   },
   "anxiety-midazolam": {
     subcutaneous: "Midazolam SC em crise/refratariedade conforme protocolo local e monitorização clínica.",
+    intravenous: "Midazolam EV em crise/refratariedade apenas em ambiente monitorado e conforme protocolo local.",
   },
   "delirium-haloperidol": {
     oral: "Haloperidol 0,5 mg a 1 mg VO a cada 12 a 24 h, titulando por sintomas e efeitos adversos.",
@@ -413,29 +765,25 @@ const prescriptionRouteMedicationDetails = {
     oral: "Quetiapina 12,5 mg a 25 mg VO à noite em caso selecionado.",
     tube: "Quetiapina por sonda/gastrostomia apenas se a apresentação puder ser administrada por sonda; confirmar antes de triturar.",
   },
-  "secretions-scopolamine": {
-    oral: "Escopolamina por via oral se apresentação disponível e apropriada; monitorar retenção urinária, constipação e delirium.",
-    subcutaneous: "Escopolamina SC conforme protocolo local para secreções/sororoca.",
-    tube: "Escopolamina por sonda/gastrostomia se apresentação compatível; monitorar efeitos anticolinérgicos.",
-  },
-  "fatigue-methylphenidate": {
-    oral: "Metilfenidato 2,5 mg a 5 mg VO pela manhã em caso selecionado.",
-    tube: "Metilfenidato por sonda/gastrostomia apenas se apresentação compatível; confirmar antes de triturar.",
+  "secretions-atropine": {
+    subcutaneous: "Sulfato de atropina conforme protocolo local para secreções/sororoca; monitorar efeitos anticolinérgicos.",
   },
   "fatigue-dexamethasone": {
     oral: "Dexametasona 2 mg a 4 mg VO pela manhã por curto período se meta definida.",
     subcutaneous: "Dexametasona 2 mg a 4 mg SC pela manhã por curto período conforme protocolo local.",
+    intravenous: "Dexametasona 2 mg a 4 mg EV pela manhã por curto período conforme protocolo local.",
     tube: "Dexametasona 2 mg a 4 mg por sonda/gastrostomia pela manhã, se apresentação compatível.",
   },
   "anorexia-dexamethasone": {
     oral: "Dexametasona 2 mg a 4 mg VO pela manhã por curto período se benefício esperado.",
     subcutaneous: "Dexametasona 2 mg a 4 mg SC pela manhã por curto período conforme protocolo local.",
+    intravenous: "Dexametasona 2 mg a 4 mg EV pela manhã por curto período conforme protocolo local.",
     tube: "Dexametasona 2 mg a 4 mg por sonda/gastrostomia pela manhã, se apresentação compatível.",
   },
   "anorexia-comfort": {
     oral: "Não há fármaco oral de rotina; priorizar conforto alimentar, boca úmida e sintoma-alvo claro.",
     subcutaneous: "Não há fármaco SC de rotina; usar via SC apenas para sintoma-alvo claro.",
-    rectal: "Não há fármaco retal de rotina para anorexia-caquexia em fim de vida.",
+    rectal: "Não há fármaco retal de rotina para síndrome de anorexia-caquexia em fim de vida.",
     tube: "Evitar alimentação ou medicamentos por sonda sem benefício proporcional; priorizar conforto e objetivo de cuidado.",
   },
 };
@@ -493,7 +841,6 @@ const medicationGroups = {
   simpleAnalgesics: [
     "Paracetamol: 500 mg, 1 a 2 comprimidos, 3 a 4 vezes/dia.",
     "Dipirona: 500 mg, 1 a 2 comprimidos, até 4 vezes/dia.",
-    "Ácido acetilsalicílico: 500 mg, 1 a 2 comprimidos; repetir a cada 4 a 8 h se necessário.",
   ],
   antiInflammatories: [
     "Ibuprofeno: 200 a 600 mg, 3 a 4 vezes/dia.",
@@ -504,29 +851,21 @@ const medicationGroups = {
     "Amitriptilina: 25 mg/dia; em idosos, 10 mg/dia.",
     "Nortriptilina: 25 mg/dia; em idosos, 10 a 25 mg/dia.",
     "Clomipramina: 10 mg/dia.",
-    "Duloxetina: 30 mg/dia.",
-    "Venlafaxina: 37,5 mg/dia.",
     "Gabapentina: 300 mg à noite ou 300 mg 3 vezes/dia, conforme tolerabilidade e função renal.",
-    "Pregabalina: 25 a 75 mg à noite, conforme tolerabilidade e função renal.",
     "Carbamazepina: 200 a 400 mg/dia; em idosos, 100 mg 2 vezes/dia.",
     "Fenitoína: 100 mg, 3 vezes/dia.",
     "Ácido valproico/valproato de sódio: 250 mg/dia.",
     "Lidocaína tópica: considerar em dor neuropática periférica localizada.",
-    "Capsaicina tópica: considerar em dor neuropática periférica localizada.",
   ],
   nociplasticAdjuvants: [
     "Amitriptilina: 25 mg/dia; em idosos, 10 mg/dia.",
     "Nortriptilina: 25 mg/dia; em idosos, 10 a 25 mg/dia.",
     "Clomipramina: 10 mg/dia.",
-    "Duloxetina: 30 mg/dia.",
-    "Venlafaxina: 37,5 mg/dia.",
     "Gabapentina: 300 mg à noite ou 300 mg 3 vezes/dia, conforme tolerabilidade e função renal.",
-    "Pregabalina: 25 a 75 mg à noite, conforme tolerabilidade e função renal.",
   ],
   opioids: [
     "Codeína: 30 mg, 3 a 4 vezes/dia; em idosos, 15 mg a cada 4 h.",
     "Morfina oral de ação curta: 5 mg a cada 4 h.",
-    "Metadona: 2,5 mg a cada 8 a 12 h.",
   ],
 };
 
@@ -596,8 +935,8 @@ const medicationAssociationGuidance = {
   },
 };
 
-function getMedicationPlan(mechanism, intensity) {
-  const groupKeys = medicationPlanMap[mechanism]?.[intensity] || [];
+function getMedicationPlan(mechanism, intensity, phenotype) {
+  const groupKeys = [...(medicationPlanMap[mechanism]?.[intensity] || [])];
 
   return {
     guidance: medicationAssociationGuidance[mechanism]?.[intensity],
@@ -800,7 +1139,7 @@ const coughTypePlans = {
       "Tratamento não medicamentoso: avaliar volume/aspecto da secreção, manter hidratação proporcional, umidificação, posicionamento e higiene brônquica quando confortável.",
       "Se a tosse for eficaz, evitar supressão rotineira para não reter secreção.",
       "Se secreção espessa: considerar nebulização com cloreto de sódio 0,9% a 3%, conforme tolerabilidade e protocolo local.",
-      "Se secreção espessa persistente e a via oral for possível: considerar N-acetilcisteína 600 mg VO 1 vez/dia como dose inicial.",
+      "Se houver broncoespasmo associado, considerar broncodilatador presente na RENAME, como salbutamol ou brometo de ipratrópio, conforme prescrição e protocolo local.",
     ],
   },
   dry: {
@@ -818,7 +1157,7 @@ const coughTypePlans = {
     actions: [
       "Tratamento não medicamentoso: avaliar se a tosse é eficaz, reposicionar, reduzir decúbito plano e associar higiene brônquica quando proporcional.",
       "Se secreção brônquica com broncorreia ou componente colinérgico: considerar brometo de ipratrópio 20 a 40 gotas por nebulização como dose inicial, conforme prescrição e protocolo local.",
-      "Se secreção terminal/sororoca ou excesso de secreção com tosse ineficaz: considerar escopolamina 10 mg a 20 mg a cada 6 horas como dose inicial, conforme via disponível e tolerabilidade.",
+      "Se secreção terminal/sororoca ou excesso de secreção com tosse ineficaz: considerar sulfato de atropina conforme prescrição, via disponível e protocolo local.",
       "Monitorar boca seca, retenção urinária, delirium, constipação e espessamento excessivo de secreções.",
     ],
   },
@@ -982,46 +1321,78 @@ const anorexiaAlertActions = {
 };
 
 const anorexiaStagePlans = {
-  reversible: {
-    title: "Baixa ingesta potencialmente reversível",
-    text: "Priorizar investigação e tratamento de fatores modificáveis antes de atribuir o quadro à caquexia avançada.",
-    actions: [
+  precachexia: {
+    title: "Pré-caquexia",
+    text: "Há perda ponderal inicial, anorexia ou sinais metabólicos precoces. A prioridade é reconhecer o risco, tratar fatores modificáveis e acompanhar evolução.",
+    nonPharmacological: [
       "Registrar peso atual, peso habitual, percentual de perda, ingesta aproximada, sintomas associados, funcionalidade e meta de cuidado.",
       "Tratar sintomas que reduzem ingesta: náusea, constipação, dor, candidíase oral, xerostomia, mucosite, refluxo, depressão e dispneia.",
-      "Associar condutas nutricionais: pequenas refeições frequentes, alimentos preferidos, maior densidade calórica/proteica e adaptação de consistência.",
+      "Associar aconselhamento nutricional precoce: pequenas refeições frequentes, alimentos preferidos, maior densidade calórica/proteica e adaptação de consistência.",
+    ],
+    pharmacological: [
+      "Não iniciar estimulante do apetite de rotina; priorizar tratamento medicamentoso apenas das causas reversíveis identificadas.",
+      "Revisar medicamentos que reduzem apetite ou aumentam náusea, constipação, sonolência ou boca seca.",
     ],
   },
   cachexia: {
-    title: "Caquexia com perda funcional",
-    text: "Combinar suporte nutricional proporcional, controle de sintomas, comunicação clara e metas funcionais realistas.",
-    actions: [
+    title: "Caquexia",
+    text: "Há síndrome multifatorial com perda de peso ou massa muscular e risco de perda funcional. O plano deve combinar controle de sintomas, suporte nutricional proporcional e metas realistas.",
+    nonPharmacological: [
       "Explicar que a caquexia é multifatorial e frequentemente não reverte apenas com aumento de calorias.",
       "Considerar aconselhamento nutricional e suplementos orais se houver aceitação, expectativa de benefício funcional e ausência de carga excessiva.",
-      "Se houver objetivo claro de curto prazo, considerar corticosteroide por tempo limitado ou megestrol em caso selecionado, ponderando tromboembolismo, edema, hiperglicemia e outros riscos.",
+      "Definir metas funcionais realistas, como conforto ao comer, redução de sofrimento familiar e manutenção de atividades significativas possíveis.",
+    ],
+    pharmacological: [
+      "Se houver objetivo claro de curto prazo, considerar corticosteroide por tempo limitado, ponderando hiperglicemia, delirium, miopatia, retenção hídrica e outros riscos.",
+      "Opções presentes na RENAME: prednisona 40 mg/dia ou dexametasona 8 mg/dia, conforme indicação, riscos e protocolo local.",
     ],
   },
-  endOfLife: {
-    title: "Fase final de vida",
-    text: "Priorizar conforto, higiene oral, alívio de sede e redução de sofrimento familiar; ganho de peso não deve ser meta central.",
-    actions: [
-      "Evitar forçar alimentação; oferecer pequenas quantidades se desejadas e respeitar recusa.",
+  refractoryCachexia: {
+    title: "Caquexia refratária",
+    text: "Há doença avançada com catabolismo ativo, baixa responsividade a intervenções, funcionalidade reduzida e prognóstico limitado. A meta principal passa a ser conforto.",
+    nonPharmacological: [
+      "Evitar metas centradas em ganho ponderal; oferecer pequenas quantidades se desejadas e respeitar recusa alimentar.",
       "Priorizar higiene oral, alívio de sede, ambiente calmo, manejo de náusea, secreções, boca seca e desconforto.",
-      "Discutir hidratação artificial caso a caso, ponderando sede, delirium, secreções, edema, ascite, vômitos, sobrecarga e objetivo do cuidado.",
+      "Revisar proporcionalidade de suplementos, hidratação ou nutrição artificial caso a caso, alinhando decisões com conforto, preferências e objetivo do cuidado.",
+    ],
+    pharmacological: [
+      "Evitar estimulantes do apetite quando não houver expectativa de benefício funcional ou sintomático relevante.",
+      "Usar medicamentos apenas para alívio de sintomas associados, como náusea, dor, dispneia, secreções, constipação, delirium ou ansiedade, conforme necessidade clínica.",
     ],
   },
 };
 
 const anorexiaFactorActions = {
-  giSymptoms:
-    "Fator associado: sintomas gastrointestinais. Tratar náusea, vômito, constipação, diarreia, refluxo, saciedade precoce ou plenitude antes de intensificar dieta ou estimulantes do apetite.",
-  oralDysphagia:
-    "Fator associado: alterações orais ou disfagia. Tratar xerostomia, candidíase, mucosite, dor oral e alteração de paladar; ajustar consistência e envolver fonoaudiologia quando houver objetivo claro.",
-  symptomsMood:
-    "Fator associado: sintomas e sofrimento. Controlar dor, dispneia, depressão, ansiedade, delirium e sofrimento espiritual; revisar conflito familiar como parte do plano terapêutico.",
-  medicationsMetabolic:
-    "Fator associado: medicamentos ou causas clínicas. Revisar opioides, antibióticos, ferro, anti-inflamatórios, digoxina, antidepressivos e quimioterápicos; investigar causas metabólicas proporcionais à meta de cuidado.",
-  familyPressure:
-    "Fator associado: pressão familiar. Realizar conversa estruturada: explicar que perda de apetite pode ser parte da doença, evitar disputa alimentar e alinhar meta de conforto e prazer possível.",
+  giSymptoms: {
+    nonPharmacological:
+      "Sintomas gastrointestinais: fracionar refeições, reduzir odores, adaptar volume e consistência, orientar hidratação possível e observar relação com constipação, refluxo ou saciedade precoce.",
+    pharmacological:
+      "Tratar sintoma predominante conforme avaliação: antiemético para náusea/vômito, laxativo para constipação, antidiarreico quando indicado ou antisecretório/procinético conforme causa provável.",
+  },
+  oralDysphagia: {
+    nonPharmacological:
+      "Alterações orais ou disfagia: intensificar higiene oral, umidificação, lubrificação, adaptação de consistência e estratégia segura de oferta; considerar fonoaudiologia quando houver objetivo claro.",
+    pharmacological:
+      "Tratar causas específicas quando presentes, como candidíase, mucosite dolorosa, xerostomia, refluxo ou dor oral, com medicamentos compatíveis com via disponível e tolerabilidade.",
+  },
+  symptomsMood: {
+    nonPharmacological:
+      "Sintomas e sofrimento: alinhar metas, reduzir pressão para comer, acolher sofrimento espiritual/emocional e ajustar rotina para refeições em horários de maior conforto.",
+    pharmacological:
+      "Otimizar controle de dor, dispneia, depressão, ansiedade, delirium ou outro sintoma limitante antes de atribuir a baixa ingesta apenas à caquexia.",
+  },
+  medicationsMetabolic: {
+    nonPharmacological:
+      "Medicamentos ou causas clínicas: revisar lista completa, hidratação possível, sinais de infecção, constipação, desidratação e exames proporcionais à meta de cuidado.",
+    pharmacological:
+      "Ajustar ou suspender, quando apropriado, fármacos que pioram apetite, náusea, boca seca, constipação ou sonolência; tratar causas metabólicas reversíveis conforme objetivo assistencial.",
+  },
+  familyPressure: {
+    nonPharmacological:
+      "Pressão familiar: realizar conversa estruturada, explicar que perda de apetite pode fazer parte da evolução da doença e substituir disputa alimentar por oferta cuidadosa e prazer possível.",
+    pharmacological:
+      "Evitar prescrever estimulante do apetite apenas para reduzir angústia familiar; considerar medicamento somente quando houver meta sintomática clara para a pessoa.",
+  },
 };
 
 const phenotypeLabels = {
@@ -1059,7 +1430,7 @@ function closeDialog() {
 
 function openTab(tabId, focusPanel = true) {
   const targetPanel = document.getElementById(tabId);
-  const activeTabId = symptomTabIds.has(tabId) ? "sintomas" : tabId;
+  const activeTabId = symptomTabIds.has(tabId) ? "sintomas" : routeTabIds.has(tabId) ? "vias-alternativas" : tabId;
 
   tabs.forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.tab === activeTabId);
@@ -1070,6 +1441,7 @@ function openTab(tabId, focusPanel = true) {
   });
 
   updateSymptomTabs(tabId);
+  updateRouteTabs(tabId);
 
   history.replaceState(null, "", `#${tabId}`);
 
@@ -1094,6 +1466,25 @@ function createSymptomSubtabs(activeId = "sintomas") {
     button.className = "subtab-trigger";
     button.type = "button";
     button.dataset.symptomTab = item.id;
+    button.textContent = item.label;
+    button.classList.toggle("active", item.id === activeId);
+    button.addEventListener("click", () => openTab(item.id));
+    wrapper.append(button);
+  });
+
+  return wrapper;
+}
+
+function createRouteSubtabs(activeId = "vias-alternativas") {
+  const wrapper = document.createElement("div");
+  wrapper.className = "subtabs route-tabs";
+  wrapper.setAttribute("aria-label", "Subabas de vias de administração");
+
+  routeTabs.forEach((item) => {
+    const button = document.createElement("button");
+    button.className = "subtab-trigger";
+    button.type = "button";
+    button.dataset.routeTab = item.id;
     button.textContent = item.label;
     button.classList.toggle("active", item.id === activeId);
     button.addEventListener("click", () => openTab(item.id));
@@ -1137,7 +1528,42 @@ function updateSymptomTabs(activeId = "sintomas") {
   });
 }
 
+function mountRouteSubtabs() {
+  const containers = [document.querySelector("#vias-alternativas .route-tabs")];
+  routeTabs.forEach((item) => {
+    const panel = document.getElementById(item.id);
+    if (!panel) return;
+    const existing = panel.querySelector(":scope > .route-tabs");
+    if (existing) {
+      containers.push(existing);
+      return;
+    }
+    const tabsElement = createRouteSubtabs(item.id);
+    const heading = panel.querySelector("h2");
+    if (heading) {
+      heading.insertAdjacentElement("afterend", tabsElement);
+    } else {
+      panel.prepend(tabsElement);
+    }
+    containers.push(tabsElement);
+  });
+
+  containers.filter(Boolean).forEach((container) => {
+    if (!container.dataset.mounted && !container.children.length) {
+      container.replaceChildren(...createRouteSubtabs().childNodes);
+      container.dataset.mounted = "true";
+    }
+  });
+}
+
+function updateRouteTabs(activeId = "vias-alternativas") {
+  document.querySelectorAll("[data-route-tab]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.routeTab === activeId);
+  });
+}
+
 mountSymptomSubtabs();
+mountRouteSubtabs();
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", () => openTab(tab.dataset.tab));
@@ -1167,6 +1593,1155 @@ document.querySelectorAll("[data-pain-subtab]").forEach((button) => {
     openPainSubtab(button.dataset.painSubtab);
   });
 });
+
+function openPncpSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-pncp-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.pncpSubtab === targetId);
+  });
+
+  document.querySelectorAll(".pncp-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-pncp-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPncpSubtab(button.dataset.pncpSubtab);
+  });
+});
+
+function openIdentificationSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-identification-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.identificationSubtab === targetId);
+  });
+
+  document.querySelectorAll(".identification-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-identification-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openIdentificationSubtab(button.dataset.identificationSubtab);
+  });
+});
+
+function openAssessmentSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-assessment-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.assessmentSubtab === targetId);
+  });
+
+  document.querySelectorAll(".assessment-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-assessment-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openAssessmentSubtab(button.dataset.assessmentSubtab);
+  });
+});
+
+function openPhasesSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-phases-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.phasesSubtab === targetId);
+  });
+
+  document.querySelectorAll(".phases-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-phases-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPhasesSubtab(button.dataset.phasesSubtab);
+  });
+});
+
+function openBioethicsSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-bioethics-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.bioethicsSubtab === targetId);
+  });
+
+  document.querySelectorAll(".bioethics-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-bioethics-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openBioethicsSubtab(button.dataset.bioethicsSubtab);
+  });
+});
+
+function openCommunicationSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-communication-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.communicationSubtab === targetId);
+  });
+
+  document.querySelectorAll(".communication-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-communication-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openCommunicationSubtab(button.dataset.communicationSubtab);
+  });
+});
+
+function openPhytotherapySubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-phytotherapy-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.phytotherapySubtab === targetId);
+  });
+
+  document.querySelectorAll(".phytotherapy-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-phytotherapy-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPhytotherapySubtab(button.dataset.phytotherapySubtab);
+  });
+});
+
+function openSkinSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-skin-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.skinSubtab === targetId);
+  });
+
+  document.querySelectorAll(".skin-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-skin-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openSkinSubtab(button.dataset.skinSubtab);
+  });
+});
+
+function openEndOfLifeSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-endoflife-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.endoflifeSubtab === targetId);
+  });
+
+  document.querySelectorAll(".endoflife-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-endoflife-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openEndOfLifeSubtab(button.dataset.endoflifeSubtab);
+  });
+});
+
+function openCompassionSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-compassion-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.compassionSubtab === targetId);
+  });
+
+  document.querySelectorAll(".compassion-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-compassion-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openCompassionSubtab(button.dataset.compassionSubtab);
+  });
+});
+
+function openHomeDeathSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-home-death-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.homeDeathSubtab === targetId);
+  });
+
+  document.querySelectorAll(".homedeath-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-home-death-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openHomeDeathSubtab(button.dataset.homeDeathSubtab);
+  });
+});
+
+function openSelfCareSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-selfcare-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.selfcareSubtab === targetId);
+  });
+
+  document.querySelectorAll(".selfcare-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-selfcare-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openSelfCareSubtab(button.dataset.selfcareSubtab);
+  });
+});
+
+function openCaregiverSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-caregiver-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.caregiverSubtab === targetId);
+  });
+
+  document.querySelectorAll(".caregiver-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-caregiver-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openCaregiverSubtab(button.dataset.caregiverSubtab);
+  });
+});
+
+function openLegalSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-legal-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.legalSubtab === targetId);
+  });
+
+  document.querySelectorAll(".legal-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-legal-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openLegalSubtab(button.dataset.legalSubtab);
+  });
+});
+
+function openPlanningSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-planning-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.planningSubtab === targetId);
+  });
+
+  document.querySelectorAll(".planning-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-planning-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPlanningSubtab(button.dataset.planningSubtab);
+  });
+});
+
+function openDecisionSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-decision-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.decisionSubtab === targetId);
+  });
+
+  document.querySelectorAll(".decision-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-decision-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openDecisionSubtab(button.dataset.decisionSubtab);
+  });
+});
+
+function setCapacityResult(title, text, actions) {
+  const titleEl = document.querySelector("#capacityResultTitle");
+  const textEl = document.querySelector("#capacityResultText");
+  const actionsEl = document.querySelector("#capacityResultActions");
+
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+  if (actionsEl) {
+    actionsEl.innerHTML = actions.map((action) => `<li>${action}</li>`).join("");
+  }
+}
+
+function updateCapacityRiskFromChecks() {
+  const selected = Array.from(document.querySelectorAll("[data-capacity-risk]:checked")).map((item) => item.dataset.capacityRisk);
+  const none = document.querySelector("[data-capacity-risk-none]");
+  capacityState.riskItems = selected;
+
+  if (selected.includes("high")) {
+    capacityState.risk = "high";
+  } else if (selected.includes("moderate")) {
+    capacityState.risk = "moderate";
+  } else {
+    capacityState.risk = "low";
+    if (none) none.checked = none.checked || selected.length === 0;
+  }
+
+  const summary = document.querySelector("#capacityRiskSummary");
+  const label = {
+    low: "baixo risco/complexidade",
+    moderate: "risco/complexidade moderado",
+    high: "alto risco/complexidade",
+  }[capacityState.risk];
+  const detail = {
+    low: "Sem itens selecionados, considerar checagem habitual dos quatro domínios.",
+    moderate: "Exigir explicação mais cuidadosa, checagem de entendimento e registro claro.",
+    high: "Exigir maior segurança na avaliação, considerar segunda avaliação, discussão multiprofissional ou apoio ético.",
+  }[capacityState.risk];
+
+  if (summary) {
+    summary.innerHTML = `<strong>Classificação automática: ${label}.</strong><p>${detail}</p>`;
+  }
+}
+
+function updateCapacityChoiceFromChecks() {
+  const selected = Array.from(document.querySelectorAll("[data-capacity-choice]:checked")).map((item) => item.dataset.capacityChoice);
+  const yesCount = selected.filter((value) => value === "yes").length;
+  const hasNoItem = selected.includes("no");
+  capacityState.choiceItems = selected;
+
+  if (hasNoItem) {
+    capacityState.domains.choice = "no";
+  } else if (yesCount >= 3) {
+    capacityState.domains.choice = "yes";
+  } else if (yesCount > 0) {
+    capacityState.domains.choice = "partial";
+  } else {
+    capacityState.domains.choice = null;
+  }
+
+  const summary = document.querySelector("#capacityChoiceSummary");
+  const label = {
+    yes: "sim",
+    partial: "parcial",
+    no: "não",
+  }[capacityState.domains.choice] || "pendente";
+  const detail = {
+    yes: "A pessoa comunica uma escolha clara, consistente e ligada à decisão atual.",
+    partial: "A pessoa comunica algum posicionamento, mas ainda precisa de apoio, confirmação ou nova checagem.",
+    no: "Há falha relevante para comunicar uma escolha própria e compreensível; corrigir barreiras reversíveis e reavaliar quando possível.",
+  }[capacityState.domains.choice] || "Selecione os itens observados para definir este domínio.";
+
+  if (summary) {
+    summary.innerHTML = `<strong>Classificação automática: ${label}.</strong><p>${detail}</p>`;
+  }
+}
+
+function updateCapacityUnderstandingFromChecks() {
+  const selected = Array.from(document.querySelectorAll("[data-capacity-understanding]:checked")).map((item) => item.dataset.capacityUnderstanding);
+  const yesCount = selected.filter((value) => value === "yes").length;
+  const hasNoItem = selected.includes("no");
+  capacityState.understandingItems = selected;
+
+  if (hasNoItem) {
+    capacityState.domains.understanding = "no";
+  } else if (yesCount >= 4) {
+    capacityState.domains.understanding = "yes";
+  } else if (yesCount > 0) {
+    capacityState.domains.understanding = "partial";
+  } else {
+    capacityState.domains.understanding = null;
+  }
+
+  const summary = document.querySelector("#capacityUnderstandingSummary");
+  const label = {
+    yes: "sim",
+    partial: "parcial",
+    no: "não",
+  }[capacityState.domains.understanding] || "pendente";
+  const detail = {
+    yes: "A pessoa compreende problema, opções, benefícios, riscos e consequências relevantes em linguagem própria.",
+    partial: "A pessoa compreende parte das informações, mas precisa de reforço, simplificação ou nova checagem.",
+    no: "Há falha relevante de compreensão; corrigir fatores reversíveis, adaptar comunicação e reavaliar antes de concluir.",
+  }[capacityState.domains.understanding] || "Selecione os itens observados para definir este domínio.";
+
+  if (summary) {
+    summary.innerHTML = `<strong>Classificação automática: ${label}.</strong><p>${detail}</p>`;
+  }
+}
+
+function updateCapacityAppreciationFromChecks() {
+  const selected = Array.from(document.querySelectorAll("[data-capacity-appreciation]:checked")).map((item) => item.dataset.capacityAppreciation);
+  const yesCount = selected.filter((value) => value === "yes").length;
+  const hasNoItem = selected.includes("no");
+  capacityState.appreciationItems = selected;
+
+  if (hasNoItem) {
+    capacityState.domains.appreciation = "no";
+  } else if (yesCount >= 4) {
+    capacityState.domains.appreciation = "yes";
+  } else if (yesCount > 0) {
+    capacityState.domains.appreciation = "partial";
+  } else {
+    capacityState.domains.appreciation = null;
+  }
+
+  const summary = document.querySelector("#capacityAppreciationSummary");
+  const label = {
+    yes: "sim",
+    partial: "parcial",
+    no: "não",
+  }[capacityState.domains.appreciation] || "pendente";
+  const detail = {
+    yes: "A pessoa reconhece que a informação clínica se aplica ao próprio caso e às consequências pessoais da decisão.",
+    partial: "A pessoa reconhece parte da situação, mas ainda precisa de conversa, exemplos concretos ou nova checagem.",
+    no: "Há falha relevante de apreciação da própria situação; investigar fatores reversíveis, falsas crenças, coerção ou sofrimento intenso.",
+  }[capacityState.domains.appreciation] || "Selecione os itens observados para definir este domínio.";
+
+  if (summary) {
+    summary.innerHTML = `<strong>Classificação automática: ${label}.</strong><p>${detail}</p>`;
+  }
+}
+
+function updateCapacityReasoningFromChecks() {
+  const selected = Array.from(document.querySelectorAll("[data-capacity-reasoning]:checked")).map((item) => item.dataset.capacityReasoning);
+  const yesCount = selected.filter((value) => value === "yes").length;
+  const hasNoItem = selected.includes("no");
+  capacityState.reasoningItems = selected;
+
+  if (hasNoItem) {
+    capacityState.domains.reasoning = "no";
+  } else if (yesCount >= 4) {
+    capacityState.domains.reasoning = "yes";
+  } else if (yesCount > 0) {
+    capacityState.domains.reasoning = "partial";
+  } else {
+    capacityState.domains.reasoning = null;
+  }
+
+  const summary = document.querySelector("#capacityReasoningSummary");
+  const label = {
+    yes: "sim",
+    partial: "parcial",
+    no: "não",
+  }[capacityState.domains.reasoning] || "pendente";
+  const detail = {
+    yes: "A pessoa compara opções, pondera consequências e justifica a escolha de modo coerente com seus valores.",
+    partial: "A pessoa raciocina parcialmente sobre a decisão, mas precisa de apoio para comparar opções ou consequências.",
+    no: "Há falha relevante de raciocínio para esta decisão; investigar fatores reversíveis, coerção, sofrimento intenso ou alteração cognitiva.",
+  }[capacityState.domains.reasoning] || "Selecione os itens observados para definir este domínio.";
+
+  if (summary) {
+    summary.innerHTML = `<strong>Classificação automática: ${label}.</strong><p>${detail}</p>`;
+  }
+}
+
+function renderCapacityResult() {
+  updateCapacityRiskFromChecks();
+  updateCapacityChoiceFromChecks();
+  updateCapacityUnderstandingFromChecks();
+  updateCapacityAppreciationFromChecks();
+  updateCapacityReasoningFromChecks();
+
+  const values = Object.values(capacityState.domains);
+  const unanswered = values.filter(Boolean).length < values.length;
+  const noCount = values.filter((value) => value === "no").length;
+  const partialCount = values.filter((value) => value === "partial").length;
+  const yesCount = values.filter((value) => value === "yes").length;
+  const prepMissing = Array.from(document.querySelectorAll("[data-capacity-prep]")).filter((item) => !item.checked).length;
+  const highRisk = capacityState.risk === "high";
+
+  if (unanswered) {
+    setCapacityResult("Complete os quatro domínios", "A conclusão aparecerá após selecionar uma resposta em cada domínio.", [
+      "Avalie capacidade para a decisão específica e no momento atual.",
+      "Use apoios de comunicação e corrija fatores reversíveis antes de concluir incapacidade quando possível.",
+    ]);
+    return;
+  }
+
+  if (noCount > 0 || partialCount >= 2 || (highRisk && partialCount > 0)) {
+    setCapacityResult("Capacidade decisória possivelmente comprometida", "Há falha ou incerteza relevante em domínio essencial, especialmente considerando o risco/complexidade da decisão.", [
+      "Tratar fatores reversíveis e repetir a avaliação se houver possibilidade de melhora.",
+      "Envolver representante/diretivas antecipadas quando a pessoa não puder decidir.",
+      "Para decisão de alto impacto, considerar segunda avaliação, equipe multiprofissional, psiquiatria/psicologia ou apoio ético institucional.",
+      "Registrar qual domínio ficou comprometido e quais apoios foram utilizados.",
+    ]);
+    return;
+  }
+
+  if (partialCount === 1 || prepMissing > 0 || capacityState.risk === "moderate") {
+    setCapacityResult("Capacidade provável, mas com necessidade de reforço", "A pessoa atende aos domínios centrais, mas há ponto parcial, preparo incompleto ou decisão de complexidade moderada.", [
+      "Reforçar explicação em linguagem simples e pedir que a pessoa repita as informações essenciais.",
+      "Documentar a decisão específica, riscos, benefícios, alternativas e coerência com valores.",
+      "Se houver dúvida residual ou pressão familiar, reavaliar em curto prazo ou discutir com equipe.",
+    ]);
+    return;
+  }
+
+  if (yesCount === 4) {
+    setCapacityResult("Capacidade decisória preservada para esta decisão", "A pessoa comunica escolha, compreende informações relevantes, aprecia a própria situação e raciocina sobre alternativas e consequências.", [
+      "Registrar a conclusão no prontuário com a decisão avaliada e as respostas centrais da pessoa.",
+      "Prosseguir com decisão compartilhada, respeitando autonomia e proporcionalidade terapêutica.",
+      "Reavaliar capacidade se houver delirium, sedação, piora clínica ou mudança da decisão.",
+    ]);
+  }
+}
+
+document.querySelectorAll("[data-capacity-risk]").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      const none = document.querySelector("[data-capacity-risk-none]");
+      if (none) none.checked = false;
+    }
+    renderCapacityResult();
+  });
+});
+
+document.querySelector("[data-capacity-risk-none]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-capacity-risk]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  }
+  renderCapacityResult();
+});
+
+document.querySelectorAll("[data-capacity-choice]").forEach((checkbox) => {
+  checkbox.addEventListener("change", renderCapacityResult);
+});
+
+document.querySelectorAll("[data-capacity-understanding]").forEach((checkbox) => {
+  checkbox.addEventListener("change", renderCapacityResult);
+});
+
+document.querySelectorAll("[data-capacity-appreciation]").forEach((checkbox) => {
+  checkbox.addEventListener("change", renderCapacityResult);
+});
+
+document.querySelectorAll("[data-capacity-reasoning]").forEach((checkbox) => {
+  checkbox.addEventListener("change", renderCapacityResult);
+});
+
+document.querySelectorAll("[data-capacity-domain]").forEach((group) => {
+  group.querySelectorAll(".segment").forEach((button) => {
+    button.addEventListener("click", () => {
+      capacityState.domains[group.dataset.capacityDomain] = button.dataset.value;
+      group.querySelectorAll(".segment").forEach((item) => {
+        item.classList.toggle("active", item === button);
+      });
+      renderCapacityResult();
+    });
+  });
+});
+
+document.querySelectorAll("[data-capacity-prep]").forEach((checkbox) => {
+  checkbox.addEventListener("change", renderCapacityResult);
+});
+
+function setPpsResult(title, text, actions) {
+  const titleEl = document.querySelector("#ppsResultTitle");
+  const textEl = document.querySelector("#ppsResultText");
+  const actionsEl = document.querySelector("#ppsResultActions");
+
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+  if (actionsEl) {
+    actionsEl.innerHTML = actions.map((action) => `<li>${action}</li>`).join("");
+  }
+}
+
+const ppsRows = {
+  100: {
+    summary: "Deambulação completa; atividade normal e trabalho sem evidência de doença; autocuidado completo; ingesta normal; consciência completa.",
+    actions: [
+      "Registrar como funcionalidade preservada e usar a PPS como linha de base para comparação futura.",
+      "Reavaliar periodicamente se surgirem sintomas, queda de atividade ou nova evidência de doença.",
+    ],
+  },
+  90: {
+    summary: "Deambulação completa; atividade normal e trabalho com alguma evidência de doença; autocuidado completo; ingesta normal; consciência completa.",
+    actions: [
+      "Registrar evidência de doença e impacto funcional ainda discreto.",
+      "Manter plano de acompanhamento, controle de sintomas e orientação sobre sinais de mudança funcional.",
+    ],
+  },
+  80: {
+    summary: "Deambulação completa; atividade normal com esforço e alguma evidência de doença; autocuidado completo; ingesta normal ou reduzida; consciência completa.",
+    actions: [
+      "Investigar fadiga, redução de tolerância ao esforço e sintomas que estejam limitando atividades habituais.",
+      "Pactuar conservação de energia, reabilitação proporcional e metas funcionais realistas.",
+    ],
+  },
+  70: {
+    summary: "Deambulação reduzida; incapaz para o trabalho normal; doença significativa; autocuidado completo; ingesta normal ou reduzida; consciência completa.",
+    actions: [
+      "Revisar perda de trabalho/atividade habitual, segurança para deslocamento e necessidade de suporte domiciliar inicial.",
+      "Acompanhar tendência da PPS e alinhar metas de cuidado com pessoa e família.",
+    ],
+  },
+  60: {
+    summary: "Deambulação reduzida; incapaz para hobbies ou trabalho doméstico; doença significativa; assistência ocasional; ingesta normal ou reduzida; consciência completa ou períodos de confusão.",
+    actions: [
+      "Pesquisar necessidade de ajuda ocasional para banho, banheiro, transferências, alimentação e medicações.",
+      "Planejar suporte do cuidador, prevenção de quedas e plano para intercorrências.",
+    ],
+  },
+  50: {
+    summary: "Maior parte do tempo sentado ou deitado; incapaz para qualquer trabalho; doença extensa; assistência considerável; ingesta normal ou reduzida; consciência completa ou períodos de confusão.",
+    actions: [
+      "Revisar suporte diário do cuidador, adaptação do domicílio, risco de internação e plano de urgência.",
+      "Avaliar sintomas de maior impacto, segurança para transferências e necessidade de atenção domiciliar ou cuidado compartilhado.",
+    ],
+  },
+  40: {
+    summary: "Maior parte do tempo acamado; incapaz para a maioria das atividades; doença extensa; assistência quase completa; ingesta normal ou reduzida; consciência completa ou sonolência +/- confusão.",
+    actions: [
+      "Priorizar conforto, prevenção de lesões por pressão, higiene, mudança de decúbito e manejo de sintomas.",
+      "Revisar proporcionalidade terapêutica, carga do cuidador e disponibilidade de medicações e insumos no domicílio.",
+    ],
+  },
+  30: {
+    summary: "Totalmente acamado; incapaz para qualquer atividade; doença extensa; dependência completa; ingesta normal ou reduzida; consciência completa ou sonolência +/- confusão.",
+    actions: [
+      "Organizar cuidado de alta dependência, higiene, pele, alimentação proporcional e plano de sintomas.",
+      "Discutir objetivos de cuidado, limites terapêuticos, suporte familiar e sinais de processo ativo de morte.",
+    ],
+  },
+  20: {
+    summary: "Totalmente acamado; incapaz para qualquer atividade; doença extensa; dependência completa; ingesta mínima a pequenos goles; consciência completa ou sonolência +/- confusão.",
+    actions: [
+      "Reavaliar fim de vida, conforto, boca úmida, presença familiar e redução de intervenções sem benefício proporcional.",
+      "Garantir plano de crise, medicações essenciais, orientação à família e contato da equipe.",
+    ],
+  },
+  10: {
+    summary: "Totalmente acamado; incapaz para qualquer atividade; doença extensa; dependência completa; cuidados com a boca; sonolento ou coma +/- confusão.",
+    actions: [
+      "Considerar processo ativo de morte e priorizar exclusivamente conforto, controle de sintomas e presença de pessoas significativas.",
+      "Orientar família sobre sinais esperados, suspensão de medidas desproporcionais e plano para o momento do óbito.",
+    ],
+  },
+  0: {
+    summary: "Morte.",
+    actions: [
+      "Seguir fluxo local de constatação/declaração de óbito, acolhimento familiar e cuidados pós-óbito.",
+      "Oferecer suporte ao luto e revisar o caso com a equipe quando apropriado.",
+    ],
+  },
+};
+
+function getPpsInterpretation(score) {
+  return ppsRows[score] || ppsRows[0];
+}
+
+const ppsTableRows = [
+  { score: 100, ambulation: "complete", activity: "normal_no_disease", selfcare: "complete", intake: "normal", consciousness: "complete" },
+  { score: 90, ambulation: "complete", activity: "normal_some_disease", selfcare: "complete", intake: "normal", consciousness: "complete" },
+  { score: 80, ambulation: "complete", activity: "normal_effort_some_disease", selfcare: "complete", intake: "normal_or_reduced", consciousness: "complete" },
+  { score: 70, ambulation: "reduced", activity: "unable_normal_work_significant", selfcare: "complete", intake: "normal_or_reduced", consciousness: "complete" },
+  { score: 60, ambulation: "reduced", activity: "unable_hobbies_significant", selfcare: "occasional", intake: "normal_or_reduced", consciousness: "complete_or_confusion" },
+  { score: 50, ambulation: "sit_lie", activity: "unable_any_work_extensive", selfcare: "considerable", intake: "normal_or_reduced", consciousness: "complete_or_confusion" },
+  { score: 40, ambulation: "bed_most", activity: "unable_most_activity_extensive", selfcare: "almost_complete", intake: "normal_or_reduced", consciousness: "complete_or_drowsy_confusion" },
+  { score: 30, ambulation: "bedbound", activity: "unable_any_activity_extensive", selfcare: "complete_dependence", intake: "normal_or_reduced", consciousness: "complete_or_drowsy_confusion" },
+  { score: 20, ambulation: "bedbound", activity: "unable_any_activity_extensive", selfcare: "complete_dependence", intake: "minimal_sips", consciousness: "complete_or_drowsy_confusion" },
+  { score: 10, ambulation: "bedbound", activity: "unable_any_activity_extensive", selfcare: "complete_dependence", intake: "mouth_care", consciousness: "drowsy_coma_confusion" },
+  { score: 0, ambulation: "death", activity: "death", selfcare: "death", intake: "death", consciousness: "death" },
+];
+
+function calculatePpsScoreFromTable(values) {
+  const hierarchy = ["ambulation", "activity", "selfcare", "intake", "consciousness"];
+  if (hierarchy.some((factor) => values[factor] === "death")) {
+    return { score: 0, determiningFactor: "ambulation", notes: [] };
+  }
+
+  let candidates = [...ppsTableRows].filter((row) => row.score > 0);
+  let determiningFactor = "ambulation";
+  const notes = [];
+
+  hierarchy.forEach((factor) => {
+    const filtered = candidates.filter((row) => row[factor] === values[factor]);
+    if (filtered.length) {
+      candidates = filtered;
+      determiningFactor = factor;
+    } else {
+      notes.push(`O domínio ${getPpsFactorLabel(factor)} ficou fora da linha mais compatível; mantida a hierarquia da tabela.`);
+    }
+  });
+
+  const score = Math.min(...candidates.map((row) => row.score));
+  return { score, determiningFactor, notes };
+}
+
+function getPpsFactorLabel(factor) {
+  const labels = {
+    ambulation: "Deambulação",
+    activity: "Atividade/evidência de doença",
+    selfcare: "Autocuidado",
+    intake: "Ingesta",
+    consciousness: "Nível de consciência",
+  };
+  return labels[factor] || factor;
+}
+
+function describePpsHierarchy(determiningFactor) {
+  return `${getPpsFactorLabel(determiningFactor)} foi o domínio que refinou a linha final compatível. Hierarquia aplicada: deambulação > atividade/evidência de doença > autocuidado > ingesta > nível de consciência.`;
+}
+
+function updatePpsResult() {
+  const selects = Array.from(document.querySelectorAll("[data-pps-factor]"));
+  if (!selects.length) return;
+
+  const selected = selects.filter((select) => select.value);
+  if (selected.length < selects.length) {
+    setPpsResult("Selecione os cinco parâmetros", "O PPS estimado aparecerá após preencher deambulação, atividade, autocuidado, ingesta e consciência.", [
+      "Preencha todos os campos para reduzir inconsistência na estimativa.",
+      "Leia a escala horizontalmente, da esquerda para a direita, respeitando a hierarquia: deambulação, atividade/evidência de doença, autocuidado, ingesta e nível de consciência.",
+      "Quando houver dúvida entre dois níveis, não use pontuação intermediária; escolha o incremento de 10% definido pelo domínio hierarquicamente mais forte que se aplica.",
+    ]);
+    return;
+  }
+
+  const values = selects.reduce((acc, select) => {
+    acc[select.dataset.ppsFactor] = select.value;
+    return acc;
+  }, {});
+  const calculation = calculatePpsScoreFromTable(values);
+  const score = calculation.score;
+  const interpretation = getPpsInterpretation(score);
+  setPpsResult(`PPS estimado: ${score}%`, interpretation.summary, [
+    describePpsHierarchy(calculation.determiningFactor),
+    ...calculation.notes,
+    ...interpretation.actions,
+    "Use a PPS como apoio à comunicação e ao acompanhamento funcional; ela não substitui avaliação longitudinal, prognóstico individual nem conversa com a pessoa e família.",
+  ]);
+}
+
+document.querySelectorAll("[data-pps-factor]").forEach((select) => {
+  select.addEventListener("change", updatePpsResult);
+});
+
+function setIdentificationStepLock(stepName, locked) {
+  document.querySelectorAll(`[data-identification-requires="${stepName}"]`).forEach((step) => {
+    step.classList.toggle("locked-step", locked);
+    step.setAttribute("aria-disabled", String(locked));
+  });
+}
+
+function setIdentificationInlineResult(containerId, titleId, textId, actionsId, title, text, actions) {
+  const container = document.querySelector(`#${containerId}`);
+  const titleEl = document.querySelector(`#${titleId}`);
+  const textEl = document.querySelector(`#${textId}`);
+  const actionsEl = document.querySelector(`#${actionsId}`);
+
+  if (container) container.hidden = false;
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+  if (actionsEl) {
+    actionsEl.innerHTML = actions.map((action) => `<li>${action}</li>`).join("");
+  }
+}
+
+function hideIdentificationInlineResult(containerId) {
+  const container = document.querySelector(`#${containerId}`);
+  if (container) container.hidden = true;
+}
+
+function setIdentificationResult(title, text, actions) {
+  const container = document.querySelector(".identification-result");
+  const titleEl = document.querySelector("#identificationResultTitle");
+  const textEl = document.querySelector("#identificationResultText");
+  const actionsEl = document.querySelector("#identificationResultActions");
+
+  if (container) container.hidden = false;
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+  if (actionsEl) {
+    actionsEl.innerHTML = actions.map((action) => `<li>${action}</li>`).join("");
+  }
+}
+
+function hideIdentificationResult() {
+  const container = document.querySelector(".identification-result");
+  if (container) container.hidden = true;
+}
+
+function getCheckedLabelTexts(selector) {
+  return Array.from(document.querySelectorAll(selector))
+    .filter((item) => item.checked)
+    .map((item) => item.closest("label")?.textContent.trim())
+    .filter(Boolean);
+}
+
+function updateIdentificationStatusFromChecks() {
+  identificationState.simplifiedItems = getCheckedLabelTexts("[data-identification-simplified-item]");
+  identificationState.simplifiedNone = Boolean(document.querySelector("[data-identification-simplified-none]")?.checked);
+  identificationState.simplifiedDoubt = Boolean(document.querySelector("[data-identification-simplified-doubt]")?.checked);
+  identificationState.spictItems = getCheckedLabelTexts("[data-identification-spict-item]");
+  identificationState.spictNone = Boolean(document.querySelector("[data-identification-spict-none]")?.checked);
+  identificationState.spictDoubt = Boolean(document.querySelector("[data-identification-spict-doubt]")?.checked);
+
+  if (identificationState.simplifiedItems.length > 0) {
+    identificationState.simplified = "positive";
+  } else if (identificationState.simplifiedDoubt) {
+    identificationState.simplified = "doubt";
+  } else if (identificationState.simplifiedNone) {
+    identificationState.simplified = "negative";
+  } else {
+    identificationState.simplified = null;
+  }
+
+  if (identificationState.spictItems.length > 0) {
+    identificationState.spict = "positive";
+  } else if (identificationState.spictDoubt) {
+    identificationState.spict = "doubt";
+  } else if (identificationState.spictNone) {
+    identificationState.spict = "negative";
+  } else {
+    identificationState.spict = null;
+  }
+}
+
+function scrollIdentificationTo(selector) {
+  const target = document.querySelector(selector);
+  if (!target) return;
+  window.setTimeout(() => {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 80);
+}
+
+function renderIdentificationFlow(scrollAfterStep = false) {
+  updateIdentificationStatusFromChecks();
+
+  const continueToSpict =
+    identificationState.simplified === "positive" || identificationState.simplified === "doubt";
+  const continueToSurprise =
+    continueToSpict && (identificationState.spict === "positive" || identificationState.spict === "doubt");
+
+  setIdentificationStepLock("spict", !continueToSpict);
+  setIdentificationStepLock("surprise", !continueToSurprise);
+  hideIdentificationResult();
+
+  if (!continueToSpict) {
+    identificationState.spict = null;
+    identificationState.spictItems = [];
+    identificationState.spictNone = false;
+    identificationState.spictDoubt = false;
+    identificationState.surprise = null;
+    document.querySelectorAll("[data-identification-spict-item], [data-identification-spict-none], [data-identification-spict-doubt]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    document.querySelectorAll('[data-identification-flow="surprise"]').forEach((button) => {
+      button.classList.remove("active");
+    });
+  } else if (!continueToSurprise) {
+    identificationState.surprise = null;
+    document.querySelectorAll('[data-identification-flow="surprise"]').forEach((button) => {
+      button.classList.remove("active");
+    });
+  }
+
+  if (!identificationState.simplified) {
+    hideIdentificationInlineResult("identificationSimplifiedResult");
+    hideIdentificationInlineResult("identificationSpictResult");
+    return;
+  }
+
+  if (identificationState.simplified === "negative") {
+    hideIdentificationInlineResult("identificationSpictResult");
+    setIdentificationInlineResult("identificationSimplifiedResult", "identificationSimplifiedTitle", "identificationSimplifiedText", "identificationSimplifiedActions", "Interromper fluxo", "Sem item positivo na Elegibilidade Simplificada, o guia orienta interromper o fluxo de elegibilidade para abordagem paliativa completa.", [
+      "Manter acompanhamento longitudinal pela APS e reavaliar se houver declínio funcional, nova internação, sintomas persistentes ou mudança clínica.",
+      "Se permanecer dúvida clínica, discutir o caso em equipe multiprofissional e considerar continuidade do fluxo.",
+    ]);
+    if (scrollAfterStep) scrollIdentificationTo("#identificationSimplifiedResult");
+    return;
+  }
+
+  const selectedSimplifiedItems = identificationState.simplifiedItems.length
+    ? `Itens selecionados: ${identificationState.simplifiedItems.join("; ")}.`
+    : "Permanece dúvida na Elegibilidade Simplificada.";
+
+  setIdentificationInlineResult("identificationSimplifiedResult", "identificationSimplifiedTitle", "identificationSimplifiedText", "identificationSimplifiedActions", "Discutir em reunião de equipe e aplicar SPICT-BR", "Item positivo ou dúvida na Elegibilidade Simplificada deve acionar discussão em equipe e avaliação com SPICT-BR.", [
+    selectedSimplifiedItems,
+    "Levar o caso selecionado pelo ACS para reunião de equipe.",
+    "Aplicar o SPICT-BR com participação da equipe multiprofissional.",
+    "Registrar motivo da triagem e principais necessidades observadas.",
+  ]);
+
+  if (!identificationState.spict) {
+    hideIdentificationInlineResult("identificationSpictResult");
+    if (scrollAfterStep) scrollIdentificationTo('[data-identification-requires="spict"]');
+    return;
+  }
+
+  if (identificationState.spict === "negative") {
+    setIdentificationInlineResult("identificationSpictResult", "identificationSpictTitle", "identificationSpictText", "identificationSpictActions", "Interromper fluxo", "Sem item positivo no SPICT-BR, o fluxo de elegibilidade para abordagem paliativa completa pode ser interrompido.", [
+      "Reavaliar periodicamente o tratamento atual, sintomas, funcionalidade e carga familiar.",
+      "Se a dúvida persistir, discutir com equipe multiprofissional ou apoio matricial antes de encerrar a avaliação.",
+    ]);
+    if (scrollAfterStep) scrollIdentificationTo("#identificationSpictResult");
+    return;
+  }
+
+  const selectedSpictItems = identificationState.spictItems.length
+    ? `Indicadores SPICT-BR selecionados: ${identificationState.spictItems.join("; ")}.`
+    : "Permanece dúvida após aplicação do SPICT-BR.";
+
+  setIdentificationInlineResult("identificationSpictResult", "identificationSpictTitle", "identificationSpictText", "identificationSpictActions", "Aplicar pergunta surpresa", "SPICT-BR positivo ou dúvida sustentada indica seguir para priorização com a pergunta surpresa.", [
+    selectedSpictItems,
+    "Pergunte: “Eu ficaria surpreso se esta pessoa falecesse nos próximos 12 meses?”.",
+    "Use a resposta para definir prioridade de acompanhamento, não como previsão rígida de tempo.",
+  ]);
+
+  if (!identificationState.surprise) {
+    if (scrollAfterStep) scrollIdentificationTo('[data-identification-requires="surprise"]');
+    return;
+  }
+
+  if (identificationState.surprise === "no") {
+    setIdentificationResult("Abordagem paliativa completa prioritária", "A resposta “não” à pergunta surpresa indica maior prioridade para abordagem paliativa completa e planejamento compartilhado.", [
+      "Reavaliar tratamento atual e medicamentos para cuidado otimizado.",
+      "Pactuar objetivos do cuidado atual e futuro com pessoa e família.",
+      "Planejar antecipadamente risco de perda cognitiva ou piora funcional.",
+      "Registrar em prontuário, comunicar e coordenar o plano geral de cuidados.",
+      "Considerar especialista quando sintomas ou necessidades forem complexos e difíceis de manejar.",
+    ]);
+    if (scrollAfterStep) scrollIdentificationTo(".identification-result");
+    return;
+  }
+
+  if (identificationState.surprise === "yes") {
+    setIdentificationResult("Abordagem paliativa completa com seguimento programado", "Mesmo sem prioridade pela pergunta surpresa, o SPICT-BR positivo indica necessidade de abordagem paliativa completa proporcional.", [
+      "Revisar necessidades atuais, sintomas e funcionalidade.",
+      "Pactuar plano de cuidado e definir periodicidade de reavaliação pela APS.",
+      "Registrar elegibilidade, preferências, cuidador de referência e critérios para acionar a rede.",
+    ]);
+    if (scrollAfterStep) scrollIdentificationTo(".identification-result");
+    return;
+  }
+
+  setIdentificationResult("Discutir prioridade em equipe", "Quando a resposta à pergunta surpresa é incerta, a decisão deve ser compartilhada pela equipe multiprofissional.", [
+    "Revisar trajetória da doença, internações, funcionalidade, sintomas e sobrecarga do cuidador.",
+    "Definir se o caso será acompanhado como prioritário ou reavaliado em prazo curto.",
+    "Registrar a incerteza e o plano de reavaliação.",
+  ]);
+  if (scrollAfterStep) scrollIdentificationTo(".identification-result");
+}
+
+document.querySelectorAll("[data-identification-flow]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const group = button.dataset.identificationFlow;
+    identificationState[group] = button.dataset.value;
+
+    document.querySelectorAll(`[data-identification-flow="${group}"]`).forEach((item) => {
+      item.classList.toggle("active", item === button);
+    });
+
+    renderIdentificationFlow(true);
+  });
+});
+
+document.querySelectorAll("[data-identification-simplified-item]").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      const none = document.querySelector("[data-identification-simplified-none]");
+      const doubt = document.querySelector("[data-identification-simplified-doubt]");
+      if (none) none.checked = false;
+      if (doubt) doubt.checked = false;
+    }
+    renderIdentificationFlow(true);
+  });
+});
+
+document.querySelector("[data-identification-simplified-none]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-identification-simplified-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const doubt = document.querySelector("[data-identification-simplified-doubt]");
+    if (doubt) doubt.checked = false;
+  }
+  renderIdentificationFlow(true);
+});
+
+document.querySelector("[data-identification-simplified-doubt]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-identification-simplified-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const none = document.querySelector("[data-identification-simplified-none]");
+    if (none) none.checked = false;
+  }
+  renderIdentificationFlow(true);
+});
+
+document.querySelectorAll("[data-identification-spict-item]").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      const none = document.querySelector("[data-identification-spict-none]");
+      const doubt = document.querySelector("[data-identification-spict-doubt]");
+      if (none) none.checked = false;
+      if (doubt) doubt.checked = false;
+    }
+    renderIdentificationFlow(true);
+  });
+});
+
+document.querySelector("[data-identification-spict-none]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-identification-spict-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const doubt = document.querySelector("[data-identification-spict-doubt]");
+    if (doubt) doubt.checked = false;
+  }
+  renderIdentificationFlow(true);
+});
+
+document.querySelector("[data-identification-spict-doubt]")?.addEventListener("change", (event) => {
+  if (event.target.checked) {
+    document.querySelectorAll("[data-identification-spict-item]").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    const none = document.querySelector("[data-identification-spict-none]");
+    if (none) none.checked = false;
+  }
+  renderIdentificationFlow(true);
+});
+
+renderIdentificationFlow();
 
 function openCoughSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
@@ -1268,6 +2843,31 @@ document.querySelectorAll("[data-anorexia-subtab]").forEach((button) => {
   });
 });
 
+function openGriefSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-grief-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.griefSubtab === targetId);
+  });
+
+  document.querySelectorAll(".grief-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-grief-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openGriefSubtab(button.dataset.griefSubtab);
+  });
+});
+
 function openHypodermoSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
 
@@ -1290,6 +2890,56 @@ function openHypodermoSubtab(targetId, focusPanel = true) {
 document.querySelectorAll("[data-hypodermo-subtab]").forEach((button) => {
   button.addEventListener("click", () => {
     openHypodermoSubtab(button.dataset.hypodermoSubtab);
+  });
+});
+
+function openPediatricSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-pediatric-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.pediatricSubtab === targetId);
+  });
+
+  document.querySelectorAll(".pediatric-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-pediatric-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPediatricSubtab(button.dataset.pediatricSubtab);
+  });
+});
+
+function openPediatricSymptomSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-pediatric-symptom-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.pediatricSymptomSubtab === targetId);
+  });
+
+  document.querySelectorAll(".pediatric-symptom-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-pediatric-symptom-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPediatricSymptomSubtab(button.dataset.pediatricSymptomSubtab);
   });
 });
 
@@ -1522,7 +3172,7 @@ function updateAnorexiaResult() {
 
   if (!anorexiaState.stepOneAnswered) {
     title.textContent = "Pesquise sinais de alerta para iniciar";
-    text.textContent = "Selecione uma resposta no passo 1 antes de avançar para situação predominante, fatores associados e conduta.";
+    text.textContent = "Selecione uma resposta no passo 1 antes de avançar para classificação da síndrome, fatores associados e conduta.";
     actions.replaceChildren(
       ...[
         "Marque um ou mais sinais de alerta, se presentes.",
@@ -1535,7 +3185,7 @@ function updateAnorexiaResult() {
   if (anorexiaState.alerts.length > 0) {
     title.textContent = "Interromper fluxo: sinais de alerta presentes";
     text.textContent =
-      "Antes de seguir o manejo habitual da anorexia-caquexia, priorizar avaliação dirigida dos sinais de alerta selecionados.";
+      "Antes de seguir o manejo habitual da síndrome de anorexia-caquexia, priorizar avaliação dirigida dos sinais de alerta selecionados.";
     actions.replaceChildren(
       ...[
         ...anorexiaState.alerts.map((alert) => anorexiaAlertActions[alert]),
@@ -1546,14 +3196,23 @@ function updateAnorexiaResult() {
   }
 
   const plan = anorexiaStagePlans[anorexiaState.stage];
-  const factorActions = anorexiaState.factors.map((factor) => anorexiaFactorActions[factor]);
+  const selectedFactorPlans = anorexiaState.factors.map((factor) => anorexiaFactorActions[factor]);
+  const nonPharmacologicalActions = [
+    ...plan.nonPharmacological,
+    ...selectedFactorPlans.map((factorPlan) => factorPlan.nonPharmacological),
+    "Reavaliar apetite, ingesta, peso quando fizer sentido, sintomas, funcionalidade, conforto e sofrimento familiar em prazo definido.",
+  ];
+  const pharmacologicalActions = [
+    ...plan.pharmacological,
+    ...selectedFactorPlans.map((factorPlan) => factorPlan.pharmacological),
+    "Monitorar benefício, sonolência, edema, hiperglicemia, tromboembolismo, delirium, constipação e outros efeitos adversos conforme medicamento utilizado.",
+  ];
 
   title.textContent = plan.title;
   text.textContent = plan.text;
   actions.replaceChildren(
-    ...plan.actions.map(createResultItem),
-    ...factorActions.map(createResultItem),
-    createResultItem("Reavaliar apetite, ingesta, peso quando fizer sentido, sintomas, funcionalidade, conforto, efeitos adversos e sofrimento familiar em prazo definido.")
+    createResultSection("Condutas não farmacológicas", nonPharmacologicalActions, "nonmedication"),
+    createResultSection("Condutas farmacológicas", pharmacologicalActions, "medication")
   );
 }
 
@@ -1607,7 +3266,7 @@ function updatePainResult() {
   }
 
   const recommendation = mechanismRecommendations[painState.mechanism];
-  const medicationPlan = getMedicationPlan(painState.mechanism, painState.intensity);
+  const medicationPlan = getMedicationPlan(painState.mechanism, painState.intensity, painState.phenotype);
   const nonMedicationActions = getNonMedicationActions(painState.mechanism, painState.intensity);
   const phytotherapyActions = getPhytotherapyActions(painState.mechanism, painState.intensity);
   title.textContent = `Plano multimodal para dor crônica ${recommendation.label} ${intensityLabels[painState.intensity]}`;
@@ -1947,9 +3606,19 @@ document.querySelectorAll("[data-prescription-group]").forEach((group) => {
     const selected = event.target.closest(".segment");
     if (!selected) return;
 
-    prescriptionState[group.dataset.prescriptionGroup] = selected.dataset.value;
-    if (group.dataset.prescriptionGroup === "route") {
+    const groupName = group.dataset.prescriptionGroup;
+    const previousValue = prescriptionState[groupName];
+    const nextValue = selected.dataset.value;
+
+    prescriptionState[groupName] = nextValue;
+    if (groupName === "population" && previousValue && previousValue !== nextValue) {
+      prescriptionState.nonpharm = [];
+      prescriptionState.medications = [];
+      prescriptionState.phytotherapy = [];
+    }
+    if (groupName === "route") {
       prescriptionState.routeAnswered = true;
+      prescriptionState.phytotherapy = [];
     }
     group.querySelectorAll(".segment").forEach((button) => {
       button.classList.toggle("active", button === selected);
@@ -2000,6 +3669,115 @@ document.querySelector("#copyPrescription")?.addEventListener("click", async (ev
   }
 });
 
+function getDirectiveField(field) {
+  return document.querySelector(`[data-directive-field="${field}"]`)?.value.trim() || "";
+}
+
+function buildDirectiveText() {
+  const fields = {
+    nome: getDirectiveField("nome") || "[nome completo]",
+    nascimento: getDirectiveField("nascimento") || "[data de nascimento]",
+    documento: getDirectiveField("documento") || "[documento]",
+    dataLocal: getDirectiveField("dataLocal") || "[local e data]",
+    representante: getDirectiveField("representante") || "[representante indicado]",
+    representanteSubstituto: getDirectiveField("representanteSubstituto") || "[representante substituto, se houver]",
+    valores: getDirectiveField("valores") || "[valores, objetivos de cuidado e limites considerados importantes]",
+    tratamentosDesejados:
+      getDirectiveField("tratamentosDesejados") ||
+      "[tratamentos desejados quando houver benefício proporcional e coerência com os objetivos de cuidado]",
+    tratamentosRecusados:
+      getDirectiveField("tratamentosRecusados") ||
+      "[tratamentos recusados em cenário irreversível ou sem benefício proporcional]",
+    conforto: getDirectiveField("conforto") || "[prioridades de conforto, local de cuidado e despedidas]",
+    observacoes: getDirectiveField("observacoes") || "[observações sobre capacidade decisória, participantes e plano de revisão]",
+  };
+
+  return [
+    "DIRETIVAS ANTECIPADAS DE VONTADE",
+    "",
+    `Eu, ${fields.nome}, nascido(a) em ${fields.nascimento}, documento ${fields.documento}, declaro, por meio destas Diretivas Antecipadas de Vontade, minhas preferências de cuidado para situações futuras em que eu não consiga expressar minha vontade de forma livre e autônoma. Registro que estas escolhas devem orientar a equipe assistencial, minha família e meu representante, sempre de acordo com a avaliação clínica, a proporcionalidade terapêutica e as normas éticas vigentes.`,
+    "",
+    `Para mim, qualidade de vida, dignidade e cuidado adequado significam: ${fields.valores}. Desejo que essas informações sejam consideradas na definição de objetivos de cuidado, especialmente em situações de doença avançada, irreversível, terminalidade, processo ativo de morte ou perda de capacidade decisória.`,
+    "",
+    `Indico como representante para apoiar decisões futuras ${fields.representante}. Caso essa pessoa não esteja disponível ou não possa exercer essa função, indico como representante substituto ${fields.representanteSubstituto}. Desejo que meu representante dialogue com a equipe de saúde, considere meus valores e ajude a defender as preferências aqui registradas.`,
+    "",
+    `Se houver benefício proporcional e coerência com meus objetivos de cuidado, desejo receber os seguintes tratamentos e cuidados: ${fields.tratamentosDesejados}. Essas preferências devem ser interpretadas considerando meu estado clínico, possibilidade real de benefício, carga de sofrimento e riscos envolvidos.`,
+    "",
+    `Em cenário irreversível, terminal, de sofrimento desproporcional ou quando não houver benefício clínico esperado, não desejo receber os seguintes tratamentos ou intervenções: ${fields.tratamentosRecusados}. Essa recusa deve ser compreendida como preferência por cuidado proporcional, conforto e alívio de sofrimento, e não como recusa de cuidado.`,
+    "",
+    `Minhas prioridades de conforto, local de cuidado, presença de pessoas significativas, espiritualidade, privacidade, despedidas e outras preferências são: ${fields.conforto}. Peço que, sempre que possível, essas preferências sejam respeitadas e revisadas com meu representante e com a equipe.`,
+    "",
+    `Para registro em prontuário e continuidade do cuidado, observo ainda: ${fields.observacoes}. Recomendo que este documento seja revisto quando houver mudança relevante de diagnóstico, prognóstico, valores pessoais, capacidade decisória ou contexto familiar.`,
+    "",
+    "Declaro que minhas escolhas devem ser consideradas pela equipe assistencial e por meu representante, priorizando conforto, dignidade, alívio de sofrimento e respeito aos meus valores, desde que não contrariem o Código de Ética Médica.",
+    "",
+    fields.dataLocal,
+    "",
+    "Assinatura da pessoa: _______________________________________________",
+    "Assinatura do representante, se houver: ______________________________",
+    "Profissional/equipe que registrou a conversa: _________________________",
+    "",
+    "Texto normativo integral pertinente - Resolução CFM nº 1.995/2012:",
+    "",
+    "RESOLUÇÃO CFM nº 1.995/2012",
+    "",
+    "Dispõe sobre as diretivas antecipadas de vontade dos pacientes.",
+    "",
+    "Art. 1º Definir diretivas antecipadas de vontade como o conjunto de desejos, prévia e expressamente manifestados pelo paciente, sobre cuidados e tratamentos que quer, ou não, receber no momento em que estiver incapacitado de expressar, livre e autonomamente, sua vontade.",
+    "",
+    "Art. 2º Nas decisões sobre cuidados e tratamentos de pacientes que se encontram incapazes de comunicar-se, ou de expressar de maneira livre e independente suas vontades, o médico levará em consideração suas diretivas antecipadas de vontade.",
+    "",
+    "§ 1º Caso o paciente tenha designado um representante para tal fim, suas informações serão levadas em consideração pelo médico.",
+    "",
+    "§ 2º O médico deixará de levar em consideração as diretivas antecipadas de vontade do paciente ou representante que, em sua análise, estiverem em desacordo com os preceitos ditados pelo Código de Ética Médica.",
+    "",
+    "§ 3º As diretivas antecipadas do paciente prevalecerão sobre qualquer outro parecer não médico, inclusive sobre os desejos dos familiares.",
+    "",
+    "§ 4º O médico registrará, no prontuário, as diretivas antecipadas de vontade que lhes foram diretamente comunicadas pelo paciente.",
+    "",
+    "§ 5º Não sendo conhecidas as diretivas antecipadas de vontade do paciente, nem havendo representante designado, familiares disponíveis ou falta de consenso entre estes, o médico recorrerá ao Comitê de Bioética da instituição, caso exista, ou, na falta deste, à Comissão de Ética Médica do hospital ou ao Conselho Regional e Federal de Medicina para fundamentar sua decisão sobre conflitos éticos, quando entender esta medida necessária e conveniente.",
+    "",
+    "Art. 3º Esta resolução entra em vigor na data de sua publicação.",
+  ].join("\n");
+}
+
+function renderDirectiveText() {
+  const output = document.querySelector("#directiveOutput");
+  if (output) {
+    output.value = buildDirectiveText();
+  }
+}
+
+document.querySelector("#generateDirective")?.addEventListener("click", renderDirectiveText);
+
+document.querySelector("#copyDirective")?.addEventListener("click", async (event) => {
+  const output = document.querySelector("#directiveOutput");
+  const text = output?.value.trim() || buildDirectiveText();
+  if (output && !output.value.trim()) {
+    output.value = text;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    event.currentTarget.textContent = "Texto copiado";
+    window.setTimeout(() => {
+      event.currentTarget.textContent = "Copiar texto";
+    }, 1800);
+  } catch {
+    event.currentTarget.textContent = "Copie manualmente";
+  }
+});
+
+document.querySelector("#clearDirective")?.addEventListener("click", () => {
+  document.querySelectorAll("[data-directive-field]").forEach((field) => {
+    field.value = "";
+  });
+  const output = document.querySelector("#directiveOutput");
+  if (output) {
+    output.value = "";
+  }
+});
+
 updatePainResult();
 updateStepAccess();
 updateCoughResult();
@@ -2010,6 +3788,10 @@ updateFatigueResult();
 updateFatigueStepAccess();
 updateAnorexiaResult();
 updateAnorexiaStepAccess();
+renderCapacityResult();
+updatePpsResult();
+renderPediatricSymptomFlows();
+setupPediatricSymptomFlowSubtabs();
 updatePrescriptionStepAccess();
 updatePrescriptionResult();
 
@@ -2027,8 +3809,232 @@ function makeListItem(text) {
   return item;
 }
 
+function getPediatricSymptomFlowState(flowId) {
+  const config = pediatricSymptomFlowConfigs[flowId];
+  if (!pediatricSymptomFlowState[flowId]) {
+    pediatricSymptomFlowState[flowId] = {
+      noAlert: false,
+      alerts: [],
+      context: config?.defaultContext || "",
+      intensity: "moderate",
+    };
+  }
+  return pediatricSymptomFlowState[flowId];
+}
+
+function getPediatricSymptomFlowResult(config, state) {
+  if (!state.noAlert && !state.alerts.length) {
+    return {
+      title: "Selecione sinais de alerta",
+      items: [
+        "Marque Sem sinais de alerta ou selecione qualquer sinal presente para orientar o próximo passo.",
+      ],
+    };
+  }
+
+  if (state.alerts.length) {
+    return {
+      title: "Próximo passo sugerido: interromper fluxo",
+      items: [
+        "Priorizar avaliação presencial imediata, segurança clínica e definição de causa potencialmente reversível.",
+        `Sinais selecionados: ${state.alerts.join("; ")}.`,
+        "Manter conforto, posicionamento, presença familiar e plano de urgência enquanto a equipe é acionada.",
+      ],
+    };
+  }
+
+  const recommendation = config.recommendations[state.context] || config.recommendations[config.defaultContext];
+  const intensityText = prescriptionLabels.intensity[state.intensity] || "não definida";
+  const escalation =
+    state.intensity === "crisis"
+      ? "Como foi marcada crise/fim de vida, reavaliar em minutos, confirmar objetivos de cuidado e acionar suporte se não houver plano de crise."
+      : state.intensity === "severe"
+      ? "Como a intensidade é intensa, definir reavaliação breve, dose de resgate quando indicada e critérios claros para contato com a equipe."
+      : "Reavaliar resposta, tolerabilidade e conforto no intervalo pactuado com família e equipe.";
+
+  return {
+    title: "Próximo passo sugerido",
+    items: [
+      `Intensidade selecionada: ${intensityText}.`,
+      `Condutas não farmacológicas: ${recommendation.nonpharm}`,
+      `Condutas farmacológicas: ${recommendation.meds}`,
+      escalation,
+      "Antes de prescrever: confirmar peso atual, idade, alergias, função renal/hepática, formulação disponível e protocolo pediátrico local.",
+    ],
+  };
+}
+
+function renderPediatricSymptomFlow(container) {
+  const flowId = container.dataset.pediatricFlow;
+  const config = pediatricSymptomFlowConfigs[flowId];
+  if (!config) return;
+
+  const state = getPediatricSymptomFlowState(flowId);
+  const result = getPediatricSymptomFlowResult(config, state);
+
+  container.innerHTML = `
+    <div class="pediatric-flow-header">
+      <h3>${config.title}</h3>
+      <p>Selecione sinais de alerta, padrão predominante e intensidade para gerar o próximo passo sugerido.</p>
+    </div>
+    <div class="pediatric-flow-steps">
+      <section class="pediatric-flow-step">
+        <h4>1. Pesquisar sinais de alerta</h4>
+        <label class="pediatric-flow-option pediatric-flow-option-none">
+          <input type="checkbox" data-ped-flow-no-alert ${state.noAlert ? "checked" : ""} />
+          <span>Sem sinais de alerta</span>
+        </label>
+        <div class="pediatric-flow-options">
+          ${config.alerts
+            .map(
+              (alert) => `
+                <label class="pediatric-flow-option">
+                  <input type="checkbox" data-ped-flow-alert="${alert}" ${state.alerts.includes(alert) ? "checked" : ""} />
+                  <span>${alert}</span>
+                </label>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+      <section class="pediatric-flow-step">
+        <h4>2. ${config.stepLabel}</h4>
+        <div class="segmented-control multi pediatric-flow-segments">
+          ${config.contexts
+            .map(
+              (context) => `
+                <button class="segment ${state.context === context.value ? "active" : ""}" type="button" data-ped-flow-context="${context.value}">
+                  ${context.label}
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+      <section class="pediatric-flow-step">
+        <h4>3. Intensidade</h4>
+        <div class="segmented-control multi pediatric-flow-segments">
+          ${Object.entries(prescriptionLabels.intensity)
+            .map(
+              ([value, label]) => `
+                <button class="segment ${state.intensity === value ? "active" : ""}" type="button" data-ped-flow-intensity="${value}">
+                  ${label}
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+      </section>
+    </div>
+    <section class="pediatric-flow-result">
+      <span class="result-kicker">${result.title}</span>
+      <ul>${result.items.map((item) => `<li>${item}</li>`).join("")}</ul>
+    </section>
+  `;
+
+  container.querySelector("[data-ped-flow-no-alert]")?.addEventListener("change", (event) => {
+    state.noAlert = event.target.checked;
+    if (state.noAlert) {
+      state.alerts = [];
+    }
+    renderPediatricSymptomFlow(container);
+  });
+
+  container.querySelectorAll("[data-ped-flow-alert]").forEach((input) => {
+    input.addEventListener("change", () => {
+      state.alerts = Array.from(container.querySelectorAll("[data-ped-flow-alert]:checked")).map(
+        (item) => item.dataset.pedFlowAlert
+      );
+      if (state.alerts.length) {
+        state.noAlert = false;
+      }
+      renderPediatricSymptomFlow(container);
+    });
+  });
+
+  container.querySelectorAll("[data-ped-flow-context]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.context = button.dataset.pedFlowContext;
+      renderPediatricSymptomFlow(container);
+    });
+  });
+
+  container.querySelectorAll("[data-ped-flow-intensity]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.intensity = button.dataset.pedFlowIntensity;
+      renderPediatricSymptomFlow(container);
+    });
+  });
+}
+
+function renderPediatricSymptomFlows() {
+  document.querySelectorAll("[data-pediatric-flow]").forEach((container) => {
+    renderPediatricSymptomFlow(container);
+  });
+}
+
+function setupPediatricSymptomFlowSubtabs() {
+  document.querySelectorAll(".pediatric-symptom-subpanel").forEach((panel) => {
+    const flowCard = Array.from(panel.children).find((child) => child.matches?.("[data-pediatric-flow]"));
+    if (!flowCard || panel.querySelector(":scope > .pediatric-inner-subtabs")) return;
+
+    const controls = document.createElement("div");
+    controls.className = "subtabs pediatric-inner-subtabs";
+    controls.setAttribute("aria-label", "Subabas do sintoma pediátrico");
+
+    const overviewButton = document.createElement("button");
+    overviewButton.className = "subtab-trigger active";
+    overviewButton.type = "button";
+    overviewButton.textContent = "Visão geral";
+
+    const flowButton = document.createElement("button");
+    flowButton.className = "subtab-trigger";
+    flowButton.type = "button";
+    flowButton.textContent = "Fluxo decisório";
+
+    const overviewPanel = document.createElement("div");
+    overviewPanel.className = "pediatric-inner-panel active";
+    overviewPanel.tabIndex = 0;
+
+    const flowPanel = document.createElement("div");
+    flowPanel.className = "pediatric-inner-panel";
+    flowPanel.tabIndex = 0;
+
+    Array.from(panel.childNodes).forEach((node) => {
+      if (node === flowCard) {
+        flowPanel.append(node);
+      } else {
+        overviewPanel.append(node);
+      }
+    });
+
+    controls.append(overviewButton, flowButton);
+    panel.append(controls, overviewPanel, flowPanel);
+
+    const openInnerPanel = (target) => {
+      const showFlow = target === "flow";
+      overviewButton.classList.toggle("active", !showFlow);
+      flowButton.classList.toggle("active", showFlow);
+      overviewPanel.classList.toggle("active", !showFlow);
+      flowPanel.classList.toggle("active", showFlow);
+      const activePanel = showFlow ? flowPanel : overviewPanel;
+      activePanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      activePanel.focus({ preventScroll: true });
+    };
+
+    overviewButton.addEventListener("click", () => openInnerPanel("overview"));
+    flowButton.addEventListener("click", () => openInnerPanel("flow"));
+  });
+}
+
 function hasPrescriptionSubtypeMatch(selectedTypes, optionTypes) {
   return !selectedTypes.length || !optionTypes || optionTypes.some((type) => selectedTypes.includes(type));
+}
+
+function isPrescriptionOptionForSelectedPopulation(option) {
+  const selectedPopulation = prescriptionState.population || "adult";
+  const optionPopulations = option.populations || ["adult"];
+  return optionPopulations.includes(selectedPopulation);
 }
 
 function getPrescriptionOptions() {
@@ -2036,6 +4042,23 @@ function getPrescriptionOptions() {
   prescriptionState.symptoms.forEach((symptom) => {
     const intensity = prescriptionState.symptomIntensities[symptom];
     (prescriptionMedicationOptions[symptom] || []).forEach((option) => {
+      if (!isPrescriptionOptionForSelectedPopulation(option)) return;
+      if (!option.routes.includes(prescriptionState.route)) return;
+      if (option.intensities && !option.intensities.includes(intensity)) return;
+      if (symptom === "pain" && !hasPrescriptionSubtypeMatch(prescriptionState.painTypes, option.painTypes)) return;
+      if (symptom === "cough" && !hasPrescriptionSubtypeMatch(prescriptionState.coughTypes, option.coughTypes)) return;
+      selected.set(option.id, option);
+    });
+  });
+  return Array.from(selected.values());
+}
+
+function getPrescriptionPhytotherapyOptions() {
+  const selected = new Map();
+  prescriptionState.symptoms.forEach((symptom) => {
+    const intensity = prescriptionState.symptomIntensities[symptom];
+    (prescriptionPhytotherapyOptions[symptom] || []).forEach((option) => {
+      if (!isPrescriptionOptionForSelectedPopulation(option)) return;
       if (!option.routes.includes(prescriptionState.route)) return;
       if (option.intensities && !option.intensities.includes(intensity)) return;
       if (symptom === "pain" && !hasPrescriptionSubtypeMatch(prescriptionState.painTypes, option.painTypes)) return;
@@ -2082,6 +4105,10 @@ function cleanupPrescriptionSymptomData() {
       item.checked = false;
     });
   }
+
+  prescriptionState.phytotherapy = prescriptionState.phytotherapy.filter((id) =>
+    getPrescriptionPhytotherapyOptions().some((option) => option.id === id)
+  );
 }
 
 function renderPrescriptionSelectedSymptoms() {
@@ -2145,13 +4172,17 @@ function isPrescriptionStepUnlocked(step) {
   const hasNonpharm = prescriptionState.nonpharm.length > 0;
   const hasMedications = prescriptionState.medications.length > 0;
 
-  if (step === "route") return true;
-  if (step === "symptoms") return prescriptionState.routeAnswered;
-  if (step === "intensity") return prescriptionState.routeAnswered && hasSymptoms;
-  if (step === "nonpharm") return prescriptionState.routeAnswered && hasSymptoms && hasIntensities;
-  if (step === "medications") return prescriptionState.routeAnswered && hasSymptoms && hasIntensities && hasNonpharm;
+  if (step === "population") return true;
+  if (step === "route") return Boolean(prescriptionState.population);
+  if (step === "symptoms") return Boolean(prescriptionState.population) && prescriptionState.routeAnswered;
+  if (step === "intensity") return Boolean(prescriptionState.population) && prescriptionState.routeAnswered && hasSymptoms;
+  if (step === "nonpharm") return Boolean(prescriptionState.population) && prescriptionState.routeAnswered && hasSymptoms && hasIntensities;
+  if (step === "medications") return Boolean(prescriptionState.population) && prescriptionState.routeAnswered && hasSymptoms && hasIntensities && hasNonpharm;
+  if (step === "phytotherapy") {
+    return Boolean(prescriptionState.population) && prescriptionState.routeAnswered && hasSymptoms && hasIntensities && hasNonpharm && hasMedications;
+  }
   if (step === "summary") {
-    return prescriptionState.routeAnswered && hasSymptoms && hasIntensities && hasNonpharm && hasMedications;
+    return Boolean(prescriptionState.population) && prescriptionState.routeAnswered && hasSymptoms && hasIntensities && hasNonpharm && hasMedications;
   }
   return false;
 }
@@ -2266,7 +4297,9 @@ function renderPrescriptionMedicationOptions() {
 
   if (!options.length) {
     const emptyText = hasAllPrescriptionIntensities()
-      ? "Não há opção farmacológica compatível com a via selecionada, sintomas e intensidade definidos. Reavalie a via ou considere avaliação especializada."
+      ? prescriptionState.population === "pediatric"
+        ? "Não há opção pediátrica compatível com a via selecionada, sintomas e intensidade definidos. Reavalie a via, confira peso/idade e considere equipe especializada."
+        : "Não há opção farmacológica compatível com a via selecionada, sintomas e intensidade definidos. Reavalie a via ou considere avaliação especializada."
       : "Selecione sintomas e intensidade para listar opções farmacológicas compatíveis com a via escolhida.";
     container.innerHTML = `<p class="empty-state">${emptyText}</p>`;
     return;
@@ -2292,6 +4325,43 @@ function renderPrescriptionMedicationOptions() {
   );
 }
 
+function renderPrescriptionPhytotherapyOptions() {
+  const container = document.querySelector("#prescriptionPhytotherapyOptions");
+  if (!container) return;
+
+  const options = getPrescriptionPhytotherapyOptions();
+  prescriptionState.phytotherapy = prescriptionState.phytotherapy.filter((id) =>
+    options.some((option) => option.id === id)
+  );
+
+  if (!options.length) {
+    const emptyText =
+      prescriptionState.population === "pediatric"
+        ? "Não há opção fitoterápica pediátrica sugerida nesta ferramenta. Confirmar protocolos locais antes de considerar fitoterapia."
+        : "Não há opção fitoterápica compatível com os sintomas, intensidade, tipo e via selecionados.";
+    container.innerHTML = `<p class="empty-state">${emptyText}</p>`;
+    return;
+  }
+
+  container.replaceChildren(
+    ...options.map((option) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.dataset.prescriptionPhytotherapy = option.id;
+      input.checked = prescriptionState.phytotherapy.includes(option.id);
+      input.addEventListener("change", () => {
+        prescriptionState.phytotherapy = Array.from(
+          document.querySelectorAll("[data-prescription-phytotherapy]:checked")
+        ).map((item) => item.dataset.prescriptionPhytotherapy);
+        updatePrescriptionResult();
+      });
+      label.append(input, document.createTextNode(` ${option.label}: ${option.detail}`));
+      return label;
+    })
+  );
+}
+
 function renderPrescriptionSection(title, items) {
   if (!items.length) return "";
   return `<section><h4>${title}</h4><ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul></section>`;
@@ -2303,6 +4373,14 @@ function getSelectedPrescriptionMedications() {
     .map((id) => options.find((option) => option.id === id))
     .filter(Boolean)
     .map((option) => formatPrescriptionMedicationOption(option));
+}
+
+function getSelectedPrescriptionPhytotherapy() {
+  const options = getPrescriptionPhytotherapyOptions();
+  return prescriptionState.phytotherapy
+    .map((id) => options.find((option) => option.id === id))
+    .filter(Boolean)
+    .map((option) => `${option.label}: ${option.detail}`);
 }
 
 function buildPrescriptionSummaryText() {
@@ -2318,15 +4396,20 @@ function buildPrescriptionSummaryText() {
     .filter(Boolean)
     .map((option) => option.text);
   const medications = getSelectedPrescriptionMedications();
+  const phytotherapy = getSelectedPrescriptionPhytotherapy();
   return [
-    `Via: ${prescriptionLabels.routes[prescriptionState.route]}`,
+    `Público: ${prescriptionLabels.population[prescriptionState.population] || "não selecionado"}`,
+    `Via: ${prescriptionLabels.routes[prescriptionState.route] || "não selecionada"}`,
     `Sintomas: ${symptoms.length ? symptoms.join(", ") : "não selecionado"}`,
     `Tipo de dor: ${painTypes.length ? painTypes.join(", ") : prescriptionState.symptoms.includes("pain") ? "não selecionado" : "não se aplica"}`,
     `Tipo de tosse: ${coughTypes.length ? coughTypes.join(", ") : prescriptionState.symptoms.includes("cough") ? "não selecionado" : "não se aplica"}`,
     `Intensidade por sintoma: ${intensities.length ? intensities.join("; ") : "não definida"}`,
     `Condutas não farmacológicas: ${nonpharm.length ? nonpharm.join(" ") : "não selecionadas"}`,
     `Condutas farmacológicas: ${medications.length ? medications.join(" ") : "não selecionadas"}`,
-    "Checar alergias, função renal/hepática, interações, contraindicações, via disponível e protocolos locais antes de prescrever.",
+    `Fitoterapia, quando indicada: ${phytotherapy.length ? phytotherapy.join(" ") : "não selecionada ou não indicada para a seleção atual"}`,
+    prescriptionState.population === "pediatric"
+      ? "Checar peso atual, idade, alergias, função renal/hepática, interações, contraindicações, formulação disponível, dose máxima diária e protocolos pediátricos locais antes de prescrever."
+      : "Checar alergias, função renal/hepática, interações, contraindicações, via disponível e protocolos locais antes de prescrever.",
   ].join("\n");
 }
 
@@ -2336,6 +4419,7 @@ function updatePrescriptionResult() {
   renderPrescriptionIntensityControls();
   renderPrescriptionNonpharmOptions();
   renderPrescriptionMedicationOptions();
+  renderPrescriptionPhytotherapyOptions();
 
   const title = document.querySelector("#prescriptionResultTitle");
   const summary = document.querySelector("#prescriptionSummary");
@@ -2353,14 +4437,20 @@ function updatePrescriptionResult() {
     .filter(Boolean)
     .map((option) => option.text);
   const medications = getSelectedPrescriptionMedications();
+  const phytotherapy = getSelectedPrescriptionPhytotherapy();
 
-  title.textContent = symptoms.length
+  title.textContent = !prescriptionState.population
+    ? "Selecione adulto ou pediátrico"
+    : symptoms.length
     ? `Prescrição para ${symptoms.join(", ")}`
     : "Selecione sintomas para gerar a prescrição";
 
   summary.innerHTML =
+    renderPrescriptionSection("Público", [
+      `Público: ${prescriptionLabels.population[prescriptionState.population] || "não selecionado"}`,
+    ]) +
     renderPrescriptionSection("Via", [
-      `Via: ${prescriptionLabels.routes[prescriptionState.route]}`,
+      `Via: ${prescriptionLabels.routes[prescriptionState.route] || "não selecionada"}`,
     ]) +
     renderPrescriptionSection("Sintomas selecionados", symptoms) +
     renderPrescriptionSection("Tipo de dor", prescriptionState.symptoms.includes("pain") ? painTypes : []) +
@@ -2368,10 +4458,19 @@ function updatePrescriptionResult() {
     renderPrescriptionSection("Intensidade por sintoma", intensities) +
     renderPrescriptionSection("Condutas não farmacológicas", nonpharm) +
     renderPrescriptionSection("Condutas farmacológicas", medications) +
-    renderPrescriptionSection("Segurança", [
-      "Checar alergias, função renal/hepática, interações, contraindicações, via disponível e protocolos locais.",
-      "Definir dose de resgate, critérios de reavaliação e sinais para acionar equipe.",
-    ]);
+    renderPrescriptionSection("Fitoterapia, quando indicada", phytotherapy) +
+    renderPrescriptionSection(
+      "Segurança",
+      prescriptionState.population === "pediatric"
+        ? [
+            "Confirmar peso atual, idade, alergias, função renal/hepática, dose máxima diária, apresentação disponível e protocolo pediátrico local.",
+            "Definir meta de alívio, intervalo de reavaliação, sinais de toxicidade e quando acionar equipe especializada.",
+          ]
+        : [
+            "Checar alergias, função renal/hepática, interações, contraindicações, via disponível e protocolos locais.",
+            "Definir dose de resgate, critérios de reavaliação e sinais para acionar equipe.",
+          ]
+    );
   updatePrescriptionStepAccess();
 }
 
@@ -2558,6 +4657,7 @@ function updatePhenotypeResult() {
 
   if (checkedItems.length === 0) {
     painState.mechanism = null;
+    painState.phenotype = null;
     title.textContent = "Selecione os achados para classificar a dor";
     text.textContent = "O resultado aparecerá aqui com a hipótese predominante e os fenótipos concorrentes.";
     evidence.replaceChildren(makeListItem("Nenhum achado selecionado ainda."));
@@ -2569,11 +4669,13 @@ function updatePhenotypeResult() {
     const names = strongPhenotypes.map(([key]) => phenotypeLabels[key].toLowerCase()).join(" + ");
     const patternText = names || "mais de um padrão fenotípico";
     painState.mechanism = "mixed";
+    painState.phenotype = null;
     title.textContent = phenotypeLabels.mixed;
     text.textContent = `Há critérios relevantes para ${patternText}. Reavaliar história, exame físico e contexto clínico para definir prioridades de manejo.`;
   } else {
     const [winner] = sortedScores[0];
     painState.mechanism = winner === "neuropathic" || winner === "nociplastic" ? winner : "nociceptive";
+    painState.phenotype = winner;
     title.textContent = phenotypeLabels[winner];
     text.textContent = phenotypeDescriptions[winner];
   }
@@ -2628,6 +4730,7 @@ const legacyHashMap = {
   "indicacao-avaliacao": "indicacao",
   "tratamento-medicamentoso": "tratamento-medicamentoso-dor",
   "tosse-dispneia": "tosse",
+  "alteracoes-orais": "cuidados-boca",
   "visao-geral-dispneia": "tipos-dispneia",
   "sintomas-gastrointestinais": "nauseas",
   "deteccao-fadiga": "deteccao-anorexia",
@@ -2635,6 +4738,7 @@ const legacyHashMap = {
   "condutas-nutricionais-fadiga": "condutas-nutricionais-anorexia",
   "tratamento-medicamentoso-fadiga": "tratamento-medicamentoso-anorexia",
   "comunicacao-familia-fadiga": "comunicacao-familia-anorexia",
+  "visao-geral-tomada": "capacidade-decisao-substituta",
 };
 const initialTab = legacyHashMap[initialHash] || initialHash;
 
@@ -2643,6 +4747,54 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("pain-subpanel")) {
   openTab("manejo-dor", false);
   openPainSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("pncp-subpanel")) {
+  openTab("politica-nacional-cuidados-paliativos", false);
+  openPncpSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("identification-subpanel")) {
+  openTab("identificacao-ras", false);
+  openIdentificationSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("assessment-subpanel")) {
+  openTab("avaliacao", false);
+  openAssessmentSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("phases-subpanel")) {
+  openTab("fases-adoecimento", false);
+  openPhasesSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("bioethics-subpanel")) {
+  openTab("bioetica", false);
+  openBioethicsSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("communication-subpanel")) {
+  openTab("comunicacao", false);
+  openCommunicationSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("phytotherapy-subpanel")) {
+  openTab("fitoterapia", false);
+  openPhytotherapySubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("skin-subpanel")) {
+  openTab("cuidados-pele", false);
+  openSkinSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("endoflife-subpanel")) {
+  openTab("fim-de-vida", false);
+  openEndOfLifeSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("compassion-subpanel")) {
+  openTab("comunidades-compassivas", false);
+  openCompassionSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("homedeath-subpanel")) {
+  openTab("obito-domicilio", false);
+  openHomeDeathSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("selfcare-subpanel")) {
+  openTab("autocuidado", false);
+  openSelfCareSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("caregiver-subpanel")) {
+  openTab("cuidador", false);
+  openCaregiverSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("legal-subpanel")) {
+  openTab("aspectos-normativos", false);
+  openLegalSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("planning-subpanel")) {
+  openTab("planejamento-antecipado", false);
+  openPlanningSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("decision-subpanel")) {
+  openTab("tomada-decisao", false);
+  openDecisionSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("cough-subpanel")) {
   openTab("tosse", false);
   openCoughSubtab(initialTab, false);
@@ -2655,7 +4807,17 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("anorexia-subpanel")) {
   openTab("anorexia-caquexia", false);
   openAnorexiaSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("grief-subpanel")) {
+  openTab("luto", false);
+  openGriefSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("hypodermo-subpanel")) {
   openTab("hipodermoclise", false);
   openHypodermoSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("pediatric-subpanel")) {
+  openTab("pediatria", false);
+  openPediatricSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("pediatric-symptom-subpanel")) {
+  openTab("pediatria", false);
+  openPediatricSubtab("controle-sintomas-pediatria", false);
+  openPediatricSymptomSubtab(initialTab, false);
 }

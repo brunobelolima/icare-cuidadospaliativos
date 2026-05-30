@@ -193,19 +193,57 @@ button {
 }
 
 .pain-subpanel,
+.pncp-subpanel,
+.identification-subpanel,
+.assessment-subpanel,
+.legal-subpanel,
+.planning-subpanel,
+.decision-subpanel,
+.phases-subpanel,
+.bioethics-subpanel,
+.communication-subpanel,
+.phytotherapy-subpanel,
+.skin-subpanel,
+.endoflife-subpanel,
+.compassion-subpanel,
+.homedeath-subpanel,
+.selfcare-subpanel,
+.caregiver-subpanel,
+.pediatric-subpanel,
+.pediatric-symptom-subpanel,
 .cough-subpanel,
 .dyspnea-subpanel,
 .fatigue-subpanel,
 .anorexia-subpanel,
+.grief-subpanel,
 .hypodermo-subpanel {
   display: none;
 }
 
 .pain-subpanel.active,
+.pncp-subpanel.active,
+.identification-subpanel.active,
+.assessment-subpanel.active,
+.legal-subpanel.active,
+.planning-subpanel.active,
+.decision-subpanel.active,
+.phases-subpanel.active,
+.bioethics-subpanel.active,
+.communication-subpanel.active,
+.phytotherapy-subpanel.active,
+.skin-subpanel.active,
+.endoflife-subpanel.active,
+.compassion-subpanel.active,
+.homedeath-subpanel.active,
+.selfcare-subpanel.active,
+.caregiver-subpanel.active,
+.pediatric-subpanel.active,
+.pediatric-symptom-subpanel.active,
 .cough-subpanel.active,
 .dyspnea-subpanel.active,
 .fatigue-subpanel.active,
 .anorexia-subpanel.active,
+.grief-subpanel.active,
 .hypodermo-subpanel.active {
   display: block;
 }
@@ -229,6 +267,25 @@ button {
 
 .definition-card ul {
   margin-bottom: 0;
+}
+
+.stacked-cards {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.stacked-cards .compact-card {
+  padding: 14px;
+}
+
+.stacked-cards h4 {
+  margin: 0 0 8px;
+  color: var(--blue);
+}
+
+.stacked-cards p {
+  margin: 0;
 }
 
 .pain-figure {
@@ -332,11 +389,79 @@ ol {
   margin-top: 18px;
 }
 
+.section-kicker {
+  margin: 22px 0 0;
+  color: #083b3d;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   margin-top: 18px;
+}
+
+.legal-card-grid {
+  grid-template-columns: minmax(260px, 0.85fr) minmax(340px, 1.15fr);
+  align-items: start;
+}
+
+.legal-card-grid article {
+  height: 100%;
+}
+
+.communication-overview-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.communication-overview-grid article,
+.communication-card-grid .definition-card {
+  height: 100%;
+}
+
+.communication-card-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+#politica-nacional-cuidados-paliativos .definition-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: stretch;
+}
+
+#politica-nacional-cuidados-paliativos .definition-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#politica-nacional-cuidados-paliativos .definition-card ul {
+  flex: 1;
+}
+
+#politica-nacional-cuidados-paliativos p,
+#politica-nacional-cuidados-paliativos li {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+#cuidados-boca .info-grid {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+#cuidados-boca .info-grid article {
+  height: 100%;
+}
+
+#candidiase-oral .definition-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+#candidiase-oral .definition-card {
+  height: 100%;
 }
 
 .two-column {
@@ -437,7 +562,8 @@ tr:last-child td {
 .cough-step,
 .dyspnea-step,
 .fatigue-step,
-.anorexia-step {
+.anorexia-step,
+.identification-step {
   margin-top: 18px;
   padding: 18px;
   border: 1px solid #a9efe0;
@@ -471,6 +597,10 @@ tr:last-child td {
 
 .prescription-result.locked-step::after {
   content: "Complete os passos anteriores para gerar o resumo.";
+}
+
+.identification-step.locked-step::after {
+  content: "Complete a etapa anterior para liberar este passo.";
 }
 
 .prescription-step legend {
@@ -522,6 +652,53 @@ tr:last-child td {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.identification-flow .segmented-control {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.capacity-domain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.capacity-domain-grid h4 {
+  margin: 0;
+  color: #06373e;
+}
+
+.capacity-domain-grid p {
+  margin: 6px 0 12px;
+}
+
+.definition-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.definition-choice-grid .segment {
+  min-height: 136px;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 7px;
+  padding: 14px;
+  text-align: left;
+  white-space: normal;
+}
+
+.definition-choice-grid .segment strong,
+.definition-choice-grid .segment span {
+  color: inherit;
+}
+
+.definition-choice-grid .segment span {
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.42;
+}
+
 .alert-checklist {
   display: grid;
   gap: 9px;
@@ -547,6 +724,17 @@ tr:last-child td {
 }
 
 .alert-checklist .no-red-flags-option strong {
+  color: #07554c;
+}
+
+.identification-checklist-group {
+  display: grid;
+  gap: 14px;
+}
+
+.identification-checklist > strong {
+  display: block;
+  margin-bottom: 6px;
   color: #07554c;
 }
 
@@ -604,6 +792,10 @@ tr:last-child td {
   background: linear-gradient(180deg, #d8ffeb, #eafffb);
 }
 
+.identification-inline-result {
+  margin-top: 0;
+}
+
 .result-kicker {
   display: block;
   margin-bottom: 8px;
@@ -623,17 +815,32 @@ tr:last-child td {
   margin-top: 12px;
 }
 
-#painResultActions {
+#painResultActions,
+#anorexiaResultActions,
+#identificationResultActions,
+#identificationSimplifiedActions,
+#identificationSpictActions,
+#capacityResultActions {
   padding-left: 0;
   list-style: none;
 }
 
-#painResultActions > li:not(.result-section) {
+#painResultActions > li:not(.result-section),
+#anorexiaResultActions > li:not(.result-section),
+#identificationResultActions > li:not(.result-section),
+#identificationSimplifiedActions > li:not(.result-section),
+#identificationSpictActions > li:not(.result-section),
+#capacityResultActions > li:not(.result-section) {
   position: relative;
   padding-left: 18px;
 }
 
-#painResultActions > li:not(.result-section)::before {
+#painResultActions > li:not(.result-section)::before,
+#anorexiaResultActions > li:not(.result-section)::before,
+#identificationResultActions > li:not(.result-section)::before,
+#identificationSimplifiedActions > li:not(.result-section)::before,
+#identificationSpictActions > li:not(.result-section)::before,
+#capacityResultActions > li:not(.result-section)::before {
   content: "";
   position: absolute;
   left: 2px;
@@ -788,6 +995,113 @@ tr:last-child td {
   background: linear-gradient(180deg, #e7fbf8, #fbffff);
 }
 
+.pediatric-flow-card {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  background: #f8fffd;
+}
+
+.pediatric-inner-subtabs {
+  margin: 0 0 16px;
+}
+
+.pediatric-inner-panel {
+  display: none;
+  min-width: 0;
+}
+
+.pediatric-inner-panel.active {
+  display: block;
+}
+
+.pediatric-flow-header {
+  display: grid;
+  gap: 6px;
+}
+
+.pediatric-flow-header h3,
+.pediatric-flow-header p {
+  margin: 0;
+}
+
+.pediatric-flow-header h3 {
+  color: #07554c;
+}
+
+.pediatric-flow-header p {
+  color: #4c666b;
+}
+
+.pediatric-flow-steps {
+  display: grid;
+  gap: 12px;
+}
+
+.pediatric-flow-step {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #d6f2ee;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.pediatric-flow-step h4 {
+  margin: 0;
+  color: #07554c;
+}
+
+.pediatric-flow-options {
+  display: grid;
+  gap: 8px;
+}
+
+.pediatric-flow-option {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  color: #21494f;
+  line-height: 1.45;
+}
+
+.pediatric-flow-option input {
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  accent-color: var(--teal);
+}
+
+.pediatric-flow-option-none {
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d6f2ee;
+  font-weight: 800;
+  color: #07554c;
+}
+
+.pediatric-flow-segments {
+  justify-content: flex-start;
+}
+
+.pediatric-flow-result {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid #78d9d0;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #e7fbf8, #fbffff);
+}
+
+.pediatric-flow-result ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .prescription-tool {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
@@ -808,6 +1122,11 @@ tr:last-child td {
 }
 
 .prescription-med-options {
+  display: grid;
+  gap: 10px;
+}
+
+.prescription-phytotherapy-options {
   display: grid;
   gap: 10px;
 }
@@ -845,6 +1164,20 @@ tr:last-child td {
 .prescription-symptom-picker select {
   min-width: 0;
   min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #21494f;
+  font: inherit;
+  font-weight: 700;
+}
+
+.pps-tool select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  margin-top: 8px;
   padding: 8px 10px;
   border: 1px solid #bdebe6;
   border-radius: 7px;
@@ -911,7 +1244,8 @@ tr:last-child td {
   color: #07554c;
 }
 
-.prescription-med-options .empty-state {
+.prescription-med-options .empty-state,
+.prescription-phytotherapy-options .empty-state {
   margin: 0;
   color: #5f7378;
 }
@@ -1245,12 +1579,138 @@ tr:last-child td {
 
 .contact-form input:focus,
 .contact-form textarea:focus,
+.editable-directive input:focus,
+.editable-directive textarea:focus,
 .tab-trigger:focus-visible,
 .primary-button:focus-visible,
 .secondary-button:focus-visible,
 .language-button:focus-visible {
   outline: 3px solid rgba(14, 116, 144, 0.28);
   outline-offset: 2px;
+}
+
+.editable-directive {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #a9efe0;
+  border-radius: 7px;
+  background: #f8fffd;
+}
+
+.editable-directive h3 {
+  margin-top: 0;
+  color: #06373e;
+}
+
+.directive-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.directive-form-grid label,
+.directive-output-label {
+  display: grid;
+  gap: 7px;
+  color: #21494f;
+  font-weight: 800;
+}
+
+.directive-form-grid .full-span {
+  grid-column: 1 / -1;
+}
+
+.editable-directive input,
+.editable-directive textarea {
+  width: 100%;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  padding: 12px 13px;
+  color: var(--ink);
+  background: #fbffff;
+  resize: vertical;
+}
+
+.complete-record-form {
+  background: #ffffff;
+}
+
+.complete-record-form fieldset {
+  margin: 16px 0 0;
+  padding: 16px;
+  border: 1px solid #cdeee9;
+  border-radius: 7px;
+}
+
+.complete-record-form legend {
+  padding: 0 8px;
+  color: #07554c;
+  font-weight: 800;
+}
+
+.record-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin: 8px 0 14px;
+}
+
+.record-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.record-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.record-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+}
+
+.record-table th,
+.record-table td {
+  border: 1px solid #cdeee9;
+  padding: 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.record-table th {
+  width: 25%;
+  color: #07554c;
+  background: #f1fffc;
+}
+
+.record-table input {
+  width: 100%;
+  min-width: 90px;
+  border: 1px solid #bdebe6;
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: #fbffff;
+}
+
+.directive-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.directive-output-label {
+  margin-top: 18px;
+}
+
+.directive-output {
+  min-height: 320px;
+  font-family: inherit;
+  line-height: 1.45;
 }
 
 .professional-dialog {
@@ -1367,7 +1827,8 @@ body.dialog-open {
   .prescription-tool,
   .prescription-controls,
   .questionnaire-grid,
-  .definition-grid {
+  .definition-grid,
+  .directive-form-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1377,6 +1838,18 @@ body.dialog-open {
 
   .segmented-control.multi {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .identification-flow .segmented-control {
+    grid-template-columns: 1fr;
+  }
+
+  .definition-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .capacity-domain-grid {
+    grid-template-columns: 1fr;
   }
 
   .care-figure {
@@ -1457,8 +1930,29 @@ body.dialog-open {
     flex-direction: column;
   }
 
-  .score-row {
-    grid-template-columns: 1fr;
-    gap: 5px;
+.score-row {
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+}
+
+.embedded-app-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.embedded-hipodermo-app {
+  width: 100%;
+  min-height: min(86vh, 920px);
+  height: 920px;
+  border: 1px solid rgba(31, 91, 111, 0.18);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+@media (max-width: 760px) {
+  .embedded-hipodermo-app {
+    min-height: 78vh;
+    height: 780px;
   }
 }

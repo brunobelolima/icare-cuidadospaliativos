@@ -1428,6 +1428,14 @@ function closeDialog() {
   document.body.classList.remove("dialog-open");
 }
 
+function scrollActiveControlsIntoView() {
+  window.requestAnimationFrame(() => {
+    document.querySelectorAll(".tabs .tab-trigger.active, .subtabs .subtab-trigger.active").forEach((control) => {
+      control.scrollIntoView({ block: "nearest", inline: "nearest" });
+    });
+  });
+}
+
 function openTab(tabId, focusPanel = true) {
   const targetPanel = document.getElementById(tabId);
   const activeTabId = symptomTabIds.has(tabId) ? "sintomas" : routeTabIds.has(tabId) ? "vias-alternativas" : tabId;
@@ -1442,6 +1450,7 @@ function openTab(tabId, focusPanel = true) {
 
   updateSymptomTabs(tabId);
   updateRouteTabs(tabId);
+  scrollActiveControlsIntoView();
 
   history.replaceState(null, "", `#${tabId}`);
 
@@ -1450,6 +1459,12 @@ function openTab(tabId, focusPanel = true) {
     targetPanel?.focus({ preventScroll: true });
   }
 }
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".tab-trigger, .subtab-trigger")) {
+    scrollActiveControlsIntoView();
+  }
+});
 
 document.body.classList.add("dialog-open");
 
@@ -4821,3 +4836,5 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
   openPediatricSubtab("controle-sintomas-pediatria", false);
   openPediatricSymptomSubtab(initialTab, false);
 }
+
+scrollActiveControlsIntoView();

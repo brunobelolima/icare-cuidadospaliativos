@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Família, cuidador e comunidade em abordagem paliativa</title>
+  <desc id="desc">Ilustração acolhedora com pessoa idosa, familiar cuidador e apoio comunitário em ambiente domiciliar.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eafff8"/>
+      <stop offset="0.55" stop-color="#f6fffb"/>
+      <stop offset="1" stop-color="#e7f2ff"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0aa0bd"/>
+      <stop offset="1" stop-color="#087f8f"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f766e" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="520" rx="34" fill="url(#bg)"/>
+  <circle cx="1015" cy="98" r="74" fill="#c9f4eb" opacity="0.75"/>
+  <circle cx="128" cy="392" r="88" fill="#dbeafe" opacity="0.72"/>
+  <path d="M76 355c76-50 154-72 236-66 112 8 172 78 281 80 130 2 176-94 300-92 82 2 157 47 229 135v108H76z" fill="#d8f7ef" opacity="0.85"/>
+  <rect x="120" y="92" width="960" height="336" rx="30" fill="#ffffff" opacity="0.78" filter="url(#shadow)"/>
+  <rect x="150" y="122" width="900" height="276" rx="24" fill="#fbffff"/>
+
+  <g transform="translate(210 116)">
+    <rect x="34" y="206" width="274" height="64" rx="26" fill="#d9f5f1"/>
+    <path d="M96 189c-8 38-19 66-31 84h122c-11-20-18-48-21-84z" fill="#0f766e"/>
+    <path d="M120 194c20 14 46 14 66 0v80h-66z" fill="#eec39f"/>
+    <circle cx="153" cy="119" r="66" fill="#f0c8a7"/>
+    <path d="M91 120c2-58 33-87 86-87 42 8 67 38 72 89-28-19-52-43-70-72-20 36-50 59-88 70z" fill="#6b4f43"/>
+    <path d="M108 123c19 6 33 6 51 0M176 123c17 6 31 6 47 0" stroke="#704f44" stroke-width="6" stroke-linecap="round"/>
+    <path d="M141 160c17 12 39 12 57 0" stroke="#8d5d52" stroke-width="6" stroke-linecap="round"/>
+    <path d="M61 248c18-50 52-76 99-76 51 0 88 28 112 84-62 36-146 36-211-8z" fill="url(#teal)"/>
+    <path d="M162 174l26 42 24-39c29 10 49 30 60 61-62 32-143 32-211-4 14-31 37-51 69-60z" fill="#ecfeff" opacity="0.24"/>
+  </g>
+
+  <g transform="translate(488 96)">
+    <rect x="42" y="240" width="286" height="58" rx="24" fill="#dbeafe"/>
+    <path d="M119 207c-5 44-18 75-36 94h136c-18-23-28-54-31-94z" fill="#155e75"/>
+    <circle cx="154" cy="135" r="72" fill="#d6aa85"/>
+    <path d="M84 133c1-68 38-101 111-97 35 19 52 49 51 91-42-8-79-27-112-57-12 31-29 52-50 63z" fill="#3f3f46"/>
+    <path d="M111 139c18 7 34 7 51 0M183 139c17 7 32 7 48 0" stroke="#5f4338" stroke-width="6" stroke-linecap="round"/>
+    <path d="M148 180c16 11 37 11 54 0" stroke="#7a4d42" stroke-width="6" stroke-linecap="round"/>
+    <path d="M56 280c19-62 61-94 126-94 63 0 108 31 135 93-74 41-181 43-261 1z" fill="#2563eb"/>
+    <path d="M143 197c23 18 52 18 74 0v82h-74z" fill="#c99a78"/>
+    <path d="M125 214c28 28 72 28 105 0" fill="none" stroke="#bfdbfe" stroke-width="13" stroke-linecap="round"/>
+    <rect x="236" y="74" width="118" height="142" rx="16" fill="#ffffff" stroke="#a7f3d0" stroke-width="4"/>
+    <path d="M259 107h72M259 137h55M259 167h68" stroke="#0f766e" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(790 126)">
+    <rect x="26" y="220" width="238" height="56" rx="24" fill="#fef3c7"/>
+    <path d="M87 190c-7 38-20 66-39 86h125c-17-22-28-51-31-86z" fill="#7c3aed"/>
+    <circle cx="127" cy="113" r="62" fill="#8f5f45"/>
+    <path d="M72 111c-2-54 24-86 78-94 35 12 55 39 58 82-43-2-77-17-102-45-8 26-20 45-34 57z" fill="#2f2a2a"/>
+    <path d="M91 119c15 6 29 6 43 0M150 119c15 6 28 6 42 0" stroke="#513a32" stroke-width="6" stroke-linecap="round"/>
+    <path d="M120 154c16 11 34 11 49 0" stroke="#684033" stroke-width="6" stroke-linecap="round"/>
+    <path d="M42 254c20-55 55-82 105-82 51 0 86 28 108 82-59 35-150 35-213 0z" fill="#7c3aed"/>
+    <path d="M123 175c20 14 45 14 64 0v78h-64z" fill="#7a4d39"/>
+    <circle cx="2" cy="96" r="25" fill="#14b8a6"/>
+    <path d="M-10 95l8 8 17-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M381 284c62-52 119-52 174 0" stroke="#14b8a6" stroke-width="12" opacity="0.55"/>
+    <path d="M698 284c56-50 111-50 166 0" stroke="#14b8a6" stroke-width="12" opacity="0.55"/>
+    <path d="M567 356c50 35 98 35 145 0" stroke="#0891b2" stroke-width="10" opacity="0.35"/>
+  </g>
+
+  <g transform="translate(162 382)">
+    <rect x="0" y="0" width="876" height="50" rx="25" fill="#ffffff" opacity="0.86"/>
+    <circle cx="42" cy="25" r="14" fill="#0aa0bd"/>
+    <path d="M76 25h190M310 25h178M533 25h118M694 25h128" stroke="#93c5c1" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

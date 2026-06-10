@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Fisiopatologia da dispneia</title>
+  <desc id="desc">Infográfico com quatro mecanismos relacionados à dispneia: maior demanda ventilatória, aumento da carga respiratória, fraqueza muscular e percepção de sofrimento, convergindo para desconforto respiratório percebido.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#0f766e"/>
+    </marker>
+    <filter id="softShadow" x="-12%" y="-12%" width="124%" height="124%">
+      <feDropShadow dx="0" dy="10" stdDeviation="13" flood-color="#0f766e" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .title { font: 800 30px Inter, Arial, sans-serif; fill: #123033; }
+      .subtitle { font: 400 17px Inter, Arial, sans-serif; fill: #526b70; }
+      .card-title { font: 800 18px Inter, Arial, sans-serif; fill: #123033; }
+      .card-text { font: 400 15px Inter, Arial, sans-serif; fill: #526b70; }
+      .small-text { font: 400 14px Inter, Arial, sans-serif; fill: #526b70; }
+      .arrow { fill: none; stroke: #0f766e; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" rx="18" fill="#f8fffd"/>
+  <text x="600" y="48" text-anchor="middle" class="title">Fisiopatologia da dispneia</text>
+  <text x="600" y="80" text-anchor="middle" class="subtitle">A falta de ar resulta da interação entre estímulos respiratórios, capacidade ventilatória e percepção cerebral.</text>
+
+  <g filter="url(#softShadow)">
+    <rect x="430" y="268" width="340" height="180" rx="18" fill="#ffffff" stroke="#a9efe0" stroke-width="2.5"/>
+    <g aria-hidden="true">
+      <circle cx="500" cy="356" r="42" fill="#d8ffeb" stroke="#0f766e" stroke-width="2.5"/>
+      <path d="M500 318 L500 345" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round"/>
+      <path d="M496 348 C483 329 465 335 464 360 C462 384 483 388 496 370 Z" fill="#ffffff" stroke="#0f766e" stroke-width="2.5"/>
+      <path d="M504 348 C517 329 535 335 536 360 C538 384 517 388 504 370 Z" fill="#ffffff" stroke="#0f766e" stroke-width="2.5"/>
+      <path d="M500 345 C493 353 488 362 484 373" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M500 345 C507 353 512 362 516 373" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-linecap="round"/>
+    </g>
+    <text x="662" y="318" text-anchor="middle" class="card-title">Dispneia</text>
+    <text x="662" y="348" text-anchor="middle" class="card-text">Desconforto respiratório</text>
+    <text x="662" y="373" text-anchor="middle" class="card-text">percebido</text>
+    <text x="662" y="398" text-anchor="middle" class="card-text">pela pessoa</text>
+    <text x="662" y="428" text-anchor="middle" class="small-text">A intensidade pode variar</text>
+    <text x="662" y="448" text-anchor="middle" class="small-text">com achados semelhantes.</text>
+  </g>
+
+  <g>
+    <rect x="64" y="132" width="320" height="156" rx="14" fill="#e8f7ff" stroke="#8bd3f7" stroke-width="2.5"/>
+    <text x="224" y="173" text-anchor="middle" class="card-title">Maior demanda ventilatória</text>
+    <text x="224" y="211" text-anchor="middle" class="card-text">Hipoxemia, hipercapnia,</text>
+    <text x="224" y="236" text-anchor="middle" class="card-text">acidose, febre, anemia,</text>
+    <text x="224" y="261" text-anchor="middle" class="card-text">dor ou ansiedade.</text>
+  </g>
+
+  <g>
+    <rect x="816" y="132" width="320" height="156" rx="14" fill="#fff8df" stroke="#f5c542" stroke-width="2.5"/>
+    <text x="976" y="173" text-anchor="middle" class="card-title">Aumento da carga respiratória</text>
+    <text x="976" y="211" text-anchor="middle" class="card-text">Broncoespasmo, secreções,</text>
+    <text x="976" y="236" text-anchor="middle" class="card-text">derrame pleural, edema</text>
+    <text x="976" y="261" text-anchor="middle" class="card-text">ou restrição torácica.</text>
+  </g>
+
+  <g>
+    <rect x="64" y="472" width="320" height="156" rx="14" fill="#f3eeff" stroke="#c4b5fd" stroke-width="2.5"/>
+    <text x="224" y="510" text-anchor="middle" class="card-title">Fraqueza muscular</text>
+    <text x="224" y="535" text-anchor="middle" class="card-title">ou descondicionamento</text>
+    <text x="224" y="571" text-anchor="middle" class="card-text">Caquexia, fragilidade,</text>
+    <text x="224" y="596" text-anchor="middle" class="card-text">imobilidade ou doença</text>
+    <text x="224" y="621" text-anchor="middle" class="card-text">neuromuscular.</text>
+  </g>
+
+  <g>
+    <rect x="816" y="472" width="320" height="156" rx="14" fill="#ffecef" stroke="#fda4af" stroke-width="2.5"/>
+    <text x="976" y="510" text-anchor="middle" class="card-title">Percepção e sofrimento</text>
+    <text x="976" y="548" text-anchor="middle" class="card-text">Medo, pânico, experiências</text>
+    <text x="976" y="573" text-anchor="middle" class="card-text">prévias, atenção à respiração</text>
+    <text x="976" y="598" text-anchor="middle" class="card-text">e ameaça percebida.</text>
+  </g>
+
+  <path class="arrow" d="M384 210 C410 222 423 247 430 304"/>
+  <path class="arrow" d="M816 210 C790 222 777 247 770 304"/>
+  <path class="arrow" d="M384 550 C412 526 425 488 430 416"/>
+  <path class="arrow" d="M816 550 C788 526 775 488 770 416"/>
+
+  <g>
+    <rect x="362" y="664" width="476" height="62" rx="14" fill="#ffffff" stroke="#d6f2ee" stroke-width="2.5"/>
+    <text x="600" y="692" text-anchor="middle" class="card-title">Avaliar com a pessoa</text>
+    <text x="600" y="716" text-anchor="middle" class="card-text">intensidade, sofrimento, impacto funcional e metas de cuidado.</text>
+  </g>
+</svg>

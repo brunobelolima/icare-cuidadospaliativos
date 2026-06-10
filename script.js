@@ -1,8 +1,411 @@
 const dialog = document.querySelector("#professionalDialog");
 const acceptButton = document.querySelector("#acceptProfessional");
 const declineButton = document.querySelector("#declineProfessional");
+const cookieBanner = document.querySelector("#cookieBanner");
+const acceptCookiesButton = document.querySelector("#acceptCookies");
+const declineCookiesButton = document.querySelector("#declineCookies");
+const visitCounter = document.querySelector("#visitCounter");
+const visitCounterMeta = document.querySelector("#visitCounterMeta");
 const tabs = Array.from(document.querySelectorAll(".tab-trigger"));
 const panels = Array.from(document.querySelectorAll(".content-panel"));
+const visitCounterKey = "icare-abordagem-paliativa-visits-v3";
+const visitCounterLastVisitKey = "icare-abordagem-paliativa-last-visit-v3";
+const visitCounterSessionKey = "icare-abordagem-paliativa-session-counted-v3";
+const visitCounterLegacyKeys = [
+  "icare-abordagem-paliativa-visits-v1",
+  "icare-abordagem-paliativa-last-visit-v1",
+  "icare-abordagem-paliativa-session-counted-v1",
+  "icare-abordagem-paliativa-visits-v2",
+  "icare-abordagem-paliativa-last-visit-v2",
+  "icare-abordagem-paliativa-session-counted-v2",
+];
+const visitCounterWindowMs = 30 * 60 * 1000;
+const cookieConsentKey = "icare-abordagem-paliativa-cookie-consent-v1";
+const publicAudienceTabs = new Set(["nao-profissionais", "medicamentos-componente-especializado", "idealizadores", "contato"]);
+const opioidSource = document.querySelector("#opioidSource");
+const opioidSourceDose = document.querySelector("#opioidSourceDose");
+const opioidTarget = document.querySelector("#opioidTarget");
+const opioidReduction = document.querySelector("#opioidReduction");
+const calculateOpioidConversionButton = document.querySelector("#calculateOpioidConversion");
+const opioidConversionResult = document.querySelector("#opioidConversionResult");
+
+const opioidConversionData = {
+  "morphine-oral": {
+    label: "Morfina oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 1,
+  },
+  "morphine-parenteral": {
+    label: "Morfina SC/IV",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 3,
+  },
+  "codeine-oral": {
+    label: "Codeína oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 0.15,
+  },
+  "dihydrocodeine-oral": {
+    label: "Di-hidrocodeína oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 0.1,
+  },
+  "tramadol-oral": {
+    label: "Tramadol oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 0.1,
+  },
+  "tapentadol-oral": {
+    label: "Tapentadol oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 0.4,
+  },
+  "hydrocodone-oral": {
+    label: "Hidrocodona oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 1,
+  },
+  "oxycodone-oral": {
+    label: "Oxicodona oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 1.5,
+  },
+  "oxycodone-parenteral": {
+    label: "Oxicodona SC/IV",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 2,
+  },
+  "hydromorphone-oral": {
+    label: "Hidromorfona oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 4,
+  },
+  "hydromorphone-parenteral": {
+    label: "Hidromorfona SC/IV",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 20,
+  },
+  "oxymorphone-oral": {
+    label: "Oximorfona oral",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 2,
+  },
+  "oxymorphone-parenteral": {
+    label: "Oximorfona SC/IV",
+    unit: "mg/24h",
+    oralMorphineEquivalentFactor: 30,
+  },
+  "fentanyl-patch": {
+    label: "Fentanil transdérmico",
+    unit: "mcg/h",
+    oralMorphineEquivalentFactor: 2,
+    isPatch: true,
+  },
+};
+
+const publicCeafMedicationList = [
+  {
+    name: "Morfina",
+    aliases: ["morfina", "sulfato de morfina"],
+    route: "Geralmente dispensada pela assistência farmacêutica municipal ou serviço de referência, com receita de controle especial/notificação conforme apresentação.",
+    documents: "Documento, receita dentro da validade e orientações da farmácia local; pode exigir fluxo próprio para medicamento controlado.",
+    forms: "Comprimido ou solução oral; solução injetável para uso em serviço de saúde, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "Não há PCDT único para uso paliativo geral. Para dor crônica ou dor oncológica, conferir protocolo/diretriz aplicável e fluxo local.",
+  },
+  {
+    name: "Codeína",
+    aliases: ["codeina", "codeína", "fosfato de codeina", "fosfato de codeína"],
+    route: "Geralmente dispensada conforme fluxo municipal/estadual para medicamento controlado, não necessariamente pelo CEAF.",
+    documents: "Receita adequada para medicamento sujeito a controle especial e documentos pessoais; confirmar apresentação disponível.",
+    forms: "Comprimido ou solução oral, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "Conferir PCDT da condição tratada e regra local para opioide controlado.",
+  },
+  {
+    name: "Metadona",
+    aliases: ["metadona"],
+    route: "Medicamento de uso especializado. A pessoa deve confirmar o fluxo com a equipe de referência e a farmácia estadual ou municipal.",
+    documents: "Receita controlada, relatório médico e documentos definidos pelo serviço. Consulte especialista antes de prescrever.",
+    forms: "Comprimido ou solução oral, conforme apresentação disponível na rede. Consulte um especialista antes de prescrever.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "Conferir PCDT/linha de cuidado da condição tratada e consultar especialista antes de prescrever.",
+  },
+  {
+    name: "Gabapentina",
+    aliases: ["gabapentina"],
+    route: "Pode depender de protocolo, indicação e fluxo estadual; confirmar se o acesso será pelo CEAF ou por outro componente local.",
+    documents: "Receita, relatório ou LME quando solicitado, CID, documentos pessoais e exames/laudos conforme protocolo.",
+    forms: "Cápsula ou comprimido, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "PCDT relacionado no site: Dor Crônica, quando a indicação for dor neuropática ou outra condição contemplada pelo protocolo.",
+  },
+  {
+    name: "Carbamazepina",
+    aliases: ["carbamazepina"],
+    route: "Frequentemente disponível na assistência farmacêutica do SUS; o local de retirada depende do município/estado e da indicação.",
+    documents: "Receita e documentos pessoais; confirmar se há exigência de laudo ou formulário para a indicação específica.",
+    forms: "Comprimido e suspensão oral, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "PCDT relacionado no site: Dor Crônica para neuralgia do trigêmeo ou neuropatia dolorosa, quando aplicável.",
+  },
+  {
+    name: "Amitriptilina",
+    aliases: ["amitriptilina"],
+    route: "Frequentemente disponível na farmácia básica municipal, conforme lista local.",
+    documents: "Receita e documentos pessoais; confirmar disponibilidade e apresentação no município.",
+    forms: "Comprimido, conforme apresentação disponível na rede.",
+    cids: "Conferir na receita/relatório e na farmácia do SUS, pois pode não seguir fluxo CEAF.",
+    pcdt: "Conferir PCDT da condição tratada quando a solicitação não for pela farmácia básica.",
+  },
+  {
+    name: "Nortriptilina",
+    aliases: ["nortriptilina"],
+    route: "Pode estar disponível conforme lista local ou fluxo estadual. Confirmar na farmácia do SUS.",
+    documents: "Receita e documentos pessoais; pode haver necessidade de relatório conforme indicação e apresentação.",
+    forms: "Cápsula ou comprimido, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "Conferir PCDT da condição tratada quando houver solicitação por fluxo estadual ou especializado.",
+  },
+  {
+    name: "Ondansetrona",
+    aliases: ["ondansetrona", "ondansetron"],
+    route: "Pode depender de protocolo, indicação e apresentação. Confirmar se o acesso local é hospitalar, municipal ou pelo CEAF.",
+    documents: "Receita, relatório e documentos pessoais; LME/exames se a farmácia estadual exigir para a indicação.",
+    forms: "Comprimido, solução oral ou solução injetável, conforme apresentação disponível na rede.",
+    cids: "Conferir no PCDT, na receita/relatório e na farmácia do SUS, pois os CIDs aceitos variam conforme indicação e fluxo local.",
+    pcdt: "Conferir PCDT/linha de cuidado da condição tratada e regra local para apresentação solicitada.",
+  },
+  {
+    name: "Haloperidol",
+    aliases: ["haloperidol"],
+    route: "Frequentemente disponível no SUS por fluxo municipal ou serviço de referência, conforme apresentação.",
+    documents: "Receita e documentos pessoais; confirmar exigências para medicamento controlado e apresentação disponível.",
+    forms: "Comprimido, solução oral ou solução injetável, conforme apresentação disponível na rede.",
+    cids: "Conferir na receita/relatório e na farmácia do SUS, pois pode não seguir fluxo CEAF.",
+    pcdt: "Conferir PCDT da condição tratada quando houver solicitação por fluxo estadual ou especializado.",
+  },
+  {
+    name: "Midazolam",
+    aliases: ["midazolam"],
+    route: "Uso geralmente restrito a serviços de saúde ou fluxos específicos, por ser medicamento controlado e de manejo supervisionado.",
+    documents: "Confirmar com equipe e serviço de referência; não deve ser buscado sem orientação formal.",
+    forms: "Solução injetável ou apresentação oral quando disponível; geralmente vinculada a serviço de saúde e monitorização.",
+    cids: "Conferir com a equipe de referência, pois geralmente depende de protocolo institucional ou serviço de saúde.",
+    pcdt: "Conferir protocolo institucional ou PCDT da condição tratada; geralmente depende de serviço de saúde.",
+  },
+  {
+    name: "Dexametasona",
+    aliases: ["dexametasona"],
+    route: "Geralmente disponível na assistência farmacêutica do SUS, conforme apresentação e lista local.",
+    documents: "Receita e documentos pessoais; confirmar apresentação disponível.",
+    forms: "Comprimido, solução oral ou solução injetável, conforme apresentação disponível na rede.",
+    cids: "Conferir na receita/relatório e na farmácia do SUS, pois pode não seguir fluxo CEAF.",
+    pcdt: "Conferir PCDT da condição tratada se houver solicitação por fluxo especializado.",
+  },
+  {
+    name: "Dipirona",
+    aliases: ["dipirona", "metamizol"],
+    route: "Geralmente disponível por farmácia básica, unidade de saúde ou serviço de referência, conforme apresentação local.",
+    documents: "Receita quando exigida e documentos pessoais; confirmar regra local.",
+    forms: "Comprimido, gotas/solução oral ou solução injetável, conforme apresentação disponível na rede.",
+    cids: "Conferir na receita/relatório e na farmácia do SUS, pois geralmente não segue fluxo CEAF.",
+    pcdt: "Geralmente não depende de PCDT/CEAF para uso comum; confirmar regra local.",
+  },
+  {
+    name: "Metoclopramida",
+    aliases: ["metoclopramida"],
+    route: "Geralmente disponível na assistência farmacêutica do SUS ou em serviços de saúde, conforme apresentação.",
+    documents: "Receita e documentos pessoais; confirmar disponibilidade local.",
+    forms: "Comprimido, solução oral ou solução injetável, conforme apresentação disponível na rede.",
+    cids: "Conferir na receita/relatório e na farmácia do SUS, pois pode não seguir fluxo CEAF.",
+    pcdt: "Conferir PCDT da condição tratada se houver solicitação por fluxo especializado.",
+  },
+];
+
+function formatOpioidDecimal(value, maximumFractionDigits = 1) {
+  if (!Number.isFinite(value)) return "--";
+  return value.toLocaleString("pt-BR", {
+    maximumFractionDigits,
+    minimumFractionDigits: value % 1 === 0 ? 0 : 1,
+  });
+}
+
+function calculateOpioidConversion() {
+  if (!opioidSource || !opioidSourceDose || !opioidTarget || !opioidReduction || !opioidConversionResult) return;
+
+  const source = opioidConversionData[opioidSource.value];
+  const target = opioidConversionData[opioidTarget.value];
+  const sourceDose = Number(opioidSourceDose.value.replace?.(",", ".") ?? opioidSourceDose.value);
+  const reduction = Number(opioidReduction.value);
+
+  opioidConversionResult.classList.add("show");
+
+  if (!source || !target || !Number.isFinite(sourceDose) || sourceDose <= 0) {
+    opioidConversionResult.innerHTML = `
+      <h3>Informe uma dose válida</h3>
+      <p>Digite a dose total usada em 24 horas. Para fentanil transdérmico, informe a dose do adesivo em mcg/h. Metadona e buprenorfina exigem cálculo individualizado por especialista.</p>
+    `;
+    return;
+  }
+
+  const oralMorphineEquivalent = sourceDose * source.oralMorphineEquivalentFactor;
+  const unreducedTargetDose = oralMorphineEquivalent / target.oralMorphineEquivalentFactor;
+  const adjustedTargetDose = unreducedTargetDose * (1 - reduction);
+  const rescueDose = target.isPatch ? null : adjustedTargetDose * 0.1;
+
+  opioidConversionResult.innerHTML = `
+    <h3>Resultado estimado</h3>
+    <div class="opioid-result-grid">
+      <div>
+        <span>Equivalente em morfina oral</span>
+        <strong>${formatOpioidDecimal(oralMorphineEquivalent, 1)} mg/24h</strong>
+      </div>
+      <div>
+        <span>Dose equianalgésica de ${target.label}</span>
+        <strong>${formatOpioidDecimal(unreducedTargetDose, target.isPatch ? 0 : 1)} ${target.unit}</strong>
+      </div>
+      <div>
+        <span>Dose sugerida após redução de ${Math.round(reduction * 100)}%</span>
+        <strong>${formatOpioidDecimal(adjustedTargetDose, target.isPatch ? 0 : 1)} ${target.unit}</strong>
+      </div>
+      <div>
+        <span>Dose de resgate aproximada</span>
+        <strong>${rescueDose === null ? "Definir separadamente" : `${formatOpioidDecimal(rescueDose, 1)} ${target.unit}`}</strong>
+      </div>
+    </div>
+    <p>
+      Arredonde para apresentações disponíveis e reavalie clinicamente. As tabelas de equivalência variam entre fontes,
+      especialmente para opioides fracos, tapentadol, hidrocodona e fentanil transdérmico. Conversões envolvendo adesivo
+      de fentanil exigem atenção ao tempo de início/retirada e necessidade de resgate durante a transição.
+    </p>
+  `;
+}
+
+const publicCeafMunicipalitiesByState = {
+  AC: ["Rio Branco", "Cruzeiro do Sul", "Sena Madureira", "Tarauacá", "Feijó"],
+  AL: ["Maceió", "Arapiraca", "Rio Largo", "Palmeira dos Índios", "União dos Palmares"],
+  AP: ["Macapá", "Santana", "Laranjal do Jari", "Oiapoque", "Mazagão"],
+  AM: ["Manaus", "Parintins", "Itacoatiara", "Manacapuru", "Coari", "Tefé", "Tabatinga"],
+  BA: ["Salvador", "Feira de Santana", "Vitória da Conquista", "Camaçari", "Itabuna", "Juazeiro", "Lauro de Freitas", "Ilhéus", "Jequié", "Barreiras"],
+  CE: ["Fortaleza", "Caucaia", "Juazeiro do Norte", "Maracanaú", "Sobral", "Crato", "Itapipoca", "Maranguape", "Iguatu", "Quixadá"],
+  DF: ["Brasília"],
+  ES: ["Vitória", "Vila Velha", "Serra", "Cariacica", "Cachoeiro de Itapemirim", "Linhares", "São Mateus", "Colatina"],
+  GO: ["Goiânia", "Aparecida de Goiânia", "Anápolis", "Rio Verde", "Águas Lindas de Goiás", "Luziânia", "Valparaíso de Goiás", "Trindade", "Catalão"],
+  MA: ["São Luís", "Imperatriz", "São José de Ribamar", "Timon", "Caxias", "Codó", "Paço do Lumiar", "Açailândia", "Bacabal"],
+  MT: ["Cuiabá", "Várzea Grande", "Rondonópolis", "Sinop", "Tangará da Serra", "Cáceres", "Sorriso", "Lucas do Rio Verde", "Barra do Garças"],
+  MS: ["Campo Grande", "Dourados", "Três Lagoas", "Corumbá", "Ponta Porã", "Naviraí", "Nova Andradina", "Aquidauana"],
+  MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim", "Montes Claros", "Ribeirão das Neves", "Uberaba", "Governador Valadares", "Ipatinga", "Divinópolis"],
+  PA: ["Belém", "Ananindeua", "Santarém", "Marabá", "Parauapebas", "Castanhal", "Abaetetuba", "Cametá", "Altamira", "Tucuruí"],
+  PB: ["João Pessoa", "Campina Grande", "Santa Rita", "Patos", "Bayeux", "Sousa", "Cajazeiras", "Cabedelo"],
+  PR: ["Curitiba", "Londrina", "Maringá", "Ponta Grossa", "Cascavel", "São José dos Pinhais", "Foz do Iguaçu", "Colombo", "Guarapuava"],
+  PE: ["Recife", "Jaboatão dos Guararapes", "Olinda", "Caruaru", "Petrolina", "Paulista", "Cabo de Santo Agostinho", "Camaragibe", "Garanhuns"],
+  PI: ["Teresina", "Parnaíba", "Picos", "Piripiri", "Floriano", "Campo Maior", "Barras"],
+  RJ: ["Rio de Janeiro", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "Niterói", "Belford Roxo", "Campos dos Goytacazes", "São João de Meriti", "Petrópolis", "Volta Redonda"],
+  RN: ["Natal", "Mossoró", "Parnamirim", "São Gonçalo do Amarante", "Macaíba", "Ceará-Mirim", "Caicó"],
+  RS: ["Porto Alegre", "Caxias do Sul", "Canoas", "Pelotas", "Santa Maria", "Gravataí", "Viamão", "Novo Hamburgo", "São Leopoldo", "Rio Grande"],
+  RO: ["Porto Velho", "Ji-Paraná", "Ariquemes", "Vilhena", "Cacoal", "Rolim de Moura", "Guajará-Mirim"],
+  RR: ["Boa Vista", "Rorainópolis", "Caracaraí", "Pacaraima", "Mucajaí"],
+  SC: ["Florianópolis", "Joinville", "Blumenau", "São José", "Chapecó", "Itajaí", "Criciúma", "Jaraguá do Sul", "Lages"],
+  SP: ["São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo", "Santo André", "São José dos Campos", "Osasco", "Ribeirão Preto", "Sorocaba", "Santos", "Guarujá", "São Vicente", "Praia Grande"],
+  SE: ["Aracaju", "Nossa Senhora do Socorro", "Lagarto", "Itabaiana", "São Cristóvão", "Estância"],
+  TO: ["Palmas", "Araguaína", "Gurupi", "Porto Nacional", "Paraíso do Tocantins", "Colinas do Tocantins"],
+};
+
+function setCookieConsent(value) {
+  try {
+    localStorage.setItem(cookieConsentKey, value);
+  } catch {
+    // Mantém o aviso fechado mesmo se o navegador bloquear armazenamento local.
+  }
+  if (cookieBanner) {
+    cookieBanner.hidden = true;
+  }
+}
+
+function initCookieBanner() {
+  if (!cookieBanner) return;
+
+  let consent = "";
+  try {
+    consent = localStorage.getItem(cookieConsentKey) || "";
+  } catch {
+    consent = "";
+  }
+
+  cookieBanner.hidden = Boolean(consent);
+  acceptCookiesButton?.addEventListener("click", () => setCookieConsent("accepted"));
+  declineCookiesButton?.addEventListener("click", () => setCookieConsent("declined"));
+}
+
+function formatVisitDate(timestamp) {
+  const date = new Date(Number(timestamp));
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function renderVisitCounter(count, lastVisit) {
+  if (!visitCounter) return;
+
+  const safeCount = Number.isFinite(count) && count >= 0 ? count : 0;
+  visitCounter.textContent = safeCount.toLocaleString("pt-BR");
+  visitCounter.closest(".visit-counter")?.classList.add("is-active");
+
+  if (visitCounterMeta) {
+    visitCounterMeta.textContent = safeCount > 0 ? "Neste navegador" : "Neste navegador | contador zerado";
+  }
+}
+
+function updateVisitCounter() {
+  if (!visitCounter) return;
+
+  try {
+    visitCounterLegacyKeys.forEach((key) => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+
+    const alreadyCountedThisSession = sessionStorage.getItem(visitCounterSessionKey) === "1";
+    const storedCount = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
+    const previousCount = Number.isFinite(storedCount) ? storedCount : 0;
+    const storedLastVisit = Number.parseInt(localStorage.getItem(visitCounterLastVisitKey) || "0", 10);
+    const lastVisit = Number.isFinite(storedLastVisit) ? storedLastVisit : 0;
+    const now = Date.now();
+    const canCountNewVisit = !alreadyCountedThisSession && (!lastVisit || now - lastVisit >= visitCounterWindowMs);
+    const nextCount = canCountNewVisit ? previousCount + 1 : previousCount;
+
+    if (canCountNewVisit) {
+      localStorage.setItem(visitCounterKey, String(nextCount));
+      localStorage.setItem(visitCounterLastVisitKey, String(now));
+      sessionStorage.setItem(visitCounterSessionKey, "1");
+    }
+
+    renderVisitCounter(nextCount, localStorage.getItem(visitCounterLastVisitKey) || "");
+  } catch {
+    renderVisitCounter(0, "");
+  }
+}
+
+updateVisitCounter();
+initCookieBanner();
+
+window.addEventListener("storage", (event) => {
+  if (event.key !== visitCounterKey && event.key !== visitCounterLastVisitKey) return;
+
+  try {
+    const count = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
+    renderVisitCounter(Number.isFinite(count) ? count : 0, localStorage.getItem(visitCounterLastVisitKey) || "");
+  } catch {
+    renderVisitCounter(0, "");
+  }
+});
 const symptomTabs = [
   { id: "manejo-dor", label: "Dor" },
   { id: "tosse", label: "Tosse" },
@@ -167,15 +570,15 @@ const prescriptionMedicationOptions = {
     { id: "pain-ibuprofen", label: "Ibuprofeno", detail: "Dor nociceptiva com componente inflamatório: 200 mg a 400 mg VO/retal a cada 6 a 8 h se seguro.", routes: ["oral", "rectal"], intensities: ["mild", "moderate"], painTypes: ["somatic"] },
     { id: "pain-codeine", label: "Codeína", detail: "Dor moderada: 15 mg a 30 mg VO/retal a cada 4 a 6 h, se apropriado.", routes: ["oral", "rectal", "tube"], intensities: ["moderate"], painTypes: ["somatic", "visceral"] },
     { id: "pain-morphine", label: "Morfina", detail: "Dor moderada/intensa: considerar 2,5 mg a 5 mg VO/retal ou 1 mg a 2 mg SC/EV, titulando resposta e segurança.", routes: ["oral", "subcutaneous", "intravenous", "rectal", "tube"], intensities: ["moderate", "severe", "crisis"] },
-    { id: "pain-amitriptyline", label: "Amitriptilina", detail: "Dor neuropática/nociplástica: 10 mg VO à noite como dose inicial em pessoa frágil ou idosa.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
-    { id: "pain-gabapentin", label: "Gabapentina", detail: "Dor neuropática/nociplástica: 100 mg a 300 mg VO à noite como dose inicial, ajustando por idade e função renal.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
+    { id: "pain-amitriptyline", label: "Amitriptilina", detail: "Dor neuropática/nociplástica: 10 mg VO à noite como posologia de referência em pessoa frágil ou idosa.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
+    { id: "pain-gabapentin", label: "Gabapentina", detail: "Dor neuropática/nociplástica: 100 mg a 300 mg VO à noite como posologia de referência, ajustando por idade e função renal.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"] },
     { id: "ped-pain-paracetamol", label: "Paracetamol pediátrico", detail: "Dor leve: 10 a 15 mg/kg/dose VO, retal ou por sonda a cada 6 h; respeitar dose máxima por peso, idade e função hepática.", routes: ["oral", "rectal", "tube"], intensities: ["mild"], painTypes: ["somatic", "visceral"], populations: ["pediatric"] },
     { id: "ped-pain-ibuprofen", label: "Ibuprofeno pediátrico", detail: "Dor leve/moderada com componente inflamatório: 5 a 10 mg/kg/dose VO a cada 6 a 8 h; evitar em desidratação, insuficiência renal, sangramento, plaquetopenia ou risco gastrointestinal.", routes: ["oral", "tube"], intensities: ["mild", "moderate"], painTypes: ["somatic"], populations: ["pediatric"] },
     { id: "ped-pain-morphine", label: "Morfina pediátrica de liberação imediata", detail: "Dor moderada/intensa: 0,1 a 0,2 mg/kg/dose VO ou por sonda a cada 4 h como início usual; iniciar mais baixo em lactentes, fragilidade, insuficiência renal/hepática ou uso de sedativos.", routes: ["oral", "tube"], intensities: ["moderate", "severe", "crisis"], populations: ["pediatric"] },
     { id: "ped-pain-gabapentin", label: "Gabapentina pediátrica", detail: "Dor neuropática ou hipersensibilidade: iniciar 5 mg/kg/dose VO ou por sonda à noite ou a cada 12 h; titular lentamente conforme resposta, sonolência e função renal.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe"], painTypes: ["neuropathic", "nociplastic"], populations: ["pediatric"] },
   ],
   dyspnea: [
-    { id: "dyspnea-morphine", label: "Opioide para dispneia", detail: "Dispneia moderada/intensa: morfina 2,5 mg a 5 mg VO ou 1 mg a 2 mg SC/EV como dose inicial, com reavaliação.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["moderate", "severe", "crisis"] },
+    { id: "dyspnea-morphine", label: "Opioide para dispneia", detail: "Dispneia moderada/intensa: morfina 2,5 mg a 5 mg VO ou 1 mg a 2 mg SC/EV como posologia de referência, com reavaliação.", routes: ["oral", "subcutaneous", "intravenous", "tube"], intensities: ["moderate", "severe", "crisis"] },
     { id: "dyspnea-bronchodilator", label: "Broncodilatador se broncoespasmo", detail: "Considerar salbutamol ou ipratrópio inalatório/nebulização se sibilância ou DPOC/asma.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"] },
     { id: "dyspnea-benzodiazepine", label: "Ansiolítico se pânico associado", detail: "Dispneia intensa/crise com ansiedade: considerar benzodiazepínico em baixa dose, com monitorização de sedação.", routes: ["oral", "subcutaneous", "tube"], intensities: ["severe", "crisis"] },
     { id: "ped-dyspnea-salbutamol", label: "Salbutamol inalatório pediátrico", detail: "Se sibilância ou broncoespasmo: 2 a 4 jatos com espaçador, podendo repetir conforme gravidade e protocolo; monitorar tremor, taquicardia e agitação.", routes: ["oral", "tube"], intensities: ["mild", "moderate", "severe", "crisis"], populations: ["pediatric"] },
@@ -669,18 +1072,18 @@ const prescriptionRouteMedicationDetails = {
     tube: "Codeína 15 mg a 30 mg por sonda/gastrostomia a cada 4 a 6 h, se apresentação compatível; lavar a sonda antes e após.",
   },
   "pain-morphine": {
-    oral: "Morfina 2,5 mg a 5 mg VO como dose inicial, com reavaliação e titulação conforme resposta.",
-    subcutaneous: "Morfina 1 mg a 2 mg SC como dose inicial, com reavaliação e titulação conforme resposta.",
-    intravenous: "Morfina 1 mg a 2 mg EV como dose inicial em ambiente monitorado, com reavaliação e titulação conforme resposta.",
-    rectal: "Morfina 2,5 mg a 5 mg por via retal como dose inicial, considerando absorção variável e titulação conforme resposta.",
-    tube: "Morfina 2,5 mg a 5 mg por sonda/gastrostomia como dose inicial, diluir e lavar a sonda antes e após.",
+    oral: "Morfina 2,5 mg a 5 mg VO como posologia de referência, com reavaliação e titulação conforme resposta.",
+    subcutaneous: "Morfina 1 mg a 2 mg SC como posologia de referência, com reavaliação e titulação conforme resposta.",
+    intravenous: "Morfina 1 mg a 2 mg EV como posologia de referência em ambiente monitorado, com reavaliação e titulação conforme resposta.",
+    rectal: "Morfina 2,5 mg a 5 mg por via retal como posologia de referência, considerando absorção variável e titulação conforme resposta.",
+    tube: "Morfina 2,5 mg a 5 mg por sonda/gastrostomia como posologia de referência, diluir e lavar a sonda antes e após.",
   },
   "pain-amitriptyline": {
-    oral: "Amitriptilina 10 mg VO à noite como dose inicial em pessoa idosa/frágil; monitorar sedação, boca seca, retenção urinária e quedas.",
+    oral: "Amitriptilina 10 mg VO à noite como posologia de referência em pessoa idosa/frágil; monitorar sedação, boca seca, retenção urinária e quedas.",
     tube: "Amitriptilina 10 mg por sonda/gastrostomia à noite apenas se apresentação compatível; confirmar possibilidade de trituração.",
   },
   "pain-gabapentin": {
-    oral: "Gabapentina 100 mg a 300 mg VO à noite como dose inicial; ajustar por idade, sonolência e função renal.",
+    oral: "Gabapentina 100 mg a 300 mg VO à noite como posologia de referência; ajustar por idade, sonolência e função renal.",
     tube: "Gabapentina 100 mg a 300 mg por sonda/gastrostomia à noite se apresentação compatível; lavar a sonda antes e após.",
   },
   "dyspnea-morphine": {
@@ -1038,6 +1441,23 @@ const phytotherapyPlanMap = {
   ],
 };
 
+const phytotherapyDoseMap = {
+  nociceptive: [
+    "Garra-do-diabo: iniciar com produto padronizado equivalente a 30 mg/dia de harpagosídeo; em apresentações de 480 mg, usar 1 comprimido VO 2 vezes ao dia quando essa equivalência estiver no rótulo ou na formulação.",
+    "Salgueiro: iniciar com extrato padronizado contendo 60 mg de salicina, 1 comprimido VO 1 vez ao dia; evitar associação com salicilatos, anticoagulantes ou antiagregantes sem avaliação clínica.",
+  ],
+  neuropathic: [
+    "Não há posologia fitoterápica específica sugerida para dor neuropática neste fluxo; se houver uso de produto vegetal, registrar dose, apresentação e monitorar interações.",
+  ],
+  nociplastic: [
+    "Não há posologia fitoterápica analgésica específica sugerida para dor nociplástica neste fluxo; priorizar plano multimodal e usar fitoterapia apenas para sintoma-alvo definido.",
+  ],
+  mixed: [
+    "Se houver componente musculoesquelético/inflamatório predominante: garra-do-diabo, produto padronizado equivalente a 30 mg/dia de harpagosídeo; em apresentações de 480 mg, 1 comprimido VO 2 vezes ao dia quando compatível com a formulação.",
+    "Se houver indicação e baixo risco de interação: salgueiro, extrato padronizado contendo 60 mg de salicina, 1 comprimido VO 1 vez ao dia; evitar em risco hemorrágico, doença ulcerosa, doença renal, anticoagulação, gestação e alergia a salicilatos.",
+  ],
+};
+
 function getPhytotherapyActions(mechanism, intensity) {
   const extra =
     intensity === "severe"
@@ -1047,9 +1467,70 @@ function getPhytotherapyActions(mechanism, intensity) {
   return [
     "Fitoterapia, quando apropriada:",
     ...(phytotherapyPlanMap[mechanism] || []),
+    "Posologias, quando indicado e disponível:",
+    ...(phytotherapyDoseMap[mechanism] || []),
     "Antes de usar: perguntar sobre chás, garrafadas, pomadas, cápsulas, tinturas e produtos comprados sem prescrição.",
     extra,
   ];
+}
+
+const painPhenotypeTreatmentProfiles = {
+  somatic: {
+    focus: "Dor nociceptiva somática: priorizar função, mobilidade, tratamento de componente inflamatório/mecânico e analgesia simples como base.",
+    nonMedication: [
+      "Direcionar fisioterapia, exercício terapêutico, calor/frio, TENS, ergonomia e metas graduais conforme estrutura dolorosa e tolerância.",
+    ],
+    medication: [
+      "Iniciar com analgésico simples; associar AINE apenas se houver componente inflamatório e baixo risco renal, gástrico e cardiovascular.",
+    ],
+  },
+  visceral: {
+    focus: "Dor nociceptiva visceral: procurar distensão, espasmo, obstrução, constipação, retenção urinária, ascite ou causa orgânica tratável.",
+    nonMedication: [
+      "Ajustar posição, alimentação, evacuação, manejo de constipação/retenção e conforto abdominal conforme causa provável e objetivo de cuidado.",
+    ],
+    medication: [
+      "Usar analgésico simples como base; se dor em cólica/espasmo, considerar antiespasmódico disponível no serviço e protocolo local; se moderada/forte, avaliar opioide proporcional.",
+    ],
+  },
+  neuropathic: {
+    focus: "Dor neuropática: tratar componente somatossensorial com adjuvante e evitar depender apenas de analgésico simples ou opioide.",
+    nonMedication: [
+      "Proteger área alodínica, dessensibilizar gradualmente, adaptar atividades e avaliar marcha, quedas, sono e humor.",
+    ],
+    medication: [
+      "Escolher um adjuvante inicial, como antidepressivo tricíclico ou anticonvulsivante, titular devagar e monitorar sedação, tontura, quedas e função renal.",
+    ],
+  },
+  nociplastic: {
+    focus: "Dor nociplástica: priorizar abordagem multimodal, educação, sono, atividade gradual e sofrimento emocional; evitar opioide como rotina.",
+    nonMedication: [
+      "Combinar educação em dor, pacing, atividade física gradual, higiene do sono, TCC/mindfulness quando disponível e metas pequenas de função.",
+    ],
+    medication: [
+      "Quando medicamento for necessário, preferir adjuvante com menor carga eficaz; evitar escalonamento de opioide sem revisão diagnóstica.",
+    ],
+  },
+  mixed: {
+    focus: "Dor mista: selecionar os componentes que mais explicam sofrimento e incapacidade, evitando somar todos os medicamentos ao mesmo tempo.",
+    nonMedication: [
+      "Definir a primeira meta funcional e combinar reabilitação, educação, apoio emocional e medidas de conforto conforme componente predominante.",
+    ],
+    medication: [
+      "Combinar analgésico simples, adjuvante e opioide apenas quando cada grupo tiver alvo claro; introduzir uma mudança por vez sempre que possível.",
+    ],
+  },
+};
+
+function buildCombinedPainDecision(mechanism, intensity, phenotype) {
+  const profileKey = phenotype || mechanism;
+  const profile = painPhenotypeTreatmentProfiles[profileKey] || painPhenotypeTreatmentProfiles[mechanism];
+
+  return {
+    focus: [profile.focus],
+    nonMedication: profile.nonMedication,
+    medication: profile.medication,
+  };
 }
 
 function createResultItem(text) {
@@ -1072,12 +1553,19 @@ function createResultSection(title, items, modifier) {
   return section;
 }
 
+function splitPrefixedAction(actions, prefix) {
+  const fullPrefix = `${prefix}:`;
+  const match = actions.find((action) => action.startsWith(fullPrefix));
+  if (!match) return [];
+  return [match.slice(fullPrefix.length).trim()];
+}
+
 function createMedicationSection(plan) {
   const section = document.createElement("li");
   section.className = "result-section result-section--medication";
 
   const heading = document.createElement("h4");
-  heading.textContent = "Tratamento medicamentoso";
+  heading.textContent = "Tratamento medicamentoso: opções e posologias";
 
   const guidance = document.createElement("p");
   guidance.className = "result-section-guidance";
@@ -1134,52 +1622,153 @@ const coughAlertActions = {
 const coughTypePlans = {
   productive: {
     title: "Tosse produtiva",
-    text: "Priorizar efetividade da tosse, mobilização de secreções e conforto, evitando supressão indiscriminada quando a secreção precisa ser eliminada.",
+    text: "Priorizar eliminação segura de secreções e conforto respiratório, evitando supressão rotineira quando a tosse é útil.",
     actions: [
-      "Tratamento não medicamentoso: avaliar volume/aspecto da secreção, manter hidratação proporcional, umidificação, posicionamento e higiene brônquica quando confortável.",
-      "Se a tosse for eficaz, evitar supressão rotineira para não reter secreção.",
-      "Se secreção espessa: considerar nebulização com cloreto de sódio 0,9% a 3%, conforme tolerabilidade e protocolo local.",
-      "Se houver broncoespasmo associado, considerar broncodilatador presente na RENAME, como salbutamol ou brometo de ipratrópio, conforme prescrição e protocolo local.",
+      "Causa provável: secreção, infecção, bronquiectasia, broncoaspiração, doença pulmonar obstrutiva ou fraqueza com tosse pouco eficaz.",
+      "Conduta não medicamentosa: cabeceira elevada, hidratação proporcional, higiene oral, umidificação se ressecamento e higiene brônquica/fisioterapia quando confortável.",
+      "Conduta medicamentosa: se secreção espessa e houver benefício esperado, considerar nebulização com cloreto de sódio 0,9%; se broncoespasmo associado, considerar salbutamol ou brometo de ipratrópio conforme prescrição e disponibilidade.",
+      "Evitar antitussivo de rotina se a tosse estiver eliminando secreção de forma eficaz.",
     ],
   },
   dry: {
     title: "Tosse seca ou irritativa",
-    text: "Pesquisar irritação de via aérea, refluxo, gotejamento pós-nasal, broncoespasmo, medicamento em uso e componente tumoral ou inflamatório.",
+    text: "Buscar irritação de via aérea e causas reversíveis antes de suprimir o sintoma.",
     actions: [
-      "Tratamento não medicamentoso: reduzir gatilhos ambientais, revisar tabagismo, umidificar ambiente se ressecamento e evitar odores/irritantes.",
-      "Se tosse seca persistente gerar desconforto e não houver secreção útil: considerar codeína 10 mg VO a cada 6 horas como dose inicial; titular para 10 mg a 20 mg até de 4/4 horas conforme resposta e tolerabilidade.",
+      "Causa provável: irritação de via aérea, refluxo, gotejamento pós-nasal, broncoespasmo, medicamento em uso, tumor ou inflamação.",
+      "Conduta não medicamentosa: reduzir fumaça, poeira, odores fortes e ar seco; elevar cabeceira se piora ao deitar; revisar tabagismo e medicamentos.",
+      "Conduta medicamentosa: se tosse seca persistente gerar desconforto e não houver secreção útil, considerar codeína 10 mg VO a cada 6 horas como posologia de referência; titular para 10 mg a 20 mg até de 4/4 a 6/6 horas conforme resposta e tolerabilidade.",
       "Monitorar sonolência, constipação, náuseas, retenção urinária e interação com outros depressores do sistema nervoso central.",
     ],
   },
   secretions: {
     title: "Tosse com secreção excessiva",
-    text: "O objetivo é reduzir acúmulo de secreções e sofrimento, sem ressecar excessivamente quando ainda há necessidade de expectoração.",
+    text: "Diferenciar secreção que precisa ser eliminada de secreção terminal ou excesso de secreção com tosse ineficaz.",
     actions: [
-      "Tratamento não medicamentoso: avaliar se a tosse é eficaz, reposicionar, reduzir decúbito plano e associar higiene brônquica quando proporcional.",
-      "Se secreção brônquica com broncorreia ou componente colinérgico: considerar brometo de ipratrópio 20 a 40 gotas por nebulização como dose inicial, conforme prescrição e protocolo local.",
-      "Se secreção terminal/sororoca ou excesso de secreção com tosse ineficaz: considerar sulfato de atropina conforme prescrição, via disponível e protocolo local.",
+      "Causa provável: broncorreia, tosse ineficaz, disfagia, broncoaspiração, secreção terminal ou acúmulo por fraqueza.",
+      "Conduta não medicamentosa: reposicionar, reduzir decúbito plano, cuidar da boca e associar higiene brônquica apenas se for confortável e proporcional.",
+      "Conduta medicamentosa: se broncorreia ou componente obstrutivo, considerar brometo de ipratrópio por nebulização conforme prescrição; se secreção terminal com sofrimento, considerar atropina conforme via disponível e protocolo local.",
       "Monitorar boca seca, retenção urinária, delirium, constipação e espessamento excessivo de secreções.",
     ],
   },
   refractory: {
     title: "Tosse refratária",
-    text: "Revisar causas reversíveis, impacto no sono/dor/dispneia e necessidade de abordagem combinada.",
+    text: "Revisar causas tratáveis, carga de sofrimento e necessidade de abordagem combinada.",
     actions: [
-      "Rever causas: tumor endobrônquico, derrame pleural, obstrução de via aérea, infecção, refluxo, gotejamento pós-nasal, IECA e broncoespasmo.",
-      "Se tosse seca ou irritativa persistente: considerar codeína 10 mg VO a cada 6 horas como dose inicial, com titulação gradual conforme resposta.",
-      "Se tosse refratária persistir apesar de tratamento da causa provável: considerar gabapentina 100 mg a 300 mg à noite como dose inicial, com ajuste gradual e revisão de função renal, tontura e sonolência.",
-      "Quando houver componente complexo, obstrutivo, tumoral ou pleural, considerar avaliação especializada conforme contexto, proporcionalidade e meta de cuidado.",
+      "Causa provável: tumor endobrônquico, derrame pleural, obstrução de via aérea, infecção, refluxo, gotejamento pós-nasal, IECA, broncoespasmo ou múltiplos fatores combinados.",
+      "Conduta não medicamentosa: revisar gatilhos, posição, alimentação, aspiração, sono, dor e dispneia; pactuar objetivo realista de alívio.",
+      "Conduta medicamentosa: se predominar tosse seca/irritativa e não houver secreção útil, considerar codeína 10 mg VO a cada 6 horas como posologia de referência, com titulação gradual conforme resposta.",
+      "Se persistir sofrimento apesar das medidas proporcionais, discutir avaliação especializada, ajuste de metas e abordagem de causa obstrutiva, pleural ou tumoral quando compatível com o plano de cuidado.",
     ],
   },
 };
 
 const coughFactorActions = {
-  ineffective: "Fator associado: tosse ineficaz. Tratamento sugerido: fisioterapia respiratória, drenagem postural, manobras de higiene brônquica e exercícios de reexpansão quando confortáveis; evitar antitussivo se houver secreção retida importante.",
-  bronchospasm: "Fator associado: broncoespasmo. Tratamento sugerido: revisar broncodilatadores e técnica inalatória; considerar brometo de ipratrópio 20 a 40 gotas por nebulização como dose inicial quando indicado.",
-  refluxPostnasal: "Fator associado: refluxo ou gotejamento pós-nasal. Tratamento sugerido: elevar cabeceira, evitar refeições volumosas antes de deitar, revisar rinossinusite/gotejamento e tratar a causa provável conforme avaliação clínica.",
-  acei: "Fator associado: IECA. Tratamento sugerido: discutir substituição do inibidor da enzima conversora de angiotensina com a equipe responsável; não escalonar antitussivo antes dessa revisão se a tosse for compatível.",
-  tumorPleural: "Fator associado: doença tumoral/pleural ou obstrutiva. Tratamento sugerido: reavaliar proporcionalidade de investigação, corticoide, abordagem de derrame/obstrução e metas de cuidado; se tosse irritativa causar sofrimento, considerar codeína 10 mg VO a cada 6 horas como dose inicial.",
+  ineffective: "Ajuste por fator associado: se a tosse for ineficaz, priorizar higiene brônquica, drenagem postural e fisioterapia respiratória quando confortáveis; evitar antitussivo diante de secreção retida importante.",
+  bronchospasm: "Ajuste por fator associado: se houver broncoespasmo, revisar técnica inalatória e considerar salbutamol ou brometo de ipratrópio conforme prescrição, protocolo e disponibilidade.",
+  refluxPostnasal: "Ajuste por fator associado: se houver refluxo ou gotejamento pós-nasal, elevar cabeceira, evitar refeições volumosas antes de deitar e tratar a causa provável conforme avaliação clínica.",
+  acei: "Ajuste por fator associado: se houver uso de IECA, discutir substituição com a equipe responsável antes de escalonar antitussivo.",
+  tumorPleural: "Ajuste por fator associado: se houver doença tumoral, pleural ou obstrutiva, revisar proporcionalidade de investigação, corticoide, abordagem de derrame/obstrução e metas de cuidado.",
 };
+
+const coughFactorTreatmentModifiers = {
+  ineffective: {
+    nonMedication: [
+      "Como há tosse ineficaz ou acúmulo de secreção, priorizar higiene brônquica, drenagem postural e fisioterapia respiratória quando confortáveis.",
+    ],
+    medication: [
+      "Evitar codeína ou outro antitussivo se houver secreção retida importante, pois a supressão pode piorar retenção e broncoaspiração.",
+    ],
+  },
+  bronchospasm: {
+    nonMedication: ["Checar técnica inalatória/nebulização, gatilhos ambientais e resposta prévia a broncodilatador."],
+    medication: [
+      "Associar broncodilatador quando houver sibilos ou broncoespasmo: salbutamol conforme prescrição/protocolo ou brometo de ipratrópio 20 a 40 gotas por nebulização como posologia de referência, quando indicado.",
+    ],
+  },
+  refluxPostnasal: {
+    nonMedication: [
+      "Se houver refluxo ou gotejamento pós-nasal, elevar cabeceira, evitar refeições volumosas antes de deitar e revisar rinossinusite, secreção nasal e alimentação.",
+    ],
+    medication: ["Tratar refluxo, rinossinusite ou gotejamento conforme avaliação clínica antes de intensificar antitussivo."],
+  },
+  acei: {
+    nonMedication: ["Relacionar início da tosse com introdução ou aumento de inibidor da enzima conversora de angiotensina."],
+    medication: ["Discutir substituição do IECA com a equipe responsável; não escalonar antitussivo antes dessa revisão se a tosse for compatível."],
+  },
+  tumorPleural: {
+    nonMedication: ["Alinhar investigação e intervenção ao objetivo de cuidado, sofrimento atual e possibilidade real de reversão."],
+    medication: [
+      "Se componente tumoral, pleural ou obstrutivo gerar tosse irritativa com sofrimento, considerar codeína 10 mg VO a cada 6 horas como posologia de referência quando não houver secreção útil.",
+      "Discutir abordagem proporcional de derrame pleural, obstrução de via aérea ou inflamação conforme contexto clínico.",
+    ],
+  },
+};
+
+function buildCombinedCoughTreatment(plan, factors) {
+  const decision = {
+    cause: splitPrefixedAction(plan.actions, "Causa provável"),
+    nonMedication: splitPrefixedAction(plan.actions, "Conduta não medicamentosa"),
+    medication: splitPrefixedAction(plan.actions, "Conduta medicamentosa"),
+    steps: [],
+    notes: plan.actions.filter(
+      (action) =>
+        !action.startsWith("Causa provável:") &&
+        !action.startsWith("Conduta não medicamentosa:") &&
+        !action.startsWith("Conduta medicamentosa:")
+    ),
+  };
+
+  factors.forEach((factor) => {
+    const modifier = coughFactorTreatmentModifiers[factor];
+    if (!modifier) return;
+    decision.nonMedication.push(...modifier.nonMedication);
+    decision.medication.push(...modifier.medication);
+  });
+
+  if (factors.includes("ineffective") && (plan.title.includes("produtiva") || plan.title.includes("secreção"))) {
+    decision.notes.push("Decisão combinada: secreção presente com tosse ineficaz favorece mobilização de secreção e cautela com supressão da tosse.");
+  }
+
+  if (factors.includes("bronchospasm") && (plan.title.includes("seca") || plan.title.includes("refratária"))) {
+    decision.notes.push("Decisão combinada: broncoespasmo associado deve ser tratado antes de considerar a tosse apenas como refratária.");
+  }
+
+  if (factors.includes("refluxPostnasal") && plan.title.includes("seca")) {
+    decision.notes.push("Decisão combinada: tosse seca com piora ao deitar sugere tratar refluxo/gotejamento antes de aumentar antitussivo.");
+  }
+
+  if (plan.title.includes("produtiva")) {
+    decision.steps.push(
+      "Etapa 1: confirmar se a tosse está eliminando secreção de forma eficaz e afastar sinais de alerta.",
+      "Etapa 2: iniciar medidas de posicionamento, hidratação proporcional, higiene oral e mobilização de secreções.",
+      factors.includes("bronchospasm")
+        ? "Etapa 3: se houver broncoespasmo, associar broncodilatador conforme prescrição; evitar antitussivo se houver secreção retida."
+        : "Etapa 3: se secreção espessa persistir, considerar nebulização com cloreto de sódio 0,9% quando houver benefício esperado."
+    );
+  } else if (plan.title.includes("seca")) {
+    decision.steps.push(
+      "Etapa 1: reduzir gatilhos irritativos e revisar refluxo, gotejamento pós-nasal, broncoespasmo, tabagismo e medicamentos.",
+      factors.includes("acei")
+        ? "Etapa 2: se houver IECA, discutir substituição antes de escalar antitussivo."
+        : "Etapa 2: tratar fator associado selecionado antes de intensificar antitussivo, quando houver causa provável.",
+      "Etapa 3: se persistir tosse seca com sofrimento e sem secreção útil, considerar codeína 10 mg VO a cada 6 horas e reavaliar tolerabilidade."
+    );
+  } else if (plan.title.includes("secreção excessiva")) {
+    decision.steps.push(
+      "Etapa 1: diferenciar secreção eliminável de secreção terminal/sororoca e verificar se a tosse é eficaz.",
+      "Etapa 2: reposicionar, cuidar da boca e usar higiene brônquica apenas se for confortável.",
+      "Etapa 3: se broncorreia ou broncoespasmo, considerar ipratrópio; se secreção terminal com sofrimento, considerar atropina conforme via e protocolo."
+    );
+  } else if (plan.title.includes("refratária")) {
+    decision.steps.push(
+      "Etapa 1: revisar causas tratáveis e fatores associados selecionados, principalmente broncoespasmo, refluxo/gotejamento, IECA e doença pleural/obstrutiva.",
+      "Etapa 2: otimizar medidas não medicamentosas e tratamento da causa provável antes de chamar a tosse de refratária.",
+      "Etapa 3: se predominar tosse seca/irritativa sem secreção útil, considerar codeína 10 mg VO a cada 6 horas e discutir avaliação especializada se sofrimento persistir."
+    );
+  }
+
+  return decision;
+}
 
 const dyspneaAlertActions = {
   severeDistress:
@@ -1424,6 +2013,7 @@ const radarAxes = [
 ];
 
 function closeDialog() {
+  if (!dialog) return;
   dialog.classList.add("hidden");
   document.body.classList.remove("dialog-open");
 }
@@ -1436,9 +2026,39 @@ function scrollActiveControlsIntoView() {
   });
 }
 
-function openTab(tabId, focusPanel = true) {
+function updateSeoMetadata(tabId) {
+  const activeLabel = document.querySelector(`.tab-trigger[data-tab="${tabId}"]`)?.textContent?.trim() || "Abordagem Paliativa";
+  const title = tabId === "boas-vindas" ? "iCare - Abordagem Paliativa | Guia prático para o SUS" : `${activeLabel} | iCare - Abordagem Paliativa`;
+  const descriptionByTab = {
+    "nao-profissionais": "Conteúdo em linguagem simples sobre abordagem paliativa para pacientes, familiares, cuidadores e comunidade.",
+    "medicamentos-componente-especializado": "Orientações sobre medicamentos do Componente Especializado da Assistência Farmacêutica, documentos, busca por medicamento e localização de CEAF.",
+    conceitos: "Definições, princípios e conceitos essenciais de abordagem paliativa e cuidados paliativos no SUS.",
+    "politica-nacional-cuidados-paliativos": "Resumo prático da Política Nacional de Cuidados Paliativos, pontos da RAS, equipes previstas e implicações para a atenção primária.",
+    "papel-profissionais": "Atribuições de profissionais da equipe multiprofissional na abordagem paliativa, com normas e referências profissionais.",
+    "identificacao-ras": "Critérios, indicadores e fluxo de identificação de pessoas com necessidades paliativas na Rede de Atenção à Saúde.",
+    avaliacao: "Ferramentas de avaliação inicial, sintomas, funcionalidade, PPS e abordagem paliativa completa.",
+    sintomas: "Controle de sintomas em abordagem paliativa, incluindo dor, dispneia, tosse, náuseas, constipação, delirium, ansiedade e outros sintomas.",
+    prescricao: "Apoio à prescrição em abordagem paliativa conforme público, via de administração, sintomas e intensidade.",
+  };
+  const description =
+    descriptionByTab[tabId] ||
+    `Conteúdo prático sobre ${activeLabel.toLowerCase()} no contexto da abordagem paliativa para o serviço público de saúde.`;
+  const canonicalUrl = `https://icare-abordagempaliativa.com.br/#${tabId}`;
+
+  document.title = title;
+  document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+  document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
+}
+
+function openTab(tabId, focusPanel = true, audienceMode = null) {
   const targetPanel = document.getElementById(tabId);
   const activeTabId = symptomTabIds.has(tabId) ? "sintomas" : routeTabIds.has(tabId) ? "vias-alternativas" : tabId;
+  const showPublicAudience = audienceMode === "public" || (audienceMode !== "professional" && publicAudienceTabs.has(tabId));
+  document.body.classList.toggle("public-audience", showPublicAudience);
 
   tabs.forEach((tab) => {
     tab.classList.toggle("active", tab.dataset.tab === activeTabId);
@@ -1450,6 +2070,7 @@ function openTab(tabId, focusPanel = true) {
 
   updateSymptomTabs(tabId);
   updateRouteTabs(tabId);
+  updateSeoMetadata(activeTabId);
   scrollActiveControlsIntoView();
 
   history.replaceState(null, "", `#${tabId}`);
@@ -1466,10 +2087,180 @@ document.addEventListener("click", (event) => {
   }
 });
 
-document.body.classList.add("dialog-open");
+if (dialog) {
+  dialog.classList.remove("hidden");
+  document.body.classList.add("dialog-open");
+}
 
-acceptButton.addEventListener("click", closeDialog);
-declineButton.addEventListener("click", closeDialog);
+acceptButton?.addEventListener("click", () => {
+  closeDialog();
+  openTab("conceitos");
+});
+declineButton?.addEventListener("click", () => {
+  closeDialog();
+  openTab("nao-profissionais");
+});
+
+document.querySelectorAll("[data-open-audience-tab]").forEach((button) => {
+  button.addEventListener("click", () => openTab(button.dataset.openAudienceTab));
+});
+
+function normalizePublicCeafTerm(value) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function getPublicCeafDocumentsHtml() {
+  return `
+    <p><strong>Primeira solicitação:</strong></p>
+    <ul>
+      <li>LME preenchido e assinado conforme o PCDT. Links: <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/o-que-e-laudo-para" target="_blank" rel="noreferrer">o que é LME</a>, <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/quem-deve-preencher-o-lme" target="_blank" rel="noreferrer">quem deve preencher o LME</a> e <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/onde-encontro-o-modelo-do" target="_blank" rel="noreferrer">modelo do LME</a>.</li>
+      <li>Receita dentro da validade, com nome genérico, apresentação, dose, via, frequência e quantidade prevista pelo PCDT ou pela prescrição clínica.</li>
+      <li>Documento de identificação, CPF ou CNS e comprovante de residência, conforme regra local.</li>
+      <li>Relatório médico, exames, escalas, CID e critérios de inclusão/exclusão exigidos pelo PCDT ou pela farmácia estadual.</li>
+    </ul>
+    <p><strong>Renovação:</strong></p>
+    <ul>
+      <li>Novo receituário e novo LME quando exigidos para continuidade do tratamento conforme PCDT.</li>
+      <li>Exames de monitoramento, relatório de resposta, avaliação de segurança ou documentos atualizados quando o PCDT exigir.</li>
+      <li>Conferir validade do LME e prazo para renovar antes de acabar o medicamento. Links: <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq" target="_blank" rel="noreferrer">FAQ do CEAF</a>, <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/qual-a-validade-do-lme" target="_blank" rel="noreferrer">validade do LME</a> e <a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/onde-devo-fazer-a-solicitacao" target="_blank" rel="noreferrer">onde solicitar ou renovar</a>.</li>
+    </ul>
+  `;
+}
+
+function renderPublicCeafMedicationResults(query = "") {
+  const container = document.querySelector("#publicCeafMedicationResults");
+  if (!container) return;
+
+  const normalizedQuery = normalizePublicCeafTerm(query);
+  if (!normalizedQuery) {
+    container.innerHTML = `
+      <article>
+        <h3>Digite para buscar</h3>
+        <p>O resultado aparecerá aqui com orientação geral sobre farmácia básica, componente especializado ou necessidade de confirmar no serviço de saúde.</p>
+      </article>
+    `;
+    return;
+  }
+
+  const matches = publicCeafMedicationList.filter((item) =>
+    item.aliases.some((alias) => normalizePublicCeafTerm(alias).includes(normalizedQuery))
+  );
+
+  if (!matches.length) {
+    container.innerHTML = `
+      <article>
+        <h3>Medicamento não encontrado</h3>
+        <p>Confirme o nome genérico com a equipe de saúde e procure a Unidade Básica de Saúde ou farmácia do SUS para saber o caminho de acesso.</p>
+      </article>
+    `;
+    return;
+  }
+
+  container.innerHTML = matches
+    .map(
+      (item) => `
+        <article>
+          <h3>${item.name}</h3>
+          <p><strong>Caminho provável:</strong> ${item.route}</p>
+          <p><strong>PCDT relacionado:</strong> ${item.pcdt} <a href="https://www.gov.br/saude/pt-br/assuntos/pcdt" target="_blank" rel="noreferrer">Consultar PCDTs do Ministério da Saúde</a>.</p>
+          <p><strong>Formas farmacêuticas disponíveis:</strong> ${item.forms}</p>
+          <p><strong>Indicado para os CIDs:</strong> ${item.cids} <a href="https://www.gov.br/conitec/pt-br/protocolos-clinicos-e-diretrizes-terapeuticas" target="_blank" rel="noreferrer">Consultar medicamentos por CID e PCDT</a>.</p>
+          <p><strong>Documentos:</strong></p>
+          <ul>
+            <li>${item.documents}</li>
+          </ul>
+          ${getPublicCeafDocumentsHtml()}
+        </article>
+      `
+    )
+    .join("");
+}
+
+document.querySelector("#publicCeafMedicationSearch")?.addEventListener("input", (event) => {
+  renderPublicCeafMedicationResults(event.target.value);
+});
+
+function renderPublicCeafLocator() {
+  const container = document.querySelector("#publicCeafLocatorResults");
+  if (!container) return;
+
+  container.innerHTML = `
+    <article>
+      <h3>Informe uma localização</h3>
+      <p>Digite um endereço para abrir links de busca no mapa e em páginas oficiais.</p>
+    </article>
+  `;
+}
+
+function getPublicCeafOfficialAddressSearchHtml(locationText) {
+  const safeLocation = String(locationText || "").trim() || "Brasil";
+  const officialAddressQuery = encodeURIComponent(
+    `site:.gov.br CEAF "Farmácia de Alto Custo" "endereço" "unidade" ${safeLocation}`
+  );
+  const healthDepartmentQuery = encodeURIComponent(
+    `Secretaria Estadual de Saúde CEAF "endereços" "Farmácia de Alto Custo" ${safeLocation}`
+  );
+
+  return `
+    <h3>Endereços em sites oficiais</h3>
+    <p>Use estas buscas para localizar páginas oficiais com unidades, polos, farmácias especializadas e endereços próximos à localização informada.</p>
+    <p><a href="https://www.google.com/search?q=${officialAddressQuery}" target="_blank" rel="noreferrer">Buscar endereços oficiais de CEAF próximas</a></p>
+    <p><a href="https://www.google.com/search?q=${healthDepartmentQuery}" target="_blank" rel="noreferrer">Buscar na Secretaria de Saúde responsável</a></p>
+    <p><a href="https://www.gov.br/saude/pt-br/composicao/sectics/daf/ceaf/faq/onde-devo-fazer-a-solicitacao" target="_blank" rel="noreferrer">Orientação oficial do Ministério da Saúde</a></p>
+  `;
+}
+
+function renderPublicCeafAddressLocator(address = "") {
+  const container = document.querySelector("#publicCeafLocatorResults");
+  if (!container) return;
+
+  const safeAddress = address.trim();
+  if (!safeAddress) {
+    renderPublicCeafLocator();
+    return;
+  }
+
+  const mapsQuery = encodeURIComponent(`CEAF Farmácia Alto Custo Farmácia Especializada perto de ${safeAddress}`);
+  const directionsDestination = encodeURIComponent("CEAF Farmácia Alto Custo Farmácia Especializada");
+  const origin = encodeURIComponent(safeAddress);
+  const officialQuery = encodeURIComponent(`CEAF Farmácia Alto Custo ${safeAddress} Secretaria de Saúde`);
+
+  container.innerHTML = `
+    <article>
+      <h3>CEAF mais próxima sugerida</h3>
+      <p>Busca baseada no endereço informado. O mapa exibirá unidades próximas; selecione a primeira opção compatível com CEAF/Farmácia de Alto Custo.</p>
+      <p><a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noreferrer">Ver CEAF mais próxima no mapa</a></p>
+    </article>
+    <article>
+      <h3>Traçar rota</h3>
+      <p>Abra a rota usando o endereço digitado como ponto de partida.</p>
+      <p><a href="https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${directionsDestination}&travelmode=driving" target="_blank" rel="noreferrer">Abrir rota até a CEAF mais próxima</a></p>
+    </article>
+    <article>
+      <h3>Busca complementar</h3>
+      <p>Procure também por páginas oficiais da Secretaria de Saúde relacionadas ao endereço informado.</p>
+      <p><a href="https://www.google.com/search?q=${officialQuery}" target="_blank" rel="noreferrer">Buscar páginas oficiais</a></p>
+    </article>
+    <article>
+      ${getPublicCeafOfficialAddressSearchHtml(safeAddress)}
+    </article>
+  `;
+}
+
+function clearPublicCeafLocator() {
+  const manualAddress = document.querySelector("#publicCeafAddress");
+  if (manualAddress) manualAddress.value = "";
+  renderPublicCeafLocator();
+}
+
+document.querySelector("#publicCeafAddress")?.addEventListener("input", (event) => {
+  renderPublicCeafAddressLocator(event.target.value);
+});
+document.querySelector("#publicCeafClear")?.addEventListener("click", clearPublicCeafLocator);
 
 function createSymptomSubtabs(activeId = "sintomas") {
   const wrapper = document.createElement("div");
@@ -1581,7 +2372,60 @@ mountSymptomSubtabs();
 mountRouteSubtabs();
 
 tabs.forEach((tab) => {
-  tab.addEventListener("click", () => openTab(tab.dataset.tab));
+  tab.addEventListener("click", () => {
+    const audienceMode = tab.classList.contains("audience-public-tab") ? "public" : "professional";
+    openTab(tab.dataset.tab, true, audienceMode);
+  });
+});
+
+function openConceptSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-concept-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.conceptSubtab === targetId);
+  });
+
+  document.querySelectorAll(".concept-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-concept-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openConceptSubtab(button.dataset.conceptSubtab);
+  });
+});
+
+function openProfessionalsSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-professionals-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.professionalsSubtab === targetId);
+  });
+
+  document.querySelectorAll(".professionals-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-professionals-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openProfessionalsSubtab(button.dataset.professionalsSubtab);
+  });
 });
 
 function openPainSubtab(targetId, focusPanel = true) {
@@ -1606,6 +2450,194 @@ function openPainSubtab(targetId, focusPanel = true) {
 document.querySelectorAll("[data-pain-subtab]").forEach((button) => {
   button.addEventListener("click", () => {
     openPainSubtab(button.dataset.painSubtab);
+  });
+});
+
+function openOpioidSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-opioid-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.opioidSubtab === targetId);
+  });
+
+  document.querySelectorAll(".opioid-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-opioid-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openOpioidSubtab(button.dataset.opioidSubtab);
+  });
+});
+
+const opioidRiskToolWeights = {
+  familyAlcohol: { female: 1, male: 3 },
+  familyIllegal: { female: 2, male: 3 },
+  familyPrescription: { female: 4, male: 4 },
+  personalAlcohol: { female: 3, male: 3 },
+  personalIllegal: { female: 4, male: 4 },
+  personalPrescription: { female: 5, male: 5 },
+  age16to45: { female: 1, male: 1 },
+  sexualAbuse: { female: 3, male: 0 },
+  psychAddOcdBipolarSchizophrenia: { female: 2, male: 2 },
+  psychDepression: { female: 1, male: 1 },
+};
+
+function updateOpioidRiskTool() {
+  const result = document.querySelector("#opioidRiskToolResult");
+  if (!result) return;
+
+  const sex = document.querySelector('input[name="ortSex"]:checked')?.value;
+  const selectedItems = Array.from(document.querySelectorAll("[data-ort-item]:checked"));
+
+  if (!sex) {
+    result.innerHTML = `
+      <h3>Resultado pendente</h3>
+      <p>Selecione o sexo conforme a tabela original para calcular o Opioid Risk Tool.</p>
+    `;
+    return;
+  }
+
+  const score = selectedItems.reduce((total, input) => {
+    const item = input.dataset.ortItem;
+    return total + (opioidRiskToolWeights[item]?.[sex] || 0);
+  }, 0);
+
+  let category = "baixo risco";
+  let guidance =
+    "Manter educação, plano terapêutico claro, prescrição organizada, prevenção de eventos adversos e reavaliação habitual.";
+
+  if (score >= 8) {
+    category = "alto risco";
+    guidance =
+      "Reforçar acompanhamento próximo, prescrição por profissional/equipe de referência, revisão de sedativos, avaliação de saúde mental ou uso de substâncias e discussão com equipe especializada quando possível.";
+  } else if (score >= 4) {
+    category = "risco moderado";
+    guidance =
+      "Combinar metas, orientar cuidador/família quando apropriado, reduzir duplicidade de prescrições, reavaliar em intervalos menores e revisar fatores modificáveis.";
+  }
+
+  const selectedText = selectedItems.length
+    ? `${selectedItems.length} fator(es) selecionado(s).`
+    : "Nenhum fator de risco selecionado.";
+
+  result.innerHTML = `
+    <h3>${score} ponto(s) - ${category}</h3>
+    <p>${selectedText}</p>
+    <p>${guidance}</p>
+    <p>O escore deve ser interpretado junto da indicação clínica, prognóstico, funcionalidade, rede de apoio, disponibilidade local e objetivos de cuidado.</p>
+  `;
+}
+
+document.querySelectorAll('input[name="ortSex"], [data-ort-item]').forEach((input) => {
+  input.addEventListener("change", updateOpioidRiskTool);
+});
+
+updateOpioidRiskTool();
+
+function getOpioidFlowValue(name) {
+  return document.querySelector(`input[name="${name}"]:checked`)?.value || "";
+}
+
+function updateOpioidIntoxicationFlow() {
+  const result = document.querySelector("#opioidIntoxicationFlowResult");
+  if (!result) return;
+
+  const breathing = getOpioidFlowValue("opioidFlowBreathing");
+  const consciousness = getOpioidFlowValue("opioidFlowConsciousness");
+  const risks = Array.from(document.querySelectorAll("[data-opioid-flow-risk]:checked")).map((item) => item.dataset.opioidFlowRisk);
+  const hasHighRisk = risks.some((item) => ["sedatives", "longacting", "frailty"].includes(item));
+  const hasWithdrawalRisk = risks.includes("withdrawal");
+  const isTherapeuticUse = risks.includes("therapeutic") || hasWithdrawalRisk;
+
+  let severity = "Leve";
+  let conduct = "Suspender nova dose, revisar opioide/sedativos, observar de perto, orientar cuidador e reavaliar frequentemente.";
+  let naloxone = "Naloxona geralmente não é necessária se a pessoa está despertável e respira de forma eficaz.";
+
+  if (breathing === "critical") {
+    severity = "Crítica";
+    conduct = "Acionar SAMU/urgência, iniciar suporte básico/avançado, ventilar imediatamente e não atrasar oxigênio ou manobras de via aérea.";
+    naloxone = "Se disponível e sem atrasar ventilação: naloxona 2 mg IV; repetir/titular conforme resposta e protocolo.";
+  } else if (breathing === "severe" || consciousness === "coma") {
+    severity = "Grave";
+    conduct = "Acionar SAMU/urgência, proteger via aérea, oferecer oxigênio e ventilação assistida se respiração ineficaz; preparar observação por recorrência.";
+    naloxone = "Naloxona 0,4 mg a 2 mg IV, IM ou SC; repetir a cada 2 a 3 min se necessário, até resposta adequada ou dose total de 10 mg, conforme bula/protocolo.";
+  } else if (breathing === "moderate" || consciousness === "somnolent") {
+    severity = hasHighRisk ? "Moderada com alto risco" : "Moderada";
+    conduct = "Chamar ajuda, monitorar frequência respiratória, padrão ventilatório, consciência e saturação quando disponível; revisar opioide, resgates e sedativos.";
+    naloxone = isTherapeuticUse
+      ? "Se houver depressão respiratória progressiva: diluir naloxona 400 microgramas em 10 mL de cloreto de sódio 0,9%; administrar 0,5 mL, equivalente a 20 microgramas IV, a cada 2 min até ventilação adequada."
+      : "Se houver piora respiratória ou rebaixamento: considerar naloxona titulada; em overdose aguda, usar esquema de 0,4 mg a 2 mg conforme protocolo.";
+  }
+
+  if (hasHighRisk && severity === "Leve") {
+    severity = "Leve com fatores de risco";
+    conduct = "Suspender nova dose, revisar fatores de risco, evitar sedativos, monitorar com maior frequência e definir retorno/contato de urgência.";
+  }
+
+  const riskText = risks.length
+    ? "Fatores associados selecionados: " +
+      risks
+        .map((risk) => ({
+          therapeutic: "uso terapêutico/paliativo",
+          withdrawal: "uso crônico ou risco de abstinência",
+          sedatives: "sedativos/álcool",
+          longacting: "opioide de longa duração ou resgates repetidos",
+          frailty: "fragilidade ou disfunção orgânica",
+        }[risk]))
+        .join(", ") +
+      "."
+    : "Nenhum fator associado adicional selecionado.";
+  const withdrawalText = hasWithdrawalRisk
+    ? "<p><strong>Risco de abstinência:</strong> evitar reversão abrupta quando houver ventilação espontânea; titular naloxona em microdoses, observar dor/agitação/vômitos e revisar plano analgésico após estabilização.</p>"
+    : "";
+
+  result.innerHTML = `
+    <h3>Resultado: ${severity}</h3>
+    <p><strong>Conduta imediata:</strong> ${conduct}</p>
+    <p><strong>Naloxona:</strong> ${naloxone}</p>
+    <p><strong>Contexto:</strong> ${riskText}</p>
+    ${withdrawalText}
+    <p><strong>Após resposta:</strong> manter observação, revisar causa da intoxicação, ajustar posologia e registrar plano de prevenção.</p>
+  `;
+}
+
+document.querySelectorAll('input[name="opioidFlowBreathing"], input[name="opioidFlowConsciousness"], [data-opioid-flow-risk]').forEach((input) => {
+  input.addEventListener("change", updateOpioidIntoxicationFlow);
+});
+
+updateOpioidIntoxicationFlow();
+
+function openPublicCeafSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-public-ceaf-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.publicCeafSubtab === targetId);
+  });
+
+  document.querySelectorAll(".public-ceaf-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-public-ceaf-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPublicCeafSubtab(button.dataset.publicCeafSubtab);
   });
 });
 
@@ -1681,6 +2713,31 @@ function openAssessmentSubtab(targetId, focusPanel = true) {
 document.querySelectorAll("[data-assessment-subtab]").forEach((button) => {
   button.addEventListener("click", () => {
     openAssessmentSubtab(button.dataset.assessmentSubtab);
+  });
+});
+
+function openCompleteElementsSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-complete-elements-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.completeElementsSubtab === targetId);
+  });
+
+  document.querySelectorAll(".complete-elements-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-complete-elements-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openCompleteElementsSubtab(button.dataset.completeElementsSubtab);
   });
 });
 
@@ -1781,6 +2838,31 @@ function openPhytotherapySubtab(targetId, focusPanel = true) {
 document.querySelectorAll("[data-phytotherapy-subtab]").forEach((button) => {
   button.addEventListener("click", () => {
     openPhytotherapySubtab(button.dataset.phytotherapySubtab);
+  });
+});
+
+function openPicsSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-pics-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.picsSubtab === targetId);
+  });
+
+  document.querySelectorAll(".pics-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-pics-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openPicsSubtab(button.dataset.picsSubtab);
   });
 });
 
@@ -1909,6 +2991,62 @@ document.querySelectorAll("[data-selfcare-subtab]").forEach((button) => {
   });
 });
 
+const burnoutLabels = [
+  "0 - Nunca",
+  "1 - Raramente",
+  "2 - Algumas vezes",
+  "3 - Frequentemente",
+  "4 - Quase sempre",
+];
+
+function getBurnoutInterpretation(score, domains) {
+  const highDomains = Object.values(domains).filter((value) => value >= 8).length;
+  if (score >= 27 || highDomains >= 2) {
+    return "Risco alto de burnout. Priorizar redução de carga quando possível, apoio institucional, supervisão, discussão com coordenação e avaliação de saúde mental se houver sofrimento persistente.";
+  }
+  if (score >= 15 || highDomains === 1) {
+    return "Risco moderado. Revisar pausas, divisão de tarefas, debriefing, apoio entre pares e fatores organizacionais modificáveis.";
+  }
+  return "Baixo risco no momento. Manter pausas, apoio entre pares e reavaliação periódica.";
+}
+
+function updateBurnoutQuestionnaire() {
+  const items = Array.from(document.querySelectorAll("[data-burnout-item]"));
+  const scoreOutput = document.querySelector("#burnoutScore");
+  const interpretationOutput = document.querySelector("#burnoutInterpretation");
+  const domainsOutput = document.querySelector("#burnoutDomains");
+  if (!items.length || !scoreOutput || !interpretationOutput || !domainsOutput) return;
+
+  const domains = { exhaustion: 0, distance: 0, efficacy: 0 };
+  items.forEach((select) => {
+    const domain = select.dataset.burnoutItem;
+    domains[domain] += Number(select.value || 0);
+  });
+
+  const score = domains.exhaustion + domains.distance + domains.efficacy;
+  scoreOutput.textContent = `Pontuação: ${score}/36`;
+  interpretationOutput.textContent = getBurnoutInterpretation(score, domains);
+  domainsOutput.innerHTML = `
+    <li>Exaustão: ${domains.exhaustion}/12</li>
+    <li>Distanciamento/cinismo: ${domains.distance}/12</li>
+    <li>Eficácia profissional reduzida: ${domains.efficacy}/12</li>
+  `;
+}
+
+document.querySelectorAll("[data-burnout-item]").forEach((select) => {
+  if (!select.options.length) {
+    burnoutLabels.forEach((label, value) => {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = label;
+      select.append(option);
+    });
+  }
+  select.addEventListener("change", updateBurnoutQuestionnaire);
+});
+
+updateBurnoutQuestionnaire();
+
 function openCaregiverSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
 
@@ -1933,6 +3071,52 @@ document.querySelectorAll("[data-caregiver-subtab]").forEach((button) => {
     openCaregiverSubtab(button.dataset.caregiverSubtab);
   });
 });
+
+const zaritLabels = [
+  "0 - Nunca",
+  "1 - Raramente",
+  "2 - Algumas vezes",
+  "3 - Frequentemente",
+  "4 - Quase sempre",
+];
+
+function getZaritInterpretation(score) {
+  if (score <= 20) {
+    return "Sem sobrecarga ou sobrecarga mínima. Reavaliar periodicamente e manter orientação prática.";
+  }
+  if (score <= 40) {
+    return "Sobrecarga leve a moderada. Revisar divisão de tarefas, descanso, rede de apoio e plano de crise.";
+  }
+  if (score <= 60) {
+    return "Sobrecarga moderada a intensa. Priorizar suporte familiar, serviço social, atenção primária e reavaliação frequente.";
+  }
+  return "Sobrecarga intensa. Avaliar risco de colapso do cuidado, segurança no domicílio e necessidade de apoio multiprofissional rápido.";
+}
+
+function updateZaritScale() {
+  const items = Array.from(document.querySelectorAll("[data-zarit-item]"));
+  const scoreOutput = document.querySelector("#zaritScore");
+  const interpretationOutput = document.querySelector("#zaritInterpretation");
+  if (!items.length || !scoreOutput || !interpretationOutput) return;
+
+  const score = items.reduce((total, select) => total + Number(select.value || 0), 0);
+  scoreOutput.textContent = `Pontuação: ${score}/88`;
+  interpretationOutput.textContent = getZaritInterpretation(score);
+}
+
+document.querySelectorAll("[data-zarit-item]").forEach((select) => {
+  if (!select.options.length) {
+    zaritLabels.forEach((label, value) => {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = label;
+      select.append(option);
+    });
+  }
+  select.addEventListener("change", updateZaritScale);
+});
+
+updateZaritScale();
 
 function openLegalSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
@@ -2808,6 +3992,31 @@ document.querySelectorAll("[data-dyspnea-subtab]").forEach((button) => {
   });
 });
 
+function openNauseaSubtab(targetId, focusPanel = true) {
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll("[data-nausea-subtab]").forEach((subtab) => {
+    subtab.classList.toggle("active", subtab.dataset.nauseaSubtab === targetId);
+  });
+
+  document.querySelectorAll(".nausea-subpanel").forEach((panel) => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  history.replaceState(null, "", `#${targetId}`);
+
+  if (focusPanel) {
+    targetPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    targetPanel?.focus({ preventScroll: true });
+  }
+}
+
+document.querySelectorAll("[data-nausea-subtab]").forEach((button) => {
+  button.addEventListener("click", () => {
+    openNauseaSubtab(button.dataset.nauseaSubtab);
+  });
+});
+
 function openFatigueSubtab(targetId, focusPanel = true) {
   const targetPanel = document.getElementById(targetId);
 
@@ -3163,13 +4372,24 @@ function updateCoughResult() {
   }
 
   const plan = coughTypePlans[coughState.type];
-  const factorActions = coughState.factors.map((factor) => coughFactorActions[factor]);
+  const combinedTreatment = buildCombinedCoughTreatment(plan, coughState.factors);
+  const factorActions = coughState.factors.map((factor) => coughFactorActions[factor]).filter(Boolean);
 
   title.textContent = plan.title;
-  text.textContent = plan.text;
+  text.textContent = coughState.factors.length
+    ? `${plan.text} A conduta abaixo combina o padrão predominante com os fatores associados selecionados.`
+    : plan.text;
   actions.replaceChildren(
-    ...plan.actions.map(createResultItem),
-    ...factorActions.map(createResultItem),
+    ...(combinedTreatment.cause.length ? [createResultSection("Causa provável", combinedTreatment.cause, "cause")] : []),
+    ...(combinedTreatment.nonMedication.length
+      ? [createResultSection("Tratamento não medicamentoso", combinedTreatment.nonMedication, "nonmedication")]
+      : []),
+    ...(combinedTreatment.medication.length
+      ? [createResultSection("Tratamento medicamentoso", combinedTreatment.medication, "medication")]
+      : []),
+    ...(combinedTreatment.steps.length ? [createResultSection("Tratamento em etapas", combinedTreatment.steps, "steps")] : []),
+    ...(factorActions.length ? [createResultSection("Ajustes pelos fatores associados", factorActions, "factors")] : []),
+    ...combinedTreatment.notes.map(createResultItem),
     createResultItem("Reavaliar resposta, sonolência, constipação, boca seca, retenção urinária, conforto respiratório e impacto no sono/fadiga.")
   );
 }
@@ -3432,10 +4652,15 @@ function updatePainResult() {
 
   const recommendation = mechanismRecommendations[painState.mechanism];
   const medicationPlan = getMedicationPlan(painState.mechanism, painState.intensity, painState.phenotype);
-  const nonMedicationActions = getNonMedicationActions(painState.mechanism, painState.intensity);
+  const combinedDecision = buildCombinedPainDecision(painState.mechanism, painState.intensity, painState.phenotype);
+  const nonMedicationActions = [
+    ...combinedDecision.nonMedication,
+    ...(nonMedicationPlanMap[painState.mechanism]?.[painState.intensity] || []),
+    "Acompanhar intensidade, função, sono, humor, autonomia, qualidade de vida e adesão.",
+  ];
   const phytotherapyActions = getPhytotherapyActions(painState.mechanism, painState.intensity);
   title.textContent = `Plano multimodal para dor crônica ${recommendation.label} ${intensityLabels[painState.intensity]}`;
-  text.textContent = recommendation.text;
+  text.textContent = `Sugestão gerada pela combinação entre classificação fenotípica, intensidade informada e perfil terapêutico: ${recommendation.text}`;
 
   const intensityAction =
     painState.intensity === "severe"
@@ -3445,9 +4670,9 @@ function updatePainResult() {
         : "Se dor leve, priorizar função, autocuidado e menor carga medicamentosa eficaz.";
 
   actions.replaceChildren(
-    ...recommendation.actions.map(createResultItem),
-    createMedicationSection(medicationPlan),
+    createResultSection("Tomada de decisão combinada", combinedDecision.focus, "cause"),
     createResultSection("Tratamento não medicamentoso", nonMedicationActions, "nonmedication"),
+    createMedicationSection(medicationPlan),
     createResultSection("Fitoterapia", phytotherapyActions, "phytotherapy"),
     createResultItem(intensityAction),
     createResultItem("Reavaliar buscando melhora mínima de 30%, ganho funcional e tolerabilidade aceitável.")
@@ -4124,26 +5349,23 @@ function buildCompleteRecordSummary() {
   const coelhoSavassiItems = getCoelhoSavassiSelectedItems() || "[sentinelas de risco familiar selecionadas]";
   const spictResult = getCompleteSpictResult();
   const ppsResult = getCompletePpsCalculation();
+  const biografia = getCompleteRecordText("biografia", "[síntese biográfica, valores, vínculos e aspectos relevantes da história de vida]");
+  const historiaAdoecimento = getCompleteRecordText("historia-adoecimento", "[diagnóstico principal, diagnósticos secundários, trajetória clínica, tratamentos prévios e em curso, internações e complicações relevantes]");
+  const familiaRede = getCompleteRecordText("familia-rede", "[composição familiar, cuidador principal, rede de apoio e aspectos familiares relevantes]");
+  const aspectosSocioeconomicos = getCompleteRecordText("aspectos-socioeconomicos", "[condições de moradia, ocupação, renda, benefícios e necessidades sociais]");
+  const dimensaoPsicologica = getCompleteRecordText("dimensao-psicologica", "[fontes de sofrimento psicológico e ações propostas]");
+  const dimensaoEspiritual = getCompleteRecordText("dimensao-espiritual", "[fontes de sofrimento espiritual, FICA e ações propostas]");
+  const dimensaoFamiliarSocial = getCompleteRecordText("dimensao-familiar-social", "[fontes de sofrimento familiar/social e ações propostas]");
+  const dimensaoFisica = getCompleteRecordText("dimensao-fisica", "[sintomas, limitações, riscos e ações propostas]");
+  const pacDav = getCompleteRecordText("pac-dav", "[preferências, valores, limites terapêuticos, representante e orientações registradas]");
+  const reflexoesEquipe = getCompleteRecordText("reflexoes-equipe", "[reflexões da equipe, dificuldades, aprendizados, necessidade de matriciamento e plano de acompanhamento]");
 
   return [
-    `Resumo da abordagem paliativa completa realizada em ${data}, por ${profissional}. Pessoa avaliada: ${nome}, ${idade}, ${genero}, Cartão Nacional do SUS ${cns}, CID ${cid}, residente em ${municipio}, endereço ${endereco}, local de cuidado ${localCuidado}, acompanhada no território pelo Agente Comunitário de Saúde ${acs}.`,
-    "",
-    `Risco familiar pela Escala de Coelho-Savassi: ${coelhoSavassiClass}, escore ${coelhoSavassiScore}. Itens selecionados: ${coelhoSavassiItems}.`,
-    "",
-    `Biografia e contexto: ${getCompleteRecordText("biografia", "[síntese biográfica, valores, vínculos e aspectos relevantes da história de vida]")}`,
-    "",
-    `História de adoecimento: ${getCompleteRecordText("historia-adoecimento", "[diagnóstico principal, diagnósticos secundários, trajetória clínica, tratamentos prévios e em curso, internações e complicações relevantes]")}`,
-    "",
-    `Elegibilidade e trajetória: ${spictResult.summary} A trajetória predominante selecionada foi: ${trajetoria}. PPS atual: ${ppsResult.summary}, avaliado em ${getCompleteRecordText("data-pps-atual", "[data da avaliação do PPS]")}. Pergunta-surpresa: ${perguntaSurpresa}.`,
-    "",
-    `Família, rede de apoio e aspectos socioeconômicos: ${getCompleteRecordText("familia-rede", "[composição familiar, cuidador principal, rede de apoio e aspectos familiares relevantes]")} ${getCompleteRecordText("aspectos-socioeconomicos", "[condições de moradia, ocupação, renda, benefícios e necessidades sociais]")}`,
-    "",
-    `Avaliação multidimensional: dimensão psicológica: ${getCompleteRecordText("dimensao-psicologica", "[fontes de sofrimento psicológico e ações propostas]")}; dimensão espiritual: ${getCompleteRecordText("dimensao-espiritual", "[fontes de sofrimento espiritual, FICA e ações propostas]")}; dimensão familiar e social: ${getCompleteRecordText("dimensao-familiar-social", "[fontes de sofrimento familiar/social e ações propostas]")}; dimensão física: ${getCompleteRecordText("dimensao-fisica", "[sintomas, limitações, riscos e ações propostas]")}.`,
-    "",
-    `Planejamento antecipado e Diretivas Antecipadas de Vontade: ${getCompleteRecordText("pac-dav", "[preferências, valores, limites terapêuticos, representante e orientações registradas]")}`,
-    "",
-    `Reflexões da equipe e próximos passos: ${getCompleteRecordText("reflexoes-equipe", "[reflexões da equipe, dificuldades, aprendizados, necessidade de matriciamento e plano de acompanhamento]")}`,
-  ].join("\n");
+    `A abordagem paliativa completa foi realizada em ${data}, por ${profissional}. A pessoa avaliada é ${nome}, ${idade}, ${genero}, Cartão Nacional do SUS ${cns}, CID ${cid}, residente em ${municipio}, no endereço ${endereco}. O local de cuidado registrado foi ${localCuidado}, com acompanhamento territorial pelo Agente Comunitário de Saúde ${acs}. Pela Escala de Coelho-Savassi, a família foi classificada como ${coelhoSavassiClass}, com escore ${coelhoSavassiScore}; os itens selecionados foram: ${coelhoSavassiItems}.`,
+    `Do ponto de vista biográfico, registrou-se: ${biografia}. A história de adoecimento inclui: ${historiaAdoecimento}. Na avaliação de elegibilidade, ${spictResult.summary} A trajetória predominante selecionada foi ${trajetoria}. O PPS atual foi ${ppsResult.summary}, avaliado em ${getCompleteRecordText("data-pps-atual", "[data da avaliação do PPS]")}. À pergunta-surpresa, a resposta registrada foi: ${perguntaSurpresa}.`,
+    `A rede familiar e social foi descrita da seguinte forma: ${familiaRede}. Os aspectos socioeconômicos relevantes foram: ${aspectosSocioeconomicos}. Na avaliação multidimensional, foram registrados sofrimento psicológico e ações propostas como ${dimensaoPsicologica}; aspectos espirituais como ${dimensaoEspiritual}; aspectos familiares e sociais como ${dimensaoFamiliarSocial}; e dimensão física como ${dimensaoFisica}.`,
+    `O planejamento antecipado de cuidados e as Diretivas Antecipadas de Vontade foram registrados como: ${pacDav}. As reflexões da equipe e os próximos passos foram: ${reflexoesEquipe}.`,
+  ].join("\n\n");
 }
 
 function renderCompleteRecordSummary() {
@@ -5180,6 +6402,14 @@ document.querySelector("#resetPhenotype")?.addEventListener("click", () => {
 
 updatePhenotypeResult();
 
+calculateOpioidConversionButton?.addEventListener("click", calculateOpioidConversion);
+
+opioidSourceDose?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    calculateOpioidConversion();
+  }
+});
+
 document.querySelectorAll(".references-toggle").forEach((button) => {
   const target = document.getElementById(button.getAttribute("aria-controls"));
   button.setAttribute("aria-expanded", "false");
@@ -5202,6 +6432,15 @@ const legacyHashMap = {
   "tratamento-medicamentoso": "tratamento-medicamentoso-dor",
   "tosse-dispneia": "tosse",
   "alteracoes-orais": "cuidados-boca",
+  "visao-geral-identificacao": "identificacao-quem-onde",
+  "visao-geral-avaliacao": "avaliacao-anamnese-sintomas",
+  "avaliacao-primeira-consulta": "avaliacao-anamnese-sintomas",
+  "profissionais-nucleo": "profissional-medico",
+  "profissionais-reabilitacao": "profissional-nutricao",
+  "profissionais-enfermagem": "profissional-tecnico-enfermagem",
+  "profissionais-territorio-suporte": "profissional-agente-comunitario-saude",
+  "profissionais-normas-conselhos": "profissional-medico",
+  "pics-exemplos": "pics-praticas-sus",
   "visao-geral-dispneia": "tipos-dispneia",
   "sintomas-gastrointestinais": "nauseas",
   "deteccao-fadiga": "deteccao-anorexia",
@@ -5210,14 +6449,27 @@ const legacyHashMap = {
   "tratamento-medicamentoso-fadiga": "tratamento-medicamentoso-anorexia",
   "comunicacao-familia-fadiga": "comunicacao-familia-anorexia",
   "visao-geral-tomada": "capacidade-decisao-substituta",
+  "visao-geral-aspectos": "proporcionalidade-aspectos",
 };
 const initialTab = legacyHashMap[initialHash] || initialHash;
 
 if (initialTab && panels.some((panel) => panel.id === initialTab)) {
   openTab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("concept-subpanel")) {
+  openTab("conceitos", false);
+  openConceptSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("professionals-subpanel")) {
+  openTab("papel-profissionais", false);
+  openProfessionalsSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("pain-subpanel")) {
   openTab("manejo-dor", false);
   openPainSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("opioid-subpanel")) {
+  openTab("uso-opioides", false);
+  openOpioidSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("public-ceaf-subpanel")) {
+  openTab("medicamentos-componente-especializado", false, "public");
+  openPublicCeafSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("pncp-subpanel")) {
   openTab("politica-nacional-cuidados-paliativos", false);
   openPncpSubtab(initialTab, false);
@@ -5227,6 +6479,10 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("assessment-subpanel")) {
   openTab("avaliacao", false);
   openAssessmentSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("complete-elements-subpanel")) {
+  openTab("avaliacao", false);
+  openAssessmentSubtab("elementos-abordagem-paliativa-completa", false);
+  openCompleteElementsSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("phases-subpanel")) {
   openTab("fases-adoecimento", false);
   openPhasesSubtab(initialTab, false);
@@ -5239,6 +6495,9 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("phytotherapy-subpanel")) {
   openTab("fitoterapia", false);
   openPhytotherapySubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("pics-subpanel")) {
+  openTab("praticas-integrativas", false);
+  openPicsSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("skin-subpanel")) {
   openTab("cuidados-pele", false);
   openSkinSubtab(initialTab, false);
@@ -5272,6 +6531,9 @@ if (initialTab && panels.some((panel) => panel.id === initialTab)) {
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("dyspnea-subpanel")) {
   openTab("dispneia", false);
   openDyspneaSubtab(initialTab, false);
+} else if (initialTab && document.getElementById(initialTab)?.classList.contains("nausea-subpanel")) {
+  openTab("nauseas", false);
+  openNauseaSubtab(initialTab, false);
 } else if (initialTab && document.getElementById(initialTab)?.classList.contains("fatigue-subpanel")) {
   openTab("fadiga", false);
   openFatigueSubtab(initialTab, false);

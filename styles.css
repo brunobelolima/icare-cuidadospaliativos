@@ -120,12 +120,29 @@ button {
 }
 
 .visit-counter {
+  position: relative;
   align-self: start;
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.86);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.74);
   box-shadow: 0 12px 28px rgba(20, 112, 116, 0.12);
+}
+
+.visit-counter::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.visit-counter.is-active::after {
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
 }
 
 .visit-counter span {
@@ -139,7 +156,7 @@ button {
   display: block;
   margin-top: 2px;
   color: var(--teal-dark);
-  font-size: 1.32rem;
+  font-size: 1.46rem;
   line-height: 1;
 }
 
@@ -147,8 +164,9 @@ button {
   display: block;
   margin-top: 4px;
   color: #48646a;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   font-weight: 700;
+  max-width: 170px;
 }
 
 .brand-logo {
@@ -190,10 +208,57 @@ button {
   color: #0a4d57;
 }
 
+.tab-trigger.prescription-tab {
+  position: relative;
+  border: 1px solid rgba(15, 118, 110, 0.28);
+  background: linear-gradient(180deg, rgba(216, 255, 235, 0.74), rgba(255, 255, 255, 0.42));
+  color: #0f5f58;
+  box-shadow: inset 4px 0 0 rgba(15, 118, 110, 0.38);
+}
+
+.tab-trigger.prescription-tab:hover {
+  background: linear-gradient(180deg, rgba(190, 246, 224, 0.9), rgba(232, 250, 245, 0.72));
+  color: #074d48;
+}
+
 .tab-trigger.active {
   background: linear-gradient(180deg, #0aa0bd, #0887a8);
   color: white;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.tab-trigger.prescription-tab.active {
+  border-color: transparent;
+  background: linear-gradient(180deg, #0aa0bd, #0887a8);
+  color: white;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 4px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+
+.audience-public-tab {
+  display: none;
+}
+
+body.public-audience .tabs .tab-trigger:not(.audience-public-tab),
+body.public-audience .tabs .tab-group-label {
+  display: none;
+}
+
+body.public-audience .tabs .audience-public-tab {
+  display: block;
+}
+
+.tab-group-label {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #e9f8f5;
+  color: #155e63;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .content-panel {
@@ -242,16 +307,21 @@ button {
 }
 
 .pain-subpanel,
+.opioid-subpanel,
+.public-ceaf-subpanel,
 .pncp-subpanel,
 .identification-subpanel,
 .assessment-subpanel,
 .legal-subpanel,
 .planning-subpanel,
 .decision-subpanel,
+.concept-subpanel,
+.professionals-subpanel,
 .phases-subpanel,
 .bioethics-subpanel,
 .communication-subpanel,
 .phytotherapy-subpanel,
+.pics-subpanel,
 .skin-subpanel,
 .endoflife-subpanel,
 .compassion-subpanel,
@@ -260,6 +330,7 @@ button {
 .caregiver-subpanel,
 .pediatric-subpanel,
 .pediatric-symptom-subpanel,
+.nausea-subpanel,
 .cough-subpanel,
 .dyspnea-subpanel,
 .fatigue-subpanel,
@@ -276,16 +347,21 @@ button {
 }
 
 .pain-subpanel.active,
+.opioid-subpanel.active,
+.public-ceaf-subpanel.active,
 .pncp-subpanel.active,
 .identification-subpanel.active,
 .assessment-subpanel.active,
 .legal-subpanel.active,
 .planning-subpanel.active,
 .decision-subpanel.active,
+.concept-subpanel.active,
+.professionals-subpanel.active,
 .phases-subpanel.active,
 .bioethics-subpanel.active,
 .communication-subpanel.active,
 .phytotherapy-subpanel.active,
+.pics-subpanel.active,
 .skin-subpanel.active,
 .endoflife-subpanel.active,
 .compassion-subpanel.active,
@@ -294,6 +370,7 @@ button {
 .caregiver-subpanel.active,
 .pediatric-subpanel.active,
 .pediatric-symptom-subpanel.active,
+.nausea-subpanel.active,
 .cough-subpanel.active,
 .dyspnea-subpanel.active,
 .fatigue-subpanel.active,
@@ -324,6 +401,33 @@ button {
 
 .definition-card h3 {
   margin-top: 0;
+}
+
+.legal-single-card-grid {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.legal-single-card-grid .definition-card {
+  min-height: 100%;
+}
+
+.assessment-card-grid {
+  align-items: stretch;
+}
+
+.assessment-card-grid .definition-card {
+  display: grid;
+  align-content: start;
+  min-height: 100%;
+}
+
+.definition-card h4 {
+  margin: 16px 0 8px;
+  padding-top: 12px;
+  border-top: 1px solid #d6f2ee;
+  color: var(--blue);
+  font-size: 0.98rem;
 }
 
 .definition-card ul {
@@ -420,6 +524,22 @@ ol {
   background: #ecfffb;
 }
 
+.public-care-figure {
+  margin: 18px 0 20px;
+  padding: 10px;
+  border: 1px solid #cbf2ed;
+  border-radius: 8px;
+  background: #fbffff;
+  box-shadow: 0 12px 30px rgba(15, 118, 110, 0.08);
+}
+
+.public-care-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
 .trajectory-figure {
   margin: 10px 0 16px;
   overflow-x: auto;
@@ -434,6 +554,481 @@ ol {
   border: 1px solid #a9efe0;
   border-radius: 8px;
   background: #f4fffc;
+}
+
+.pediatric-trajectory-figure {
+  margin: 18px 0 22px;
+}
+
+.pediatric-trajectory-chart {
+  display: block;
+  width: 100%;
+  min-width: 980px;
+  height: auto;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #f8fffd;
+}
+
+.trajectory-title {
+  fill: #123f54;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.trajectory-note,
+.trajectory-small {
+  fill: #52616f;
+  font-size: 15px;
+}
+
+.trajectory-axis {
+  stroke: #52616f;
+  stroke-width: 2.4;
+}
+
+.trajectory-grid {
+  stroke: #d7ede9;
+  stroke-width: 1.4;
+  stroke-dasharray: 7 9;
+}
+
+.trajectory-axis-label {
+  fill: #314757;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.trajectory-line {
+  fill: none;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trajectory-acute {
+  stroke: #e05252;
+}
+
+.trajectory-cronic {
+  stroke: #0f766e;
+}
+
+.trajectory-progressive {
+  stroke: #2f6fed;
+}
+
+.trajectory-neuro {
+  stroke: #8a5cf6;
+}
+
+.trajectory-neonatal {
+  stroke: #f59e0b;
+}
+
+.trajectory-loss {
+  stroke: #64748b;
+}
+
+.trajectory-label {
+  fill: #123f54;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.trajectory-marker {
+  stroke: #ffffff;
+  stroke-width: 4;
+}
+
+.trajectory-marker-priority {
+  stroke-width: 7;
+}
+
+.trajectory-marker-acute {
+  fill: #e05252;
+}
+
+.trajectory-marker-cronic {
+  fill: #0f766e;
+}
+
+.trajectory-marker-progressive {
+  fill: #2f6fed;
+}
+
+.trajectory-marker-neuro {
+  fill: #8a5cf6;
+}
+
+.trajectory-marker-neonatal {
+  fill: #f59e0b;
+}
+
+.trajectory-marker-loss {
+  fill: #64748b;
+}
+
+.trajectory-marker-text {
+  fill: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.trajectory-legend rect {
+  fill: #ffffff;
+  stroke: #d7ede9;
+}
+
+.trajectory-legend text {
+  fill: #314757;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.trajectory-legend-title {
+  fill: #123f54;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.legend-marker-text {
+  font-size: 14px;
+}
+
+.original-manual-figure {
+  margin: 18px 0 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.original-manual-figure h3 {
+  margin: 0 0 10px;
+}
+
+.original-manual-image {
+  display: block;
+  width: 100%;
+  min-width: 760px;
+  height: auto;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.conass-house-image {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid #d8efe9;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.conass-house-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.conass-house-link {
+  display: block;
+  overflow: hidden;
+}
+
+.conass-house-legend {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conass-house-legend li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 34px;
+  color: #263746;
+  font-size: 0.94rem;
+  line-height: 1.25;
+}
+
+.house-legend-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.house-legend-1 { background: #168dcc; }
+.house-legend-2 { background: #df1419; }
+.house-legend-3 { background: #00a85a; }
+.house-legend-4 { background: #ffed3a; color: #425466; }
+.house-legend-5 { background: #91a5aa; }
+.house-legend-6 { background: #a94f13; }
+.house-legend-7 { background: #5e983e; }
+.house-legend-8 { background: #ff8848; }
+.house-legend-9 { background: #f7b731; color: #263746; }
+
+.macc-figure {
+  margin: 18px 0 22px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.macc-chart {
+  display: block;
+  width: 100%;
+  min-width: 920px;
+  height: auto;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #f8fffd;
+}
+
+.macc-title {
+  fill: #123f54;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.macc-subtitle,
+.macc-caption {
+  fill: #52616f;
+  font-size: 16px;
+}
+
+.macc-pyramid path {
+  stroke: #ffffff;
+  stroke-width: 5;
+}
+
+.macc-layer-1 {
+  fill: #dff7ef;
+}
+
+.macc-layer-2 {
+  fill: #c7f0e8;
+}
+
+.macc-layer-3 {
+  fill: #a9e8df;
+}
+
+.macc-layer-4 {
+  fill: #83d7cf;
+}
+
+.macc-layer-5 {
+  fill: #5fc3bd;
+}
+
+.macc-layer-labels text {
+  fill: #123f54;
+  font-size: 19px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.macc-arrow {
+  fill: none;
+  stroke: #0f766e;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 10 9;
+}
+
+.macc-palliative-strip rect {
+  fill: #fff7d6;
+  stroke: #f59e0b;
+  stroke-width: 4;
+}
+
+.macc-palliative-strip text {
+  fill: #314757;
+  font-size: 16px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.macc-palliative-strip .macc-side-title {
+  fill: #8a4b00;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.macc-side-card rect {
+  fill: #ffffff;
+  stroke: #cbf2ed;
+  stroke-width: 2;
+}
+
+.macc-side-card text {
+  fill: #314757;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.macc-side-card .macc-side-title {
+  fill: #123f54;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.plan-house-figure {
+  margin: 18px 0 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.plan-house-chart {
+  display: block;
+  width: 100%;
+  min-width: 920px;
+  height: auto;
+  border: 1px solid #a9efe0;
+  border-radius: 8px;
+  background: #f8fffd;
+}
+
+.house-title {
+  fill: #123f54;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.house-subtitle,
+.house-caption {
+  fill: #52616f;
+  font-size: 16px;
+}
+
+.house-roof {
+  fill: #0f766e;
+  stroke: #0b5f59;
+  stroke-width: 4;
+}
+
+.house-attic {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 2;
+}
+
+.house-roof-text,
+.house-foundation-text,
+.house-door-text {
+  fill: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.house-roof-small,
+.house-foundation-small {
+  fill: #e6fffb;
+  font-size: 15px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.house-wall {
+  fill: #ecfffb;
+  stroke: #7bd8cf;
+  stroke-width: 4;
+}
+
+.house-divider {
+  stroke: #b5ebe4;
+  stroke-width: 3;
+}
+
+.house-foundation {
+  fill: #123f54;
+}
+
+.house-window rect {
+  fill: #ffffff;
+  stroke: #a9efe0;
+  stroke-width: 3;
+}
+
+.house-window text {
+  fill: #123f54;
+  font-size: 19px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.house-window .house-window-small {
+  fill: #52616f;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.house-window-highlight rect {
+  fill: #fff7d6;
+  stroke: #f59e0b;
+  stroke-width: 7;
+  filter: drop-shadow(0 10px 12px rgba(245, 158, 11, 0.24));
+}
+
+.house-window-highlight text {
+  fill: #8a4b00;
+}
+
+.house-door {
+  fill: #0f766e;
+  stroke: #ffffff;
+  stroke-width: 4;
+}
+
+.house-side-note rect {
+  fill: #ffffff;
+  stroke: #cbf2ed;
+  stroke-width: 2;
+}
+
+.house-side-note text {
+  fill: #314757;
+  font-size: 16px;
+  font-weight: 850;
+  text-anchor: middle;
+}
+
+.house-highlight-arrow {
+  fill: none;
+  stroke: #f59e0b;
+  stroke-width: 6;
+  stroke-linecap: round;
+  marker-end: none;
+}
+
+.house-highlight-dot {
+  fill: #f59e0b;
+  stroke: #ffffff;
+  stroke-width: 4;
+}
+
+.house-callout {
+  fill: #8a4b00;
+  font-size: 17px;
+  font-weight: 900;
+  text-anchor: middle;
 }
 
 .mint-box,
@@ -527,6 +1122,36 @@ ol {
   height: 100%;
 }
 
+.concept-principles-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.concept-principles-grid article {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.concept-principles-grid h3 {
+  margin-top: 0;
+}
+
+.concept-principles-grid p {
+  flex: 1;
+}
+
+#nao-profissionais .info-grid,
+#nao-profissionais .legal-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+#nao-profissionais .info-grid article,
+#nao-profissionais .legal-card-grid article {
+  height: 100%;
+}
+
 .communication-overview-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
@@ -585,6 +1210,20 @@ ol {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-top: 18px;
+}
+
+.audience-choice-grid {
+  margin: 18px 0;
+}
+
+.audience-choice-grid article {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.audience-choice-grid button {
+  align-self: flex-start;
 }
 
 .table-wrap {
@@ -943,6 +1582,7 @@ tr:last-child td {
 }
 
 #painResultActions,
+#coughResultActions,
 #anorexiaResultActions,
 #identificationResultActions,
 #identificationSimplifiedActions,
@@ -953,6 +1593,7 @@ tr:last-child td {
 }
 
 #painResultActions > li:not(.result-section),
+#coughResultActions > li:not(.result-section),
 #anorexiaResultActions > li:not(.result-section),
 #identificationResultActions > li:not(.result-section),
 #identificationSimplifiedActions > li:not(.result-section),
@@ -963,6 +1604,7 @@ tr:last-child td {
 }
 
 #painResultActions > li:not(.result-section)::before,
+#coughResultActions > li:not(.result-section)::before,
 #anorexiaResultActions > li:not(.result-section)::before,
 #identificationResultActions > li:not(.result-section)::before,
 #identificationSimplifiedActions > li:not(.result-section)::before,
@@ -991,6 +1633,31 @@ tr:last-child td {
   margin: 0 0 10px;
   color: #06373e;
   font-size: 1rem;
+}
+
+.result-section--nonmedication {
+  border-left-color: #0f766e;
+  background: #f4fffb;
+}
+
+.result-section--medication {
+  border-left-color: #087891;
+  background: #f6fbff;
+}
+
+.result-section--cause {
+  border-left-color: #64748b;
+  background: #fbfdff;
+}
+
+.result-section--factors {
+  border-left-color: #7c3aed;
+  background: #fbf8ff;
+}
+
+.result-section--steps {
+  border-left-color: #ca8a04;
+  background: #fffdf2;
 }
 
 .result-section-guidance {
@@ -1132,16 +1799,19 @@ tr:last-child td {
   background: #f8fffd;
 }
 
-.pediatric-inner-subtabs {
+.pediatric-inner-subtabs,
+.assessment-inner-subtabs {
   margin: 0 0 16px;
 }
 
-.pediatric-inner-panel {
+.pediatric-inner-panel,
+.complete-elements-subpanel {
   display: none;
   min-width: 0;
 }
 
-.pediatric-inner-panel.active {
+.pediatric-inner-panel.active,
+.complete-elements-subpanel.active {
   display: block;
 }
 
@@ -1248,6 +1918,89 @@ tr:last-child td {
   min-width: 0;
 }
 
+#prescricao,
+#prescricao * {
+  box-sizing: border-box;
+}
+
+#prescricao .prescription-step,
+#prescricao .prescription-step *,
+#prescricao .prescription-result,
+#prescricao .prescription-result *,
+#prescricao .prescription-summary,
+#prescricao .prescription-summary *,
+#prescricao .medication-group-card,
+#prescricao .medication-group-card *,
+#prescricao .result-section,
+#prescricao .result-section * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+#prescricao button,
+#prescricao label,
+#prescricao li,
+#prescricao p,
+#prescricao strong,
+#prescricao span,
+#prescricao h3,
+#prescricao h4,
+#prescricao h5 {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+#prescricao .segment,
+#prescricao .compact-button,
+#prescricao .selected-symptom-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+  min-height: 44px;
+  padding-block: 9px;
+  line-height: 1.25;
+  text-align: center;
+}
+
+#prescricao .selected-symptom-chip {
+  justify-content: flex-start;
+  border-radius: 7px;
+  text-align: left;
+}
+
+#prescricao .segmented-control,
+#prescricao .segmented-control.multi {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+}
+
+#prescricao .prescription-med-options label,
+#prescricao .prescription-phytotherapy-options label,
+#prescricao .prescription-nonpharm-options label,
+#prescricao .prescription-intensity-item label,
+#prescricao .prescription-pain-types label,
+#prescricao .prescription-symptom-types label {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  line-height: 1.4;
+}
+
+#prescricao input[type="checkbox"],
+#prescricao input[type="radio"] {
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+
+#prescricao .locked-step::after {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
 .prescription-med-options {
   display: grid;
   gap: 10px;
@@ -1271,6 +2024,7 @@ tr:last-child td {
 .prescription-intensity-item {
   display: grid;
   gap: 8px;
+  min-width: 0;
   padding: 12px;
   border: 1px solid #d6f2ee;
   border-radius: 7px;
@@ -1393,6 +2147,7 @@ tr:last-child td {
 }
 
 .prescription-summary section {
+  min-width: 0;
   padding: 12px;
   border: 1px solid #bfe7e3;
   border-radius: 7px;
@@ -1403,6 +2158,7 @@ tr:last-child td {
   margin: 0 0 8px;
   color: #06373e;
   font-size: 0.98rem;
+  line-height: 1.28;
 }
 
 .prescription-summary ul {
@@ -1525,7 +2281,7 @@ tr:last-child td {
   background: #77d8d0;
 }
 
-.flow-node span {
+.flow-node > span:first-child {
   position: absolute;
   left: 18px;
   top: 20px;
@@ -1537,6 +2293,17 @@ tr:last-child td {
   background: var(--teal);
   color: white;
   font-weight: 800;
+}
+
+.interactive-flowchart .flow-node {
+  padding: 18px;
+}
+
+.interactive-flowchart .pain-step,
+.interactive-flowchart .cough-step,
+.interactive-flowchart .intensity-step,
+.interactive-flowchart .pain-result {
+  margin-top: 0;
 }
 
 .flow-node.start {
@@ -1648,6 +2415,74 @@ tr:last-child td {
 .callout strong {
   color: #07554c;
   white-space: nowrap;
+}
+
+.opioid-conversion-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin: 18px 0;
+}
+
+.opioid-conversion-form label {
+  display: grid;
+  gap: 7px;
+  font-weight: 800;
+  color: #07554c;
+}
+
+.opioid-conversion-form select,
+.opioid-conversion-form input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  background: white;
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.opioid-conversion-result {
+  display: none;
+  margin-top: 16px;
+  border: 1px solid #d6f2ee;
+  border-radius: 10px;
+  background: #f8fffd;
+  padding: 16px;
+}
+
+.opioid-conversion-result.show {
+  display: block;
+}
+
+.opioid-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.opioid-result-grid div {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #d6f2ee;
+  border-radius: 8px;
+  background: white;
+  padding: 12px;
+}
+
+.opioid-result-grid span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.opioid-result-grid strong {
+  color: #07554c;
+  font-size: 1.25rem;
 }
 
 .check-list {
@@ -1906,6 +2741,23 @@ tr:last-child td {
   margin-top: 16px;
 }
 
+.inline-locator-label {
+  display: grid;
+  gap: 6px;
+  min-width: min(100%, 320px);
+  color: #21494f;
+  font-weight: 800;
+}
+
+.inline-locator-label input {
+  width: 100%;
+  border: 1px solid #bdebe6;
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fbffff;
+}
+
 .directive-output-label {
   margin-top: 18px;
 }
@@ -1913,7 +2765,12 @@ tr:last-child td {
 .directive-output {
   min-height: 320px;
   font-family: inherit;
+  font-weight: 400;
   line-height: 1.45;
+}
+
+#completeRecordSummary {
+  font-weight: 400;
 }
 
 .professional-dialog {
@@ -1929,6 +2786,54 @@ tr:last-child td {
 
 .professional-dialog.hidden {
   display: none;
+}
+
+.cookie-banner {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  width: min(980px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+}
+
+.cookie-banner[hidden] {
+  display: none;
+}
+
+.cookie-banner strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #06373e;
+}
+
+.cookie-banner p {
+  margin: 0;
+  color: #315b62;
+  font-size: 0.94rem;
+}
+
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cookie-actions .primary-button,
+.cookie-actions .secondary-button {
+  min-height: 38px;
+  padding: 8px 14px;
 }
 
 .dialog-card {
@@ -2019,6 +2924,10 @@ body.dialog-open {
   }
 
   .tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .opioid-conversion-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2119,6 +3028,11 @@ body.dialog-open {
     margin-inline: 0;
   }
 
+  .opioid-conversion-form,
+  .opioid-result-grid {
+    grid-template-columns: 1fr;
+  }
+
   .tab-trigger {
     width: 100%;
     min-height: 46px;
@@ -2136,6 +3050,19 @@ body.dialog-open {
   .subtab-trigger {
     width: 100%;
     white-space: normal;
+  }
+
+  .cookie-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .cookie-actions {
+    justify-content: stretch;
+  }
+
+  .cookie-actions .primary-button,
+  .cookie-actions .secondary-button {
+    flex: 1 1 120px;
   }
 
   .pain-figure {
@@ -2230,4 +3157,25 @@ body.dialog-open {
   grid-template-columns: 1fr;
   gap: 5px;
 }
+}
+
+@media (max-width: 760px) {
+  .conass-house-layout {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .conass-house-image {
+    max-width: 320px;
+  }
+
+  .conass-house-legend li {
+    grid-template-columns: 32px minmax(0, 1fr);
+    font-size: 0.9rem;
+  }
+
+  .house-legend-chip {
+    width: 32px;
+    height: 32px;
+  }
 }

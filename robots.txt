@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://icare-abordagempaliativa.com.br/sitemap.xml

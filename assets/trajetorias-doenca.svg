@@ -77,7 +77,7 @@
   <g transform="translate(728 24)">
     <rect class="panel" width="328" height="360" rx="10"/>
     <text class="label" x="22" y="42">Fragilidade / demência</text>
-    <text class="small" x="22" y="70">Declínio a partir de PPS 40%</text>
+    <text class="small" x="22" y="70">Declínio prolongado e progressivo</text>
     <line class="grid" x1="78" y1="96" x2="294" y2="96"/>
     <line class="grid" x1="78" y1="144" x2="294" y2="144"/>
     <line class="grid" x1="78" y1="192" x2="294" y2="192"/>
@@ -100,9 +100,6 @@
     <circle class="marker" cx="90" cy="211" r="6"/>
     <circle class="marker" cx="168" cy="234" r="6"/>
     <circle class="marker" cx="230" cy="266" r="6"/>
-    <text class="note" x="94" y="204">PPS 40%</text>
-    <text class="note" x="132" y="228">dependência</text>
-    <text class="note" x="212" y="258">fase final</text>
     <text class="axisText" x="22" y="86">PPS (%)</text>
     <text class="axisText" x="230" y="325">tempo</text>
   </g>

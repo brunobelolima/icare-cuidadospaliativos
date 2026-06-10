@@ -1,0 +1,19 @@
+{
+  "name": "iCare - Abordagem Paliativa",
+  "short_name": "iCare Paliativa",
+  "description": "Guia prático de abordagem paliativa para profissionais do serviço público de saúde.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5fffd",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "assets/icare-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

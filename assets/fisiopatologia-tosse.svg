@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">Fisiopatologia da tosse</title>
+  <desc id="desc">Ilustração anatômica em perfil do reflexo da tosse, com vias aéreas, pulmões, diafragma, nervo vago, centro da tosse e resposta eferente.</desc>
+  <metadata>Rótulos: Estímulo irritativo; Receptores das vias aéreas; Nervo vago; Centro da tosse; Vias eferentes; Laringe; Músculos respiratórios; Tosse.</metadata>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0f766e"/>
+    </marker>
+    <marker id="arrow-air" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0891b2"/>
+    </marker>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fffd"/>
+      <stop offset="1" stop-color="#eef8ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#064e5b" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .bg { fill: url(#bg); }
+      .title { font: 800 36px Arial, Helvetica, sans-serif; fill: #064e5b; }
+      .subtitle { font: 600 17px Arial, Helvetica, sans-serif; fill: #3f6268; }
+      .stage { fill: #ffffff; stroke: #c7ebe7; stroke-width: 2; filter: url(#shadow); }
+      .skin { fill: #f3faf8; stroke: #397f7b; stroke-width: 3; }
+      .neck { fill: #edf7f4; stroke: #397f7b; stroke-width: 3; }
+      .feature { fill: none; stroke: #397f7b; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+      .torso-line { fill: none; stroke: #73aaa6; stroke-width: 2; stroke-linecap: round; opacity: 0.75; }
+      .rib { fill: none; stroke: #8bbfba; stroke-width: 1.7; stroke-linecap: round; opacity: 0.65; }
+      .airway { fill: none; stroke: #0b6fa4; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+      .airway-inner { fill: none; stroke: #e6f7ff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+      .lung { fill: #dff4ff; stroke: #0b6fa4; stroke-width: 3; }
+      .diaphragm { fill: none; stroke: #0f766e; stroke-width: 5; stroke-linecap: round; }
+      .brain { fill: #fee2e2; stroke: #b45309; stroke-width: 2.5; }
+      .center { fill: #f97316; stroke: #9a3412; stroke-width: 2; }
+      .receptor { fill: #facc15; stroke: #a16207; stroke-width: 2; }
+      .afferent { fill: none; stroke: #2563eb; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 7 7; marker-end: url(#arrow-blue); }
+      .efferent { fill: none; stroke: #0f766e; stroke-width: 3; stroke-linecap: round; marker-end: url(#arrow-green); }
+      .airflow { fill: none; stroke: #0891b2; stroke-width: 4; stroke-linecap: round; marker-end: url(#arrow-air); }
+      .leader { fill: none; stroke: #789299; stroke-width: 1.6; stroke-linecap: round; }
+      .label { fill: #ffffff; stroke: #c7ebe7; stroke-width: 2; filter: url(#shadow); }
+      .label-title { font: 800 17px Arial, Helvetica, sans-serif; fill: #073b43; }
+      .label-text { font: 600 13.5px Arial, Helvetica, sans-serif; fill: #3f6268; }
+      .badge { fill: #0f766e; }
+      .badge-blue { fill: #2563eb; }
+      .badge-orange { fill: #f97316; }
+      .badge-text { font: 800 15px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .side-title { font: 800 19px Arial, Helvetica, sans-serif; fill: #064e5b; }
+      .side-text { font: 600 14.5px Arial, Helvetica, sans-serif; fill: #315b62; }
+      .chip { fill: #e8f7ff; stroke: #94d3e6; stroke-width: 1.8; }
+      .chip-text { font: 800 14.5px Arial, Helvetica, sans-serif; fill: #075985; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="760" rx="28"/>
+  <text class="title" x="56" y="58">Fisiopatologia da tosse</text>
+  <text class="subtitle" x="56" y="88">Arco reflexo: estímulo nas vias aéreas, nervo vago, centro da tosse e resposta motora coordenada</text>
+
+  <rect class="stage" x="50" y="120" width="850" height="590" rx="24"/>
+  <rect class="stage" x="932" y="120" width="298" height="590" rx="24"/>
+
+  <!-- Modelo humano em perfil, com cabeça, face, pescoço, ombros e tórax -->
+  <g id="human-profile">
+    <path class="neck" d="M448 286 C425 332 411 389 414 462 C417 545 455 624 520 672 L710 672 C657 614 637 549 640 474 C644 398 615 333 570 289 Z"/>
+    <path class="skin" d="M503 104 C453 101 413 128 396 169 C382 204 390 241 413 265 C433 286 464 300 501 302 C558 304 603 260 606 205 C609 152 562 108 503 104 Z"/>
+    <path class="skin" d="M408 190 C382 198 356 212 329 236 C354 242 382 239 406 226"/>
+    <path class="skin" d="M405 249 C380 260 359 279 339 306 C369 307 398 295 421 275"/>
+    <path class="skin" d="M412 666 C467 623 598 624 676 666"/>
+    <path class="feature" d="M423 166 C407 177 398 194 399 213"/>
+    <path class="feature" d="M430 160 C439 153 451 151 462 156"/>
+    <circle cx="451" cy="169" r="4" fill="#397f7b"/>
+    <path class="feature" d="M391 225 C376 227 361 231 347 237"/>
+    <path class="feature" d="M394 254 C378 265 365 276 355 291"/>
+    <path class="feature" d="M511 174 C532 190 535 222 517 244"/>
+    <path class="torso-line" d="M448 330 C474 360 487 405 487 460"/>
+    <path class="torso-line" d="M572 326 C548 360 536 405 536 460"/>
+    <path class="rib" d="M413 500 C455 478 566 478 610 500"/>
+    <path class="rib" d="M397 542 C452 514 584 514 626 542"/>
+    <path class="rib" d="M388 584 C458 552 590 552 636 584"/>
+  </g>
+
+  <!-- Boca, faringe, traqueia, brônquios, pulmões e diafragma -->
+  <path class="airway" d="M350 236 C400 235 445 238 475 257 C501 274 510 303 508 338 L508 420"/>
+  <path class="airway-inner" d="M350 236 C400 235 445 238 475 257 C501 274 510 303 508 338 L508 420"/>
+  <path class="airway" d="M508 420 C476 448 454 482 437 532"/>
+  <path class="airway-inner" d="M508 420 C476 448 454 482 437 532"/>
+  <path class="airway" d="M508 420 C544 447 571 482 590 532"/>
+  <path class="airway-inner" d="M508 420 C544 447 571 482 590 532"/>
+
+  <path class="lung" d="M414 470 C353 492 337 568 363 624 C387 676 449 670 476 617 C502 565 486 497 456 474 C443 464 428 465 414 470 Z"/>
+  <path class="lung" d="M607 470 C668 492 684 568 658 624 C634 676 572 670 545 617 C519 565 535 497 565 474 C578 464 593 465 607 470 Z"/>
+  <path class="diaphragm" d="M354 641 C436 608 579 608 664 641"/>
+
+  <!-- Cérebro e centro da tosse -->
+  <path class="brain" d="M485 130 C515 124 548 143 559 173 C571 206 552 235 519 239 C485 244 457 222 455 190 C453 163 465 137 485 130 Z"/>
+  <circle class="center" cx="525" cy="234" r="13"/>
+
+  <!-- Receptores nas vias aéreas -->
+  <circle class="receptor" cx="491" cy="362" r="8"/>
+  <circle class="receptor" cx="508" cy="420" r="8"/>
+  <circle class="receptor" cx="441" cy="520" r="8"/>
+  <circle class="receptor" cx="584" cy="520" r="8"/>
+
+  <!-- Setas finas, desenhadas no espaço anatômico e sem cruzar textos -->
+  <path class="afferent" d="M490 362 C455 324 455 270 524 236"/>
+  <path class="efferent" d="M538 241 C648 276 676 404 609 517"/>
+  <path class="efferent" d="M539 247 C611 309 610 412 548 612"/>
+  <path class="airflow" d="M349 236 C304 235 266 234 225 234"/>
+  <path class="airflow" d="M337 219 C301 205 269 199 232 198"/>
+  <path class="airflow" d="M337 253 C302 268 270 276 232 278"/>
+
+  <!-- Números próximos à anatomia -->
+  <circle class="badge-blue" cx="479" cy="366" r="17"/><text class="badge-text" x="479" y="372" text-anchor="middle">1</text>
+  <circle class="badge-blue" cx="458" cy="295" r="17"/><text class="badge-text" x="458" y="301" text-anchor="middle">2</text>
+  <circle class="badge-orange" cx="548" cy="229" r="17"/><text class="badge-text" x="548" y="235" text-anchor="middle">3</text>
+  <circle class="badge" cx="624" cy="517" r="17"/><text class="badge-text" x="624" y="523" text-anchor="middle">4</text>
+  <circle class="badge" cx="218" cy="234" r="17"/><text class="badge-text" x="218" y="240" text-anchor="middle">5</text>
+
+  <!-- Legendas com conectores curtos, fora das setas principais -->
+  <g transform="translate(90 148)">
+    <rect class="label" x="0" y="0" width="250" height="82" rx="14"/>
+    <text class="label-title" x="18" y="28">5. Tosse</text>
+    <text class="label-text" x="18" y="51">Expulsão rápida de ar pela boca</text>
+    <text class="label-text" x="18" y="69">para proteção das vias aéreas.</text>
+  </g>
+  <path class="leader" d="M340 189 L270 216"/>
+
+  <g transform="translate(92 330)">
+    <rect class="label" x="0" y="0" width="254" height="90" rx="14"/>
+    <text class="label-title" x="18" y="29">1. Receptores</text>
+    <text class="label-text" x="18" y="53">Laringe, traqueia e brônquios</text>
+    <text class="label-text" x="18" y="72">detectam irritação ou secreção.</text>
+  </g>
+  <path class="leader" d="M346 373 L470 365"/>
+
+  <g transform="translate(92 452)">
+    <rect class="label" x="0" y="0" width="254" height="90" rx="14"/>
+    <text class="label-title" x="18" y="29">2. Nervo vago</text>
+    <text class="label-text" x="18" y="53">Leva o impulso sensitivo</text>
+    <text class="label-text" x="18" y="72">até o tronco encefálico.</text>
+  </g>
+  <path class="leader" d="M346 482 L445 309"/>
+
+  <g transform="translate(620 156)">
+    <rect class="label" x="0" y="0" width="226" height="90" rx="14"/>
+    <text class="label-title" x="18" y="29">3. Centro da tosse</text>
+    <text class="label-text" x="18" y="53">Integra estímulos e coordena</text>
+    <text class="label-text" x="18" y="72">a resposta reflexa.</text>
+  </g>
+  <path class="leader" d="M620 204 L563 228"/>
+
+  <g transform="translate(648 518)">
+    <rect class="label" x="0" y="0" width="206" height="108" rx="14"/>
+    <text class="label-title" x="18" y="29">4. Resposta motora</text>
+    <text class="label-text" x="18" y="53">Laringe, diafragma,</text>
+    <text class="label-text" x="18" y="72">intercostais e parede</text>
+    <text class="label-text" x="18" y="91">torácica se contraem.</text>
+  </g>
+  <path class="leader" d="M648 563 L624 530"/>
+
+  <!-- Painel lateral enxuto -->
+  <text class="side-title" x="972" y="176">Gatilhos que ativam o reflexo</text>
+  <g transform="translate(972 202)">
+    <rect class="chip" x="0" y="0" width="214" height="42" rx="14"/>
+    <text class="chip-text" x="16" y="27">Inflamação ou irritação</text>
+    <rect class="chip" x="0" y="58" width="214" height="42" rx="14"/>
+    <text class="chip-text" x="16" y="85">Secreções ou aspiração</text>
+    <rect class="chip" x="0" y="116" width="214" height="42" rx="14"/>
+    <text class="chip-text" x="16" y="143">Obstrução ou compressão</text>
+  </g>
+
+  <text class="side-title" x="972" y="414">Na prática</text>
+  <text class="side-text" x="972" y="447">A tosse produtiva e efetiva pode</text>
+  <text class="side-text" x="972" y="470">ser protetora.</text>
+  <text class="side-text" x="972" y="510">Tosse seca, exaustiva ou refratária</text>
+  <text class="side-text" x="972" y="533">pode exigir alívio sintomático.</text>
+  <text class="side-text" x="972" y="573">A decisão considera secreções,</text>
+  <text class="side-text" x="972" y="596">sofrimento, sinais de alerta e</text>
+  <text class="side-text" x="972" y="619">objetivo de cuidado.</text>
+</svg>

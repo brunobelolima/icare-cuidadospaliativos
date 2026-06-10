@@ -8,9 +8,9 @@ const visitCounter = document.querySelector("#visitCounter");
 const visitCounterMeta = document.querySelector("#visitCounterMeta");
 const tabs = Array.from(document.querySelectorAll(".tab-trigger"));
 const panels = Array.from(document.querySelectorAll(".content-panel"));
-const visitCounterKey = "icare-abordagem-paliativa-visits-v3";
-const visitCounterLastVisitKey = "icare-abordagem-paliativa-last-visit-v3";
+const visitCounterKey = "icare-abordagem-paliativa-global-visits-cache-v1";
 const visitCounterSessionKey = "icare-abordagem-paliativa-session-counted-v3";
+const visitCounterUrl = "https://abacus.jasoncameron.dev/hit/icare-abordagem-paliativa/visitas";
 const visitCounterLegacyKeys = [
   "icare-abordagem-paliativa-visits-v1",
   "icare-abordagem-paliativa-last-visit-v1",
@@ -18,8 +18,9 @@ const visitCounterLegacyKeys = [
   "icare-abordagem-paliativa-visits-v2",
   "icare-abordagem-paliativa-last-visit-v2",
   "icare-abordagem-paliativa-session-counted-v2",
+  "icare-abordagem-paliativa-visits-v3",
+  "icare-abordagem-paliativa-last-visit-v3",
 ];
-const visitCounterWindowMs = 30 * 60 * 1000;
 const cookieConsentKey = "icare-abordagem-paliativa-cookie-consent-v1";
 const publicAudienceTabs = new Set(["nao-profissionais", "medicamentos-componente-especializado", "idealizadores", "contato"]);
 const opioidSource = document.querySelector("#opioidSource");
@@ -338,20 +339,7 @@ function initCookieBanner() {
   declineCookiesButton?.addEventListener("click", () => setCookieConsent("declined"));
 }
 
-function formatVisitDate(timestamp) {
-  const date = new Date(Number(timestamp));
-  if (Number.isNaN(date.getTime())) return "";
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
-function renderVisitCounter(count, lastVisit) {
+function renderVisitCounter(count, isFallback = false) {
   if (!visitCounter) return;
 
   const safeCount = Number.isFinite(count) && count >= 0 ? count : 0;
@@ -359,11 +347,11 @@ function renderVisitCounter(count, lastVisit) {
   visitCounter.closest(".visit-counter")?.classList.add("is-active");
 
   if (visitCounterMeta) {
-    visitCounterMeta.textContent = safeCount > 0 ? "Neste navegador" : "Neste navegador | contador zerado";
+    visitCounterMeta.textContent = isFallback ? "Total geral salvo" : "Total geral";
   }
 }
 
-function updateVisitCounter() {
+async function updateVisitCounter() {
   if (!visitCounter) return;
 
   try {
@@ -373,39 +361,35 @@ function updateVisitCounter() {
     });
 
     const alreadyCountedThisSession = sessionStorage.getItem(visitCounterSessionKey) === "1";
-    const storedCount = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
-    const previousCount = Number.isFinite(storedCount) ? storedCount : 0;
-    const storedLastVisit = Number.parseInt(localStorage.getItem(visitCounterLastVisitKey) || "0", 10);
-    const lastVisit = Number.isFinite(storedLastVisit) ? storedLastVisit : 0;
-    const now = Date.now();
-    const canCountNewVisit = !alreadyCountedThisSession && (!lastVisit || now - lastVisit >= visitCounterWindowMs);
-    const nextCount = canCountNewVisit ? previousCount + 1 : previousCount;
+    const cachedCount = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
 
-    if (canCountNewVisit) {
-      localStorage.setItem(visitCounterKey, String(nextCount));
-      localStorage.setItem(visitCounterLastVisitKey, String(now));
+    if (alreadyCountedThisSession && Number.isFinite(cachedCount) && cachedCount > 0) {
+      renderVisitCounter(cachedCount, true);
+      return;
+    }
+
+    const response = await fetch(visitCounterUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("Visit counter unavailable");
+
+    const data = await response.json();
+    const total = Number.parseInt(String(data.value || "0"), 10);
+    const safeTotal = Number.isFinite(total) ? total : 0;
+
+    localStorage.setItem(visitCounterKey, String(safeTotal));
+    if (!alreadyCountedThisSession) {
       sessionStorage.setItem(visitCounterSessionKey, "1");
     }
 
-    renderVisitCounter(nextCount, localStorage.getItem(visitCounterLastVisitKey) || "");
+    renderVisitCounter(safeTotal);
   } catch {
-    renderVisitCounter(0, "");
+    const cachedCount = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
+    renderVisitCounter(Number.isFinite(cachedCount) ? cachedCount : 0, true);
   }
 }
 
 updateVisitCounter();
 initCookieBanner();
 
-window.addEventListener("storage", (event) => {
-  if (event.key !== visitCounterKey && event.key !== visitCounterLastVisitKey) return;
-
-  try {
-    const count = Number.parseInt(localStorage.getItem(visitCounterKey) || "0", 10);
-    renderVisitCounter(Number.isFinite(count) ? count : 0, localStorage.getItem(visitCounterLastVisitKey) || "");
-  } catch {
-    renderVisitCounter(0, "");
-  }
-});
 const symptomTabs = [
   { id: "manejo-dor", label: "Dor" },
   { id: "tosse", label: "Tosse" },
@@ -3081,13 +3065,13 @@ const zaritLabels = [
 ];
 
 function getZaritInterpretation(score) {
-  if (score <= 20) {
+  if (score <= 11) {
     return "Sem sobrecarga ou sobrecarga mínima. Reavaliar periodicamente e manter orientação prática.";
   }
-  if (score <= 40) {
+  if (score <= 22) {
     return "Sobrecarga leve a moderada. Revisar divisão de tarefas, descanso, rede de apoio e plano de crise.";
   }
-  if (score <= 60) {
+  if (score <= 33) {
     return "Sobrecarga moderada a intensa. Priorizar suporte familiar, serviço social, atenção primária e reavaliação frequente.";
   }
   return "Sobrecarga intensa. Avaliar risco de colapso do cuidado, segurança no domicílio e necessidade de apoio multiprofissional rápido.";
@@ -3100,7 +3084,7 @@ function updateZaritScale() {
   if (!items.length || !scoreOutput || !interpretationOutput) return;
 
   const score = items.reduce((total, select) => total + Number(select.value || 0), 0);
-  scoreOutput.textContent = `Pontuação: ${score}/88`;
+  scoreOutput.textContent = `Pontuação: ${score}/48`;
   interpretationOutput.textContent = getZaritInterpretation(score);
 }
 
